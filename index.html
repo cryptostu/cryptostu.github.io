@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html class="full-height">
 <head>
   <meta charset="utf-8">
-  
-
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   
   <title>Cryptocurrency Tech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -25,494 +26,506 @@
   
     <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
 </head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Cryptocurrency Tech</a>
-      </h1>
-      
-        <h2 id="subtitle-wrap">
-          <a href="/" id="subtitle">Cryptocurrency Technologies</a>
-        </h2>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
-      </div>
-    </div>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Diskobólos</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
   </div>
 </header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-比特币-交易的数据结构" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/01/10/比特币-交易的数据结构/" class="article-date">
-  <time datetime="2018-01-10T05:45:27.000Z" itemprop="datePublished">2018-01-10</time>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <style>
+    .post-hover:hover {
+        box-shadow: inset 0 0 100px #000;
+        transition: box-shadow .2s;
+    }
+
+    .sub-post-container .post-hover:hover h3 {
+        text-decoration: underline gray;
+    }
+
+
+    .primary-item-main {
+        height: 330px;
+        background-size: cover;
+    }
+
+    .primary-container .title,
+    .primary-container .sub-title,
+    .primary-container .post-content-text,
+    .primary-container .date {
+        color: #fff;
+    }
+
+    .post-content-text {
+        color: #f1f1f1!important;
+    }
+
+    .primary-container .post-hover {
+        background: black;
+    }
+
+    .content-bg-mask {
+        background: rgba(0,0,0,.4);
+    }
+
+</style>
+
+<div style="background: #f5f8f9;">
+    <div id="main-container" class="container" style="padding-top: 20px;">
+        <div class="is-flex main-content justify-center">
+            <section class="column is-9">
+                
+<div class="primary-container content-box is-flex-desktop clear-padding bottom-line" style="margin-bottom: 25px;">
+    <div class="column  is-7-desktop">
+        <a href="/2018/01/10/比特币-交易的数据结构/">
+            <div class="full-height post-hover"
+                 style="
+                         background-image: url('');
+                         height: 350px;
+                         background-size: cover;
+                         background-repeat: no-repeat;
+                         ">
+                    <div class=" is-flex flex-column center content has-text-centered full-height has-padding content-bg-mask">
+                        <h1 class="title text-shadow" style="margin-bottom: 15px;">
+                            比特币:交易的数据结构
+                        </h1>
+                        <div>
+                        
+                            
+                        
+                        </div>
+                        <p class="post-content-text is-marginless has-padding text-shadow">
+                            比特币协议中最重要的部分就是交易，比特币协议其他的部分也都是为了确保交易的生成、广播、验证和打包而实现的。本文内容主要是针对交易的数据结构以及对原始交易进行解析，后期还会继续写交易的生命周期、交易脚本等文章。
+原始交易比特币的交易是以字..
+                        </p>
+                        <p class="date text-shadow">2018-01-10</p>
+                        <button class="button is-info is-small">Read More</button>
+                    </div>
+            </div>
+        </a>
+    </div>
+    <div class="column is-5 is-hidden-touch" style="padding-left: 0;">
+        <div class="full-height is-flex flex-column justify-space-between" style="min-height: 350px;">
+            
+                
+<a class="post-hover" href="/2018/01/10/BCH发错地址是如何丢币的？/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('http://upload-images.jianshu.io/upload_images/22188-e295931dea4dc6d5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                BCH发错地址是如何丢币的？
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                早上的时候看到某币圈大V的微博，他说因为Bitcoin.com把Bitcoin Cash Wal..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-10</p>
+        </div>
+    </div>
 </a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/10/比特币-交易的数据结构/">比特币:交易的数据结构</a>
-    </h1>
-  
+            
+            
+                
+<a class="post-hover" href="/2018/01/10/AsicBoost和SegWit/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('http://upload-images.jianshu.io/upload_images/22188-1ee9b581b9a5d8a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                AsicBoost和SegWit
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                关于AsicBoost和SegWit的讨论已经冷清了很多，但我还是想从技术的角度尝试解释下：
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>比特币协议中最重要的部分就是交易，比特币协议其他的部分也都是为了确保交易的生成、广播、验证和打包而实现的。<br>本文内容主要是针对交易的数据结构以及对原始交易进行解析，后期还会继续写<code>交易的生命周期</code>、<code>交易脚本</code>等文章。</p>
-<h2 id="原始交易"><a href="#原始交易" class="headerlink" title="原始交易"></a>原始交易</h2><p>比特币的交易是以字节的形式存在块中的，使用<code>bitcoin-cli</code>命令可以获得一个原始的交易数据。例如：</p>
-<blockquote>
-<p>bitcoin-cli getrawtransaction 2eb0e06af852f049f7dc641f740ded17a11cde138fd3d3d3c4a078649c053260</p>
-</blockquote>
-<p>会得到一个完整的原始交易数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">010000000112255d3c...88ac00000000</span><br></pre></td></tr></table></figure></p>
-<p><a href="010000000112255d3cd1e5a59bec64057b0d2b2a7f3c9a9e1f14d0f1b362b72e96743d69ae010000008a473044022065d352a27ed3039e7fbca5315c38b5d255e68e9919964906c5dfe3cfea7abe11022070036614521710506873b769ff8bb53dc7350f752fc687ed483713eca136b611014104d5d461083771ac542a6417a8424b74ba56d47f77e888cde408a508189d88bcef9bbb7292b750774da227dbd326db2a2efbeaab9789e57b946a41ab895c0d2eaeffffffff0200e1f505000000001976a9147072795a259b38bf476e053852ab85221ba9467b88acc0570100000000001976a9140cb6c275be7f179883bb821ef1dfd6b520fc656988ac00000000">^rawtransaction</a><br>得到的原始交易是经过<code>hex</code>处理的，并没有显示为原始字节。从上面的<code>hex</code>字符串也并不能看到有用的信息（如果想查看json格式的交易可以查看<a href="https://chain.api.btc.com/v3/tx/2eb0e06af852f049f7dc641f740ded17a11cde138fd3d3d3c4a078649c053260?verbose=3" target="_blank" rel="noopener">api</a>).<br>原始的交易数据并不能直观地体现交易的具体内容，如何才能得到具体的交易内容呢？借助这个例子可以详细的分析下交易结构和原始数据解析。先看下交易的数据结构。</p>
-<h2 id="交易的数据结构"><a href="#交易的数据结构" class="headerlink" title="交易的数据结构"></a>交易的数据结构</h2><p>一个完整的交易由以下的元素构成的：</p>
-<ul>
-<li>版本 version</li>
-<li>输入 tx_in</li>
-<li>输出 tx_out</li>
-<li>锁定时间 lock_time</li>
-</ul>
-<p>其中交易的输入和输出有可能是一个或多个，上面所说的交易就有一个输入和两个输出。<br>版本(version)是明确一笔交易参照的规则，除非有重大升级的情况下，版本号基本无变化，是比较固定的一个值。<br>交易的锁定时间是被该交易被加到区块的最早时间，在大多数的情况下他的值都是0，表示需要立即被加入区块中。如果锁定时间大于0而小于5亿，它的值就表示区块高度。如果大于5亿就表示一个Unix时间戳。<br>上面所描述的交易构成又是如何在原始交易里面体现的呢？这就需要对原始交易进行拆解，看下交易结构如何在原始交易中定义的：</p>
-<table>
-<thead>
-<tr>
-<th>描述</th>
-<th>长度</th>
-<th>原始字段</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> 版本</td>
-<td>4</td>
-<td>01000000</td>
-</tr>
-<tr>
-<td> 交易输入的个数</td>
-<td>1+</td>
-<td>01</td>
-</tr>
-<tr>
-<td> 交易输入</td>
-<td>41+</td>
-<td>12255……ffffffff <a href="12255d3cd1e5a59bec64057b0d2b2a7f3c9a9e1f14d0f1b362b72e96743d69ae010000008a473044022065d352a27ed3039e7fbca5315c38b5d255e68e9919964906c5dfe3cfea7abe11022070036614521710506873b769ff8bb53dc7350f752fc687ed483713eca136b611014104d5d461083771ac542a6417a8424b74ba56d47f77e888cde408a508189d88bcef9bbb7292b750774da227dbd326db2a2efbeaab9789e57b946a41ab895c0d2eaeffffffff">^ins</a></td>
-</tr>
-<tr>
-<td>输出的个数</td>
-<td>1+</td>
-<td>02</td>
-</tr>
-<tr>
-<td>交易输出</td>
-<td>9+</td>
-<td>00e1f…988ac<a href="00e1f505000000001976a9147072795a259b38bf476e053852ab85221ba9467b88acc0570100000000001976a9140cb6c275be7f179883bb821ef1dfd6b520fc656988ac">^outs</a></td>
-</tr>
-<tr>
-<td>锁定时间</td>
-<td>4</td>
-<td>00000000</td>
-</tr>
-</tbody>
-</table>
-<p>通过上面的表格可以看到一个原始交易是如何存储交易的。原始交易中除了包括交易所需要的数据之外，因为交易的输入和输出有可能会出现多个，所以原始交易还需要额外的字段用来描述交易的输入、输出个数，输入、输出的个数并不是固定的，因此用来描述个数使用的是变长整数（VarInt），他的目的是在节省空间的情况下能够存储足够使用的整数。<br>这里描述了一个交易的数据结构以及他在原始交易中如何存储的，但是并没有拆解出具体的<code>输入</code>、<code>输出</code>内容。下面就对<code>输入</code>、<code>输出</code>进行详细的拆解，先从输入开始。</p>
-<h2 id="交易输入"><a href="#交易输入" class="headerlink" title="交易输入"></a>交易输入</h2><p>一个交易的输入是由下面的元素组成：</p>
-<ul>
-<li>引用交易的hash</li>
-<li>引用交易的索引</li>
-<li>解锁脚本</li>
-</ul>
-<p>那么交易输入又是如何在原始交易里面进行存储的呢？从上面的分析我们可以知道该例子交易中只有一个交易的输入。下面就是从原始交易中解析下交易的<code>输入</code>：</p>
-<table>
-<thead>
-<tr>
-<th>描述</th>
-<th>长度</th>
-<th>原始字段</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>前置交易hash</td>
-<td>32</td>
-<td>12255…ae<a href="12255d3cd1e5a59bec64057b0d2b2a7f3c9a9e1f14d0f1b362b72e96743d69ae">^previous_hash</a></td>
-</tr>
-<tr>
-<td>前置交易的索引</td>
-<td>4</td>
-<td>01000000</td>
-</tr>
-<tr>
-<td> 解锁脚本长度</td>
-<td>1+</td>
-<td>8a</td>
-</tr>
-<tr>
-<td>解锁脚本</td>
-<td>？</td>
-<td>4730…eae<a href="473044022065d352a27ed3039e7fbca5315c38b5d255e68e9919964906c5dfe3cfea7abe11022070036614521710506873b769ff8bb53dc7350f752fc687ed483713eca136b611014104d5d461083771ac542a6417a8424b74ba56d47f77e888cde408a508189d88bcef9bbb7292b750774da227dbd326db2a2efbeaab9789e57b946a41ab895c0d2eae">^in_script</a></td>
-</tr>
-<tr>
-<td>序列</td>
-<td>4</td>
-<td>ffffffff</td>
-</tr>
-</tbody>
-</table>
-<p>这里获取到的hash和网站上面显示的hash并一致，这是因为字节序的存储和读取的方式不一致造成的，即<a href="http://www.cnblogs.com/fuchongjundream/p/3914770.html" target="_blank" rel="noopener">大端和小端模式</a>：</p>
-<blockquote>
-<p>网络协议规定接收到第一个字节是高字节，存放在低地址，所以发送时会首先去低地址取数据的高字节</p>
-</blockquote>
-<p>而在比特币的存储中hash是做为一个整数存储的，因此在取hash时候需要从低地址开始获取。<br>而解锁脚本的长度也是未知的，就需要使用一个可变整形用来表示解锁脚本的长度。对于<code>交易脚本</code>的拆解会在以后的文章中进行。<br>通过上面表格的描述就可以从一个交易中拆解出它的输入了，下面继续对交易输出进行拆解。</p>
-<h2 id="交易输出"><a href="#交易输出" class="headerlink" title="交易输出"></a>交易输出</h2><p>一个交易的输出是由下面的元素组成的：</p>
-<ul>
-<li>输出金额</li>
-<li>输出脚本</li>
-</ul>
-<p>那交易的输出在原始交易中又是如何存储的呢？从上面的交易拆解中可以知道该例子交易是有两个输出，这里只需要针对第一个输出进行拆解即可：</p>
-<table>
-<thead>
-<tr>
-<th>描述</th>
-<th>长度</th>
-<th>原始字段</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>value 单位是1聪</td>
-<td>8</td>
-<td>00e1f50500000000</td>
-</tr>
-<tr>
-<td> 锁定脚本长度</td>
-<td>1+</td>
-<td>19</td>
-</tr>
-<tr>
-<td>  锁定脚本</td>
-<td>？</td>
-<td>76a9147072795a259b38bf476e053852ab85221ba9467b88ac</td>
-</tr>
-</tbody>
-</table>
-<p>注意输出的金额也涉及到大端传输的问题，解析的时候需要从低地址开始读取。<br>这里并没有对<code>锁定脚本</code>进行拆解，所以还看不到输出的地址，对于一个比特币交易来说，交易本身是不用关心输出的地址，交易只需要关心锁定脚本，当使用的时候能使用使用正确的解锁脚本即可动用比特币。关于<code>交易脚本</code>会在以后的内容里详细的介绍。<br>交易本身的数据结构并不没有<code>交易费</code>的概念，每笔交易的手续费是使用<code>总输入-总输出</code>计算得到的，所以在交易的数据结构中没有体现。<br>总结，一个原始的交易包含了一个交易所需要的所有数据，他们按照比特币协议规定的规则进行存储。在交易生成，验证的时候也需要按照相同的规则验证。<br>参考:<a href="https://en.bitcoin.it/wiki/Protocol_documentation#tx" target="_blank" rel="noopener">https://en.bitcoin.it/wiki/Protocol_documentation#tx</a></p>
-
-      
+..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-10</p>
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/01/10/比特币-交易的数据结构/" data-id="cjc8n61m40002qhfy0q6zddv4" class="article-share-link">Teilen</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-BCH发错地址是如何丢币的？" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/01/10/BCH发错地址是如何丢币的？/" class="article-date">
-  <time datetime="2018-01-10T03:55:19.000Z" itemprop="datePublished">2018-01-10</time>
 </a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/10/BCH发错地址是如何丢币的？/">BCH发错地址是如何丢币的？</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>早上的时候看到某币圈大V的微博，他说因为Bitcoin.com把Bitcoin Cash Wallet做为默认钱包造成了用户的丢币。我赶紧更新了bitcoin.com钱包试用了下。<br><img src="http://upload-images.jianshu.io/upload_images/22188-e295931dea4dc6d5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500" alt="bitcoin.com wallet"></p>
-<p>钱包的改动很简单，就把Bitcoin Cash Wallets作为首选，这样就造成用户丢币了……<br>其实这事和Roger Ver真的没有啥关系，估计该大V现在还不清楚BCH是如何丢失的吧！（该大V还宣称数百万的BTC因此而丢失）</p>
-<h2 id="第一个问题丢币的到底是什么币种？"><a href="#第一个问题丢币的到底是什么币种？" class="headerlink" title="第一个问题丢币的到底是什么币种？"></a>第一个问题丢币的到底是什么币种？</h2><p>先来看第一个问题，哪个币种的币丢失了，是BTC还是BCH。如果连这个都搞不清楚后面的问题就更难说明白了，这里先声明，只考虑最近出现的因为发错地址而丢币的情况，不包含用户私钥丢失，密码忘记等情况。<br>我们知道BCH去掉了SW交易的地址，另外还有区块大小，动态难度调整等。在地址上和BTC是没有区别除了SW地址以外，那么就可以得出一个结论包含了SW交易的BTC的地址集合是要大于BCH的地址集合的，意思就是说你在BCH上生成的地址都可以在BTC上生成而可以使用。<br>BTC和BCH使用同一种地址编码技术，一种可能出现的情况是用户会发错地址，本来是想构建交易发送BCH到A地址的，最后发现A地址是BTC的，这种情况下只要有对应的私钥，无论是BTC或者BCH上面都可以生成对应的地址找回币。<br>而刚刚说了BTC的地址集合是大于BCH的，也就是说如果BCH上面有私钥的地址肯定可以在BTC上生成的，反过来却不是。BCH上面不支持SW的地址，BTC上面生成的SW地址BCH不可使用，丢币问题也是和SW的地址有关。错误的把BCH在发送到SW地址上才可能会出现BCH丢失的情况。</p>
-<h2 id="第二个问题什么样的地址会造成丢币？"><a href="#第二个问题什么样的地址会造成丢币？" class="headerlink" title="第二个问题什么样的地址会造成丢币？"></a>第二个问题什么样的地址会造成丢币？</h2><p>上面已经说了把BCH打到SW地址上才可能会出现丢币的问题，这里还是要简单做下介绍。<br>可以简单的地址分为三类：普通地址（1开头），多种签名地址（3开头），另外的就是SW地址，当前使用的SW地址都是镶嵌在P2SH中的P2WPKH地址它也是3开头的地址。</p>
-<blockquote>
-<p>P2SH（bip16)是Gavin Andresen提出的一种pay to script Hash的方法，允许发送者构建更加丰富的交易类型。</p>
-</blockquote>
-<p>P2SH的锁定脚本例子:</p>
-<blockquote>
-<p>OP_HASH160 86107606107baa4d1fc6711e22de7f0ef2056766 OP_EQUAL</p>
-</blockquote>
-<p>而在赎回脚本里面，需要提供一段脚本(redeemScript)，通过的条件需要满足该脚本可执行返回true，且其hash值与后面的值相同，最终脚本类似于:</p>
-<blockquote>
-<p>redeemScript OP_HASH160 86107606107baa4d1fc6711e22de7f0ef2056766 OP_EQUAL</p>
-</blockquote>
-<p>我们常常使用的多种签名其实是P2SH的一种方式，当前另外一种使用P2SH比较多的就是SW地址。上面例子中的P2SH脚本其实就是一个SW地址的锁定脚本。该地址在支持SW交易的BTC中可以发送SW交易解锁，而在BCH链上的只会识别成一个P2SH的地址，地址是合法的（可以简单认为在BCH就认为是一个多重签名的地址）。<br>当有人把BCH发送到这种SW地址上面的时候麻烦就出现了，BCH上面不支持SW交易，无法生成对应的解锁脚本。<br>那么把BCH误发到SW地址上是不是就没有办法挽回了呢？答案是否定的。</p>
-<h2 id="SW交易是如何”骗”老节点的"><a href="#SW交易是如何”骗”老节点的" class="headerlink" title="SW交易是如何”骗”老节点的"></a>SW交易是如何”骗”老节点的</h2><p>想要找回发送到错误地址上的BCH，就需要明白SW交易是如何“骗”老节点的。<br>SW升级是一个软分叉，也就是意味着SW交易也需要在老版本节点上验证通过，SW交易要”骗”老节点，让老节点在不清楚SW交易具体结构的情况下还可以正确验证交易，那如何”骗”老节点呢？<br>简单来说SW的地址其实是RedeemScript（赎回脚本）的一个hash，比如我们拿一个最简单的sw的交易举例：<a href="https://btc.com/c586389e5e4b3acb9d6c8be1c19ae8ab2795397633176f5a6442a261bbdefc3a" target="_blank" rel="noopener">c586389e5e4b3acb9d6c8be1c19ae8ab2795397633176f5a6442a261bbdefc3a</a></p>
-<ul>
-<li>该交易的输入地址：35SegwitPieWKVHieXd97mnurNi8o6CM73</li>
-<li>输入的脚本: OP_HASH160 2928f43af18d2d60e8a843540d8086b305341339 OP_EQUAL</li>
-<li>WitnessScript：160014a4b4ca48de0b3fffc15404a1acdc8dbaae226955</li>
-<li>Witness: 30450221008604ef8f6d8afa892dee0f31259b6ce02dd70c545cfcfed8148179971876c54a022076d771d6e91bed212783c9b06e0de600fab2d518fad6f15a2b191d7fbd262a3e01<br>039d25ab79f41f75ceaf882411fd41fa670a4c672c23ffaf0e361a969cde0692e8</li>
-</ul>
-<p>只需要分析WitnessScript即可，这部分是用来让老版本验证该交易是合法的，这个脚本可以分为两部分</p>
-<blockquote>
-<p><code>16</code>  0014a4b4ca48de0b3fffc15404a1acdc8dbaae226955</p>
-</blockquote>
-<p>其中16是用来压栈的操作符，后面的数据（0014a4b4ca48de0b3fffc15404a1acdc8dbaae226955）的hash就是锁定脚本的hash值2928f43af18d2d60e8a843540d8086b305341339，这样把该脚本给老版本，老版本验证该脚本肯定是可以通过的。老版本的客户端运行的时候，该解锁脚本可以正确运行，老版本的客户端是不用关心公钥和签名数据的。这样就成功的”骗”了老版本的节点。</p>
-<p>上面介绍的是SW交易如何”骗”老版本客户端的，这和BCH用户错误地发币到SW地址又有什么关系呢？<br>因为BCH客户端和BTC老版本客户端的验证方式是一样的，可以这么说SW交易有办法合法地在老版本客户端上验证通过，当然它也可以在BCH客户端上验证通过的。<br>这是一个btc.com帮忙找回的BCH例子<a href="https://www.blocktrail.com/BCC/address/3DutBysquuSbQxYA6EEq3m8VBQDBqa55mw/transactions" target="_blank" rel="noopener">https://www.blocktrail.com/BCC/address/3DutBysquuSbQxYA6EEq3m8VBQDBqa55mw/transactions</a><br>其交易详情为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">      &#123;</span><br><span class="line">      &quot;txid&quot;: &quot;ac3db4411e1ce8cc76e3ebe2f7d0a538c6033fcf80484a97902eef7d6a5e34e6&quot;,</span><br><span class="line">      &quot;vout&quot;: 0,</span><br><span class="line">      &quot;scriptSig&quot;: &#123;</span><br><span class="line">        &quot;asm&quot;: &quot;00205c4b9ef7c8896cef0d2a8fd3693d3877e0f4d1d3904fbcaf9cac1bcfb324d9b2&quot;,</span><br><span class="line">        &quot;hex&quot;: &quot;2200205c4b9ef7c8896cef0d2a8fd3693d3877e0f4d1d3904fbcaf9cac1bcfb324d9b2&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;sequence&quot;: 4294967295</span><br><span class="line">    &#125;,</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>它在BCH上的解锁脚本(用来让老版本客户端通过验证的)是：2200205c4b9ef7c8896cef0d2a8fd3693d3877e0f4d1d3904fbcaf9cac1bcfb324d9b2，该交易在BTC链上也会动用过：<a href="https://btc.com/b25ae18255104fa8e871f5b7bcca5e30b11b67a1720555e710f36dfe6ab85397" target="_blank" rel="noopener">https://btc.com/b25ae18255104fa8e871f5b7bcca5e30b11b67a1720555e710f36dfe6ab85397</a> 可以找到该解锁脚本:<br><img src="http://upload-images.jianshu.io/upload_images/22188-1c61766479d7d366.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500" alt="WitnessScript"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果你使用的是普通地址的交易，或者多重签名的交易都是安全的，不会出现发送错误地址丢币的情况，无论是在BCH链上还是BTC链上，即使你本来想发BTC的发到了BCH地址上也是可以找回的，反之亦然。这里的前提是你有办法找到接受地址的私钥。<br>当你把BCH发送到SW地址上时，就没有办法使用对应的私钥找回币了，如果该SW地址上的币在BTC链上面动用过，发送的BCH有可能会直接被黑客盗走，只要发送过黑客就能拿到解锁脚本，拿走该地址上的BCH，没有BTC链上没有发送过币是安全的。<br>如果你不小心把BCH发送到SW地址上，首先做的是不要再做任何发币的操作，可以到<a href="btc.com">btc.com</a>寻求帮助，可以找回你的BCH，如果你发送的SW地址的币在BTC链上动用过的话，你的BCH就有可能会被黑客盗走。<br>另外BCH社区准备升级地址格式，看样子这样做还是很有意义的。</p>
-<p>打赏地址:  16uoPajbFeKcVXdwDSuGxb7unYy1X1rMss<br><img src="http://upload-images.jianshu.io/upload_images/22188-a488acc2db7ddbf4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="16uoPajbFeKcVXdwDSuGxb7unYy1X1rMss"></p>
-
-      
+            
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/01/10/BCH发错地址是如何丢币的？/" data-id="cjc8n61m10001qhfytyjkyqf0" class="article-share-link">Teilen</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-AsicBoost和SegWit" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/01/10/AsicBoost和SegWit/" class="article-date">
-  <time datetime="2018-01-10T03:46:37.000Z" itemprop="datePublished">2018-01-10</time>
+    <div class="column is-12 is-hidden-desktop">
+        
+        
+<a class="post-hover" href="/2018/01/10/BCH发错地址是如何丢币的？/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('http://upload-images.jianshu.io/upload_images/22188-e295931dea4dc6d5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                BCH发错地址是如何丢币的？
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                早上的时候看到某币圈大V的微博，他说因为Bitcoin.com把Bitcoin Cash Wal..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-10</p>
+        </div>
+    </div>
 </a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/10/AsicBoost和SegWit/">AsicBoost和SegWit</a>
-    </h1>
-  
+        
+        
+<a class="post-hover" href="/2018/01/10/AsicBoost和SegWit/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('http://upload-images.jianshu.io/upload_images/22188-1ee9b581b9a5d8a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                AsicBoost和SegWit
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                关于AsicBoost和SegWit的讨论已经冷清了很多，但我还是想从技术的角度尝试解释下：
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>关于AsicBoost和SegWit的讨论已经冷清了很多，但我还是想从技术的角度尝试解释下：</p>
-<ol>
-<li>AsicBoost是什么</li>
-<li>AsicBoost和SegWit有什么关系 </li>
-</ol>
-<p>在说这两件事情之前，离不开一个关键词：<code>挖矿</code>，那就先来说说挖矿吧！</p>
-<h2 id="挖矿"><a href="#挖矿" class="headerlink" title="挖矿"></a>挖矿</h2><p>比特币的挖矿机制：比特币挖矿机制采用的是SHA256算法，但SHA256算法并不是针对整个块做的，而是只是针对块头（Block Header）做SHA256，下图是block的组成：<br><img src="http://upload-images.jianshu.io/upload_images/22188-1ee9b581b9a5d8a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="block"></p>
-<p>从上图中可以看到Block hash是从哪些字段组合之后再做hash而得到的，其中黄色背景的字段就是块头，它包含:</p>
-<blockquote>
-<ol>
-<li>版本号  </li>
-<li>上一个块的hash </li>
-<li>Merkle root  </li>
-<li>timestamp(时间戳) </li>
-<li>bits(难度)</li>
-<li>Nonce  (随机数)</li>
-</ol>
-</blockquote>
-<p>在一轮挖矿过程中，其中的版本号、上一块的hash、难度都是确定的，矿工需要做的就是不断的修改Nonce，以改变当前块的hash值以找到小于当前难度的<code>Block Header</code>。<br>但Nonce的可用搜索空间是不够的，原因就是Nonce的位数只有<strong>4bytes</strong>。Block Header中各字段所占的位数：<br><img src="http://upload-images.jianshu.io/upload_images/22188-9b7589845daf933a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="Block Header位数"><br><strong>4bytes的Nonce</strong>的意味着他的搜索概率空间为<code>2^32</code>，也就4G次的hash运算就能遍历完，对于当前的单个矿机来说也就是一瞬间就可以完成的事。<br>在Nonce的搜索空间不够的情况下，就只剩下<code>timestamp</code>和<code>Merkle root</code>可以改变了，timestamp可以前后调整，但是调整之后的搜索空间还是不够。<br>矿工通过修改Coinbase交易、或者交易顺序、或者其他的方式，获取新的<code>Merkle Root</code>，再重新做2^32次Nonce的遍历。而<code>Merkle Root</code>是32 bytes，它的搜索空间足够大。<br>总结比特币的挖矿：</p>
-<blockquote>
-<p>简单来说比特币挖矿就是通过不断更改Nonce来改变块hash以寻找小于当前难度的Block Header，但是Nonce的搜索空间太小了，在做完2^32次哈希没有找到对应的块头就需要变更Merkle Root重新计算。</p>
-</blockquote>
-<p>上面说了简单说了下比特币挖矿机制，那<code>AsicBoost</code>又是怎么回事呢？</p>
-<h2 id="AsicBoost"><a href="#AsicBoost" class="headerlink" title="AsicBoost"></a>AsicBoost</h2><p><code>AsicBoost</code>是和<code>SHA256的计算</code>、<code>Block Header结构</code>有关的一种算法，在开始计算块头hash的时候是需要补齐到128 bytes再做SHA256计算，而上面所示块头只有80 bytes，剩下的需要使用固定的48 bytes填充到128 bytes。<br>而在计算<code>128 bytes</code>的hash的过程是分两个过程进行的，前64 bytes一起计算，后64 bytes一起运算:<br><img src="http://upload-images.jianshu.io/upload_images/22188-955a8b80562fb235.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="块头SHA256计算"><br>这样一个被填充过的块头就被分成了两个部分，比较有意思的是Merkle Root，Merkle Root的32个bytes中前28个bytes被放在前部分计算，后4个bytes被放在后部分计算，<code>Block Header hash</code>的计算公式为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SHA256=F(Chunk1)+B(Chunk2)</span><br><span class="line">Chunk1=(version)+(Previous hash)+F28(Merkle root)</span><br><span class="line">Chunk2=B4(Merkle Root)+Timetamp+Bits+Nonce+padding</span><br></pre></td></tr></table></figure></p>
-<p>结合上面所述，块hash计算时就出现了一个现象:</p>
-<blockquote>
-<p>每次更改Nonce的值的时候，Chunk1的值保持不变，这意味着每次变更Nonce的时候只需要重新计算<code>B(Chunk2)</code>再结合上一次计算的<code>F(Chunk1)</code>即可。</p>
-</blockquote>
-<p><strong>这是一种优化挖矿的方法</strong>，优化之后每一轮在可搜索空间中变更Nonce，计算SHA256的公式就变成了:</p>
-<blockquote>
-<p>SHA256=F(Chunk1)(不变)+B(Chunk2)`</p>
-</blockquote>
-<p><strong>基本上所有的矿机都做了这个优化</strong>。而<code>AsicBoost</code>在这个优化的基础上又延伸了思路，找到了另一种优化方法：</p>
-<blockquote>
-<p>既然可以保持<code>Chunk 1</code>不变，有没有办法保持<code>Chunk 2</code>不变呢？从前面的公式中可以看到只要保持<code>Merkle Root</code>的最后4位、时间戳、和Nonce不变的情况下即可保持<code>Chunk 2</code>不变。</p>
-</blockquote>
-<p>如果能够找到<code>Merkle Root</code>后四位是相同的话，那么在同一个timestamp和Nonce不变的情况下，就可以得到另一个优化公式：</p>
-<blockquote>
-<p>SHA256=F(Chunk1)`+B(Chunk2)(不变)</p>
-</blockquote>
-<p>对于timestamp来在一轮挖矿过程中它基本是不变的，而Nonce是在2^32内搜索空间内遍历的，剩下的问题就是要找到足够多的后四位相同的<code>Merkle Root</code>，这样在每次遍历Nonce时就可以复用后部分的计算结果，就有效的减少了计算，提高了找到块hash的概率。<br>前面说过可以通过改变交易顺序、更改Coinbase等方式得到新的Markle Root，这样就可以通过碰撞找到后4位相同的Merkle Root，那通过碰撞找到后4位相同的hash的概率是多少呢？根据”生日悖论”（后4位相同的bytes就是32 bits相同的概率），它的概率是：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/22188-6fd0841bc4b18a55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="碰撞概率"></p>
-<p>大概碰撞77000次就有50%的概率会出现后四位相同的hash，而这样的碰撞能提高多少概率呢？AsicBoost白皮书中给出现的结果：<br><img src="http://upload-images.jianshu.io/upload_images/22188-0ea02571bfe8e8ca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="碰撞次数与概率"><br>这种优化理论上能够提高20%的碰撞效率，而合并的性能提升大概是7%左右。<code>AsicBoost</code>可以在软件上实现，也是通过芯片（硬件）上实现。变更<code>Merkle Root</code>的方法:</p>
-<ol>
-<li>修改Coinbase交易，白皮书认为不够高效</li>
-<li>另一种就是更新Merkle树的排序</li>
-<li>…其他方式</li>
-</ol>
-<p>可以看出<code>AsicBoost</code>是<strong>一种基于比特币块头和SHA256算法做出的优化</strong>，并不是一种攻击。</p>
-<h2 id="AsicBoost只有一种技术优化"><a href="#AsicBoost只有一种技术优化" class="headerlink" title="AsicBoost只有一种技术优化"></a>AsicBoost只有一种技术优化</h2><p>很明显AsicBoost既没有破坏现在的比特币协议，也没有生产出不可用的块，更不会出现针对比特币的安全问题。<br>而基于SHA256算法的优化在比特币历史中也出现了好几次:</p>
-<ol>
-<li>前边提到的变更Nonce的时候，前半部分F(Chunk1)并不需要重新计算</li>
-<li>后部分的前三轮也是可以优化的参考<a href="https://github.com/dustinfineout/cgminer/blob/master/libbitfury.c#L17" target="_blank" rel="noopener">ms3steps</a></li>
-<li>…… </li>
-<li>AsicBoost</li>
-</ol>
-<p>可以这样说所有的软件和系统都存在被优化的可能性，比特币的挖矿历史就是一部不断优化效率的过程。<br>究竟我们应该如何定义<code>优化</code>和<code>攻击</code>呢？这是一个值得思考的问题。优化SHA256前64位的计算是允许的，优化后64位的计算就是<code>攻击</code>了吗？</p>
-<blockquote>
-<p><code>AsicBoost</code>是一个优化算法，只是在原有的比特币挖矿基础上提高了碰撞hash的概率，用来找到更合适的<code>Block Header</code>，提高了找到块头的概率，并不是漏洞</p>
-</blockquote>
-<p>如果存在一种提升比特币挖矿效率的技术，我更希望矿工早日应用上这种技术，这样攻击者和矿工相比就不存在技术优势。毕竟算力才是比特币安全的基础，攻击者在技术上领先矿工的话，比特币被攻击的可能性会增加很多。</p>
-<p>介绍完了<code>AsicBoost</code>，再来看下<code>AsicBoost</code>和SegWit又有什么样的关系呢？</p>
-<h2 id="SegWit和AsicBoost"><a href="#SegWit和AsicBoost" class="headerlink" title="SegWit和AsicBoost"></a>SegWit和AsicBoost</h2><p>SegWit(Segregated Witness)即隔离验证，它的应用将会对TX有所改变，它将会采用一种新的TX ID:<code>Witness ID</code></p>
-<p><img src="http://upload-images.jianshu.io/upload_images/22188-5155aa8e56515bae.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="witnesstx"><br>相应地 Witnesss ID就对对应有<code>Witness Merkle Tree</code>，继而就有了<code>Winess Merkel Root</code>，而<code>Winess Merkel Root</code>写在哪里呢？答案就是<code>Coinbase</code>。<br>在<code>SegWit</code>协议中Coinbase会增加一个新的output,新的output为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">output_data = WITNESS_COMMITMENT_HEADER + ser_uint256(uint256_from_str(hash256(ser_uint256(witness_root)+ser_uint256(witness_nonce))))</span><br><span class="line">script = CScript([OP_RETURN, output_data])</span><br></pre></td></tr></table></figure></p>
-<p>新增的output包含：OP_RETURN+WITNESS信息+<code>Witness Merkle Root</code>的hash组成的Script。<br>而<code>Witness Merkle Root</code>的计算是不包括<code>Coinbase</code>的，这样就避免了Coinbase和<code>Witness Merkle Root</code>相互改变而造成的死循环。</p>
-<p>这样就出现了一个问题，就是如果在<code>SegWit</code>中变更任意交易位置的话就会导致<code>Witness Merkle Root</code>的变化，而Coinbase中是要包含<code>Witness Merkle Root</code>的信息，这样就会影响Coinbase的变化，Coinbase的变化会导致整个块的Merkle Root发生了变化。<br>如果在SegWit中使用的AsicBoost是通过变更交易顺序获取新的Merkle Root了，效率就会降低，因为需要同时计算<code>Witness Merkle Root</code>和<code>Merkle Root</code>，进而降低<code>AsicBoost</code>的效率。<br>这就是SegWit对于AsicBoost的影响。但不能忽略了一条重要的事实:<code>SegWit</code>和<code>AsicBoost</code>并不是互斥的:</p>
-<blockquote>
-<p>只要块头结构不变的情况下<code>AsicBoost</code>的优化仍然存在，仍然有效。</p>
-</blockquote>
-<p>在SegWit中变更Coinbase获取<code>Merkle Root</code>的方式和当前协议中变更Coinbase的效果是一样的，因为<code>Witness Merkle Root</code>中并不包括Coinbase TX。<br>SegWit并不是和AsicBoost是互斥的，并不是在SegWit中就不存在AsicBoost的优化了。而在<code>SegWit</code>中使用<code>AsicBoost</code>在工程上也是可以进行优化的：计算Merkle Root也是要计算hash的，可以在计算Merkle Root不时阻塞块hash的计算，并行计算会是一种更好的优化方式，在并行的情况下使用变更<code>Coinbase</code>获取<code>Merkle Root</code>所带来的效率的降低并不会特别明显。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>AsicBoost的原理:</p>
-<blockquote>
-<p>在计算块头的时候，Merkle Root被分割成了两个部分计算，导致了如果使用后4位相同的Merkle Root去计算块hash的话，会提高挖矿的效率</p>
-</blockquote>
-<p>SegWit：</p>
-<blockquote>
-<p>SegWit 需要使用<code>Wintess TX ID</code>，继而有了新的<code>Witness Merkle Root</code>，而<code>Witness Merkle Root</code>是会写进Coinbase的，Coinbase本身是不会写入<code>Witness Merkle Root</code>的。因为软分叉的原因，块头的结构并没有变化。</p>
-</blockquote>
-<p>根据上面所述可以得出以下结论:</p>
-<h3 id="AsicBoost本质上只是基于块头结构和SHA256算法其中的一种优化"><a href="#AsicBoost本质上只是基于块头结构和SHA256算法其中的一种优化" class="headerlink" title="AsicBoost本质上只是基于块头结构和SHA256算法其中的一种优化"></a>AsicBoost本质上只是基于块头结构和SHA256算法其中的一种优化</h3><p>###AsicBoost和SegWit并不互斥<br>块头结构和SHA256算法不变的前提条件，<code>AsicBoost</code>会一直存在。</p>
-<h3 id="SegWit会对于AsicBoost中交易互换的方式有影响"><a href="#SegWit会对于AsicBoost中交易互换的方式有影响" class="headerlink" title="SegWit会对于AsicBoost中交易互换的方式有影响"></a>SegWit会对于AsicBoost中交易互换的方式有影响</h3><p>在SegWit中，每次的变更交易顺序都会导致Coinbase的变化，继而需要重新计算<code>Merkle Root</code>。交易顺序的变更会导致<code>Witness Merkle Root</code>和<code>Merkle Root</code>的变化。</p>
-<h3 id="如果有更好工程化地优化AsicBoost的方式，在SegWit中仍然有效"><a href="#如果有更好工程化地优化AsicBoost的方式，在SegWit中仍然有效" class="headerlink" title="如果有更好工程化地优化AsicBoost的方式，在SegWit中仍然有效"></a>如果有更好工程化地优化AsicBoost的方式，在SegWit中仍然有效</h3><p>除了变更交易顺序更新Merkle Root的方式效率会降低以外，使用工程化优化AsicBoost的方式仍然可以有效。比如并行计算等方式</p>
-<p><code>AsicBoost</code>只是一种优化挖矿的方式，而且在SegWit中<code>AsicBoost</code>优化也没有消失，因为块的结构并没有改变。G Maxwell在邮件中提出了一种更改块头的方式让<code>AsicBoost</code>不能再继续使用，我并不反对这种提议，只是认为没有这个必要，如果不允许矿工优化后64为bytes的计算，那前64位bytes的优化计算是不是也应该想办法禁止掉呢？而且未来说不好还会出现其它类似的优化，难道都要禁止掉吗？</p>
-<blockquote>
-<p>在给定的条件下，人类总是有办法找到方法A优于原来的方法B的，人类的历史就是效率不断被提高的历史</p>
-</blockquote>
-<p>分享看到的一个<a href="http://weibo.com/5243857939/EFHPai5AO" target="_blank" rel="noopener">微博</a>，分享下：<br><img src="http://upload-images.jianshu.io/upload_images/22188-888ebd690b66fb8b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="微博截图"></p>
-
-      
+..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-10</p>
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/01/10/AsicBoost和SegWit/" data-id="cjc8n61lx0000qhfy8kbwkxug" class="article-share-link">Teilen</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
-
-</section>
+</a>
         
-          <aside id="sidebar">
-  
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archiv</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li></ul>
     </div>
-  </div>
+</div>
 
+                    
+                    
+                
+                    
+                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
+                            <a class="post-hover" href="/2018/01/10/BCH发错地址是如何丢币的？/">
+                            <div class="columns" style="min-height: 230px;">
+                                
+                                    <div class="column is-4-desktop is-5-tablet post-avatar is-hidden-mobile"
+                                         style="margin: 10px; background-size: cover;background-image: url('http://upload-images.jianshu.io/upload_images/22188-e295931dea4dc6d5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500')">
+                                    </div>
+                                
+                                <div class="column is-8-desktop post-content is-flex align-center">
+                                    <div class="content">
+                                        <h3>BCH发错地址是如何丢币的？</h3>
+                                        
+                                        <p>
+                                            
+                                        </p>
+                                        <p>
+                                            早上的时候看到某币圈大V的微博，他说因为Bitcoin.com把Bitcoin Cash Wallet做为默认钱包造成了用户的丢币。我赶紧更新了bitcoin.com钱包试用了下。
+钱包的改动很简单，就把Bitcoin Cash Wallets作为首选，这样就造成用户丢币了……其实这事和Roger Ver真的没有啥关系，估计该大V现在还不清楚BCH是如何..
+                                        </p>
+                                        <p>2018-01-10</p>
+                                        <button class="button is-small">Read More</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        </div>
+                    
+                
+                    
+                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
+                            <a class="post-hover" href="/2018/01/10/AsicBoost和SegWit/">
+                            <div class="columns" style="min-height: 230px;">
+                                
+                                    <div class="column is-4-desktop is-5-tablet post-avatar is-hidden-mobile"
+                                         style="margin: 10px; background-size: cover;background-image: url('http://upload-images.jianshu.io/upload_images/22188-1ee9b581b9a5d8a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240')">
+                                    </div>
+                                
+                                <div class="column is-8-desktop post-content is-flex align-center">
+                                    <div class="content">
+                                        <h3>AsicBoost和SegWit</h3>
+                                        
+                                        <p>
+                                            
+                                        </p>
+                                        <p>
+                                            关于AsicBoost和SegWit的讨论已经冷清了很多，但我还是想从技术的角度尝试解释下：
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">letzter Beitrag</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2018/01/10/比特币-交易的数据结构/">比特币:交易的数据结构</a>
-          </li>
-        
-          <li>
-            <a href="/2018/01/10/BCH发错地址是如何丢币的？/">BCH发错地址是如何丢币的？</a>
-          </li>
-        
-          <li>
-            <a href="/2018/01/10/AsicBoost和SegWit/">AsicBoost和SegWit</a>
-          </li>
-        
-      </ul>
+AsicBoost是什么
+AsicBoost和SegWit有什么关系 
+
+在说这两件事情之前，离不开一个关键词：挖矿，那就先来说说挖矿吧！
+挖矿比特币的挖矿机制：比特币挖矿机制采用的是SHA256算法，但SHA256算法并不是针对整个块做的，而是只是针对块头（..
+                                        </p>
+                                        <p>2018-01-10</p>
+                                        <button class="button is-small">Read More</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        </div>
+                    
+                
+                <!--翻頁-->
+                <nav class="pagination is-flex" style="justify-content: flex-end">
+                    
+                        
+                        
+                    
+                </nav>
+            </section>
+            
+                <style>
+    /*user info start*/
+    .user-info {
+        padding: 15px 0 0;
+    }
+
+    .user-info .avatar {
+        width: 155px;
+        height: 155px;
+        border-radius: 50%;
+    }
+
+    .sns-container {
+        flex-wrap: wrap;
+    }
+
+    .sns-container a{
+        color: black;
+    }
+    /*user info end*/
+
+    /*Tag start*/
+    #tag_cloud .tags-item{
+        display: inline-block;
+        color: #000;
+        border: 1px solid gray;
+
+        margin: 4px 2px;
+        padding: 0 4px;
+        border-radius: 6px;
+    }
+    /*Tag end*/
+
+    /*Site box start*/
+    .site-box {
+        height: 60px;
+    }
+    /*Site box end*/
+
+    .category-list-item,
+    .archive-list-item {
+        display: flex;
+        margin-bottom: 4px;
+        justify-content: space-between;
+    }
+    .category-list-link,
+    .archive-list-link {
+        color: black;
+    }
+
+    .category-list-count,
+    .archive-list-count {
+        width: 32px;
+        text-align: center;
+        border-radius: 4px;
+        color: #fff;
+        background-color: gray;
+    }
+</style>
+<aside class="column is-hidden-touch is-3" style="max-width: 280px; min-width: 230px">
+    <div class="content-box user-info">
+        <div class="has-padding">
+            <header class="has-text-centered">
+                <img class="avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+            </header>
+            <section class="has-text-centered">
+                <h3><strong>Diskobólos</strong></h3>
+                <p class="sub-title">A Touch Of Zen</p>
+                
+                <p class="is-flex center" style=" color: gray">
+                    <i class="fa fa-map-marker" style="padding: 5px"></i>
+                    Earth
+                </p>
+                
+            </section>
+        </div>
+        <div class="top-line">
+            <ul class="sns-container justify-center is-flex has-padding">
+                
+
+                
+                <li>
+                    <a target="_blank" href="https://twitter.com/ehazon">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                        </span>
+                    </a>
+                </li>
+                
+
+                
+                <li>
+                    <a target="_blank" href="https://www.zhihu.com/people/margretz">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa  fa-stack-1x fa-inverse">知</i>
+                                        </span>
+                    </a>
+                </li>
+                
+
+                
+
+                
+
+                
+                <li>
+                    <a target="_blank" href="https://github.com/haojen">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                        </span>
+                    </a>
+                </li>
+                
+
+                
+            </ul>
+        </div>
     </div>
-  </div>
-
-  
+    <div class="content-box">
+        <!--post数量和tag category 数量-->
+        <div class="site-box is-flex">
+            <div class="flex-1 is-flex flex-column center full-height right-line">
+                <strong>3</strong>
+                <p>Posts</p>
+            </div>
+            <div class="flex-1 is-flex flex-column center full-height">
+                <strong></strong>
+                <p>Tags</p>
+            </div>
+        </div>
+    </div>
+    <div id='tag_cloud' class="content-inner content-box">
+        <div class="has-text-centered">
+            <strong>Tags</strong>
+        </div>
+        <div class="content-inner is-flex flex-wrap justify-space-between">
+            
+        </div>
+    </div>
+    <div class="content-inner content-box">
+        <div class="has-text-centered">
+            <strong>Categories</strong>
+        </div>
+        <div class="content-inner">
+            
+        </div>
+    </div>
+    <div class="content-inner content-box">
+        <div class="has-text-centered">
+            <strong>Archives</strong>
+        </div>
+        <div class="content-inner">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a><span class="archive-list-count">3</span></li></ul>
+        </div>
+    </div>
 </aside>
-        
+            
+        </div>
+    </div>
+</div>
+
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2018 Copernicus<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
     </div>
   </div>
 </footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
+<script src="/js/search_core.js"></script>
 <script src="/js/script.js"></script>
 
-
-
-  </div>
 </body>
 </html>
