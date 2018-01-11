@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>[翻译]BIP146解决签名编码的延展性 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。 动机签名延展性指的是：网络中的任何中继节点，不需要获取对应交易的私钥， 而修改该交易签名的能力。对于非SW交易，签名延展性将改变txid,将使所有未确认的子交易失效。即使SW交易(BIP141)的txid是非第三方延展的，但这种延展性的vector仍然将改变wtxid，并且可能降低紧凑型区块的中继效率(BIP1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]BIP146解决签名编码的延展性">
+<meta property="og:url" content="http://yoursite.com/2018/01/11/翻译-BIP146解决签名编码的延展性/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。 动机签名延展性指的是：网络中的任何中继节点，不需要获取对应交易的私钥， 而修改该交易签名的能力。对于非SW交易，签名延展性将改变txid,将使所有未确认的子交易失效。即使SW交易(BIP141)的txid是非第三方延展的，但这种延展性的vector仍然将改变wtxid，并且可能降低紧凑型区块的中继效率(BIP1">
+<meta property="og:updated_time" content="2018-01-11T08:43:12.834Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[翻译]BIP146解决签名编码的延展性">
+<meta name="twitter:description" content="综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。 动机签名延展性指的是：网络中的任何中继节点，不需要获取对应交易的私钥， 而修改该交易签名的能力。对于非SW交易，签名延展性将改变txid,将使所有未确认的子交易失效。即使SW交易(BIP141)的txid是非第三方延展的，但这种延展性的vector仍然将改变wtxid，并且可能降低紧凑型区块的中继效率(BIP1">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>[翻译]BIP146解决签名编码的延展性</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-01-11</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h2><p>本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>签名延展性指的是：网络中的任何中继节点，不需要获取对应交易的私钥， 而修改该交易签名的能力。对于非SW交易，签名延展性将改变txid,将使所有未确认的子交易失效。即使SW交易(BIP141)的txid是非第三方延展的，但这种延展性的vector仍然将改变wtxid，并且可能降低紧凑型区块的中继效率(BIP152)。</p>
+<p>自从严格的DER签名实施后，ECDSA签名中还有两个已知的延展性来源:<br>&gt;</p>
+<ul>
+<li>ECDSA自身的签名延展性：ECDSA签名是自身具有延展性，因为内部S的负值(模曲线顺序)不会使签名无效。 </li>
+<li>无效签名的延展性：如果采用OP_CHECKSIG 或OP_CHECKMULTISIG 的签名验证失败，一个false将被返回到栈上，并且脚本验证将继续执行。无效签名可以使用任何值，只要这些值遵循BIP66 中描述的所有规则。</li>
+</ul>
+<p>本提案定义了新的规则来修正上述提到的延展性。</p>
+<h2 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h2><p>为了修正签名编码的延展性，接下来的新规则被应用到当下的隔离验证和隔离验证脚本。</p>
+<h3 id="LOW-S"><a href="#LOW-S" class="headerlink" title="LOW_S"></a>LOW_S</h3><p>新规则要求ECDSA签名内的S的值最大是曲线半径除以2(实际上将该值限制在其下半部分范围内)。每个使用了OP_CHECKSIG<sup>1</sup>,OP_CHECKSIGVERIFY,OP_CHECKMULTISIG,OP_CHECKMULTISIGVERIFY操作码的签名，同时该签名采用了ECDSA验证，则必须使用一个介于0x1和0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0，并且采用严格DER编码的S值。</p>
+<p>如果传递给ECDSA验证的签名没有通过LOW_S 检查，并且是一个非空的字节数组，则整个脚本评估立即失败。</p>
+<p>在签名中一个高S值可以平滑的被S’ = 0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141 - S 替换。</p>
+<h3 id="NULLFAIL"><a href="#NULLFAIL" class="headerlink" title="NULLFAIL"></a>NULLFAIL</h3><p>如果一个OP_CHECKSIG试图向栈上返回一个false值，那我们要求对应的签名必须是一个空的字节数组。</p>
+<p>如果一个OP_CHECKMULTISIG试图向栈上返回一个false，我们要求传输到OP_CHECKMULTISIG的所有签名必须是空的字节数组，即使由于过早的签名验证中断而可能导致一些签名处理被跳过。</p>
+<p>否则，整个脚本评估立即失败。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>接下来的示例由LOW_S和NULLFAIL<sup>2</sup> 规则组成。</p>
+<p>符号:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CO       : curve order = 0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141</span><br><span class="line">HCO      : half curve order = CO / 2 = 0x7FFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF 5D576E73 57A4501D DFE92F46 681B20A0</span><br><span class="line">P1, P2   : valid, serialized, public keys</span><br><span class="line">S1L, S2L : valid low S value signatures using respective keys P1 and P2 (1 ≤ S ≤ HCO)</span><br><span class="line">S1H, S2H : signatures with high S value (otherwise valid) using respective keys P1 and P2 (HCO &lt; S &lt; CO)</span><br><span class="line">F        : any BIP66-compliant non-empty byte array but not a valid signature</span><br></pre></td></tr></table></figure></p>
+<p>这些脚本像以前一样返回TRUE至栈上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">S1L P1 CHECKSIG</span><br><span class="line">0 S1L S2L 2 P1 P2 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<p>这些脚本像以前一样返回FALSE至栈上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0 P1 CHECKSIG</span><br><span class="line">0 0 0 2 P1 P2 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<p>在新规则执行后，先前的TRUE脚本将立即失败<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">S1H P1 CHECKSIG</span><br><span class="line">0 S1H S2L 2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 S1L S2H 2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 S1H S2H 2 P1 P2 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<p>在新规则执行后，先前的TRUE脚本将立即失败<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">F P1 CHECKSIG</span><br><span class="line">0 S2L S1L 2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 S1L F   2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 F   S2L 2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 S1L 0   2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 0   S2L 2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 F   0   2 P1 P2 2 CHECKMULTISIG</span><br><span class="line">0 0   F   2 P1 P2 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<h2 id="部署："><a href="#部署：" class="headerlink" title="部署："></a>部署：</h2><p>该BIP将通过BIP9(版本位)进行部署。</p>
+<p>比特币主网络中，BIP9的开始时间是:midnight TBD UTC(纪元时间戳TBD)，BIP的结束时间是:midnight TBD UTC(纪元时间戳TBD)。</p>
+<p>比特币测试网络中，BIP9的开始时间是:midnight TBD UTC(纪元时间戳TBD)，BIP的结束时间是:midnight TBD UTC(纪元时间戳TBD)。</p>
+<h2 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h2><p>从v0.9.0，客户端已产生了LOW_S兼容性脚本，并且从v0.11.1客户端开始，LOW_S规则已经作为中继策略被强制执行。截止2016年8月，违反上述规则的交易很少被添加至主链中。对于实际使用的所有scriptPubKey 类型，非兼容性的签名可以平滑的被转换为兼容性，所以这些新规则并没有任何导致任何功能的丢失。</p>
+<p>使用 OP_CHECKSIG or OP_CHECKMULTISIG失败的脚本很少出现在主链上。从v0.13.1客户端开始，NULLFAIL 规则已经作为中继政策被强制执行。</p>
+<p>当设计新脚本时，用户必须注意这些新规则。</p>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><p>参考客户端的实现可以在下述网址获得：<a href="https://github.com/bitcoin/bitcoin/blob/35fe0393f216aa6020fc929272118eade5628636/src/script/interpreter.cpp#L185" target="_blank" rel="noopener">https://github.com/bitcoin/bitcoin/blob/35fe0393f216aa6020fc929272118eade5628636/src/script/interpreter.cpp#L185</a><br><a href="https://github.com/bitcoin/bitcoin/pull/8634" target="_blank" rel="noopener">https://github.com/bitcoin/bitcoin/pull/8634</a></p>
+<h2 id="脚注"><a href="#脚注" class="headerlink" title="脚注"></a>脚注</h2><ol>
+<li><p>P2WPKH的交易在BIP141中描述</p>
+</li>
+<li><p>请注意由于v0.13.1客户端中具体实现的细节，一些使用高S值的签名通过了LOW_S检测。然而，这些签名肯定是无效的，由随后的NULLFAIL检测失败。</p>
+</li>
+</ol>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0146.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0146.mediawiki</a></p>
+<hr>
+<p>本文由 <code>Copernicus团队 姚永芯</code>翻译，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
