@@ -138,7 +138,7 @@
                 
 <div class="primary-container content-box is-flex-desktop clear-padding bottom-line" style="margin-bottom: 25px;">
     <div class="column  is-7-desktop">
-        <a href="/2018/01/11/翻译-BIP146解决签名编码的延展性/">
+        <a href="/2018/01/12/翻译-BIP141隔离见证交易/">
             <div class="full-height post-hover"
                  style="
                          background-image: url('');
@@ -148,7 +148,7 @@
                          ">
                     <div class=" is-flex flex-column center content has-text-centered full-height has-padding content-bg-mask">
                         <h1 class="title text-shadow" style="margin-bottom: 15px;">
-                            [翻译]BIP146解决签名编码的延展性
+                            [翻译]BIP141隔离见证交易
                         </h1>
                         <div>
                         
@@ -156,10 +156,10 @@
                         
                         </div>
                         <p class="post-content-text is-marginless has-padding text-shadow">
-                            综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。
-动机签名延展性指的是：网络中的任何中继节点，不需要获取对应交易的私钥， 而修改该交易签名的能力。对于非SW交易，签名延展性将改变txid,将使所有未..
+                            综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该结构包含检查交易有效性所需的数据。此外，脚本和签名移动到了这个新结构。
+为了确保BIP软分叉的兼容性，该结构通过coinbase交易嵌套在区..
                         </p>
-                        <p class="date text-shadow">2018-01-11</p>
+                        <p class="date text-shadow">2018-01-12</p>
                         <button class="button is-info is-small">Read More</button>
                     </div>
             </div>
@@ -167,6 +167,27 @@
     </div>
     <div class="column is-5 is-hidden-touch" style="padding-left: 0;">
         <div class="full-height is-flex flex-column justify-space-between" style="min-height: 350px;">
+            
+                
+<a class="post-hover" href="/2018/01/11/翻译-BIP146解决签名编码的延展性/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                [翻译]BIP146解决签名编码的延展性
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。
+动机签名..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-11</p>
+        </div>
+    </div>
+</a>
+            
             
                 
 <a class="post-hover" href="/2018/01/10/比特币-交易的数据结构/" style="height: 48.5%">
@@ -181,26 +202,6 @@
             <p class="sub-title text-shadow"></p>
             <p class="is-marginless text-shadow post-content-text">
                 比特币协议中最重要的部分就是交易，比特币协议其他的部分也都是为了确保交易的生成、广播、验证和打包..
-            </p>
-            <p class="date text-shadow is-marginless">2018-01-10</p>
-        </div>
-    </div>
-</a>
-            
-            
-                
-<a class="post-hover" href="/2018/01/10/BCH发错地址是如何丢币的？/" style="height: 48.5%">
-    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('http://upload-images.jianshu.io/upload_images/22188-e295931dea4dc6d5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500')">
-        <div class="content-bg-mask full-width full-height has-padding">
-            <h3 class="title is-marginless text-shadow">
-                BCH发错地址是如何丢币的？
-            </h3>
-            
-            
-            
-            <p class="sub-title text-shadow"></p>
-            <p class="is-marginless text-shadow post-content-text">
-                早上的时候看到某币圈大V的微博，他说因为Bitcoin.com把Bitcoin Cash Wal..
             </p>
             <p class="date text-shadow is-marginless">2018-01-10</p>
         </div>
@@ -212,6 +213,27 @@
     <div class="column is-12 is-hidden-desktop">
         
         
+<a class="post-hover" href="/2018/01/11/翻译-BIP146解决签名编码的延展性/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                [翻译]BIP146解决签名编码的延展性
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。
+动机签名..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-11</p>
+        </div>
+    </div>
+</a>
+        
+        
+        
 <a class="post-hover" href="/2018/01/10/比特币-交易的数据结构/" style="height: 48.5%">
     <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
         <div class="content-bg-mask full-width full-height has-padding">
@@ -230,30 +252,35 @@
     </div>
 </a>
         
-        
-        
-<a class="post-hover" href="/2018/01/10/BCH发错地址是如何丢币的？/" style="height: 48.5%">
-    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('http://upload-images.jianshu.io/upload_images/22188-e295931dea4dc6d5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/500')">
-        <div class="content-bg-mask full-width full-height has-padding">
-            <h3 class="title is-marginless text-shadow">
-                BCH发错地址是如何丢币的？
-            </h3>
-            
-            
-            
-            <p class="sub-title text-shadow"></p>
-            <p class="is-marginless text-shadow post-content-text">
-                早上的时候看到某币圈大V的微博，他说因为Bitcoin.com把Bitcoin Cash Wal..
-            </p>
-            <p class="date text-shadow is-marginless">2018-01-10</p>
-        </div>
-    </div>
-</a>
-        
     </div>
 </div>
 
                     
+                    
+                
+                    
+                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
+                            <a class="post-hover" href="/2018/01/11/翻译-BIP146解决签名编码的延展性/">
+                            <div class="columns" style="min-height: 230px;">
+                                
+                                <div class="column is-8-desktop post-content is-flex align-center">
+                                    <div class="content">
+                                        <h3>[翻译]BIP146解决签名编码的延展性</h3>
+                                        
+                                        <p>
+                                            
+                                        </p>
+                                        <p>
+                                            综述本提案描述了改变比特币交易的验证规则，来修正与ECDSA签名编码有关的交易延展性。
+动机签名延展性指的是：网络中的任何中继节点，不需要获取对应交易的私钥， 而修改该交易签名的能力。对于非SW交易，签名延展性将改变txid,将使所有未确认的子交易失效。即使SW交易(BIP141)的txid是非第三方延展的，但这种延展性的vector仍然将改变wtxid..
+                                        </p>
+                                        <p>2018-01-11</p>
+                                        <button class="button is-small">Read More</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        </div>
                     
                 
                     
@@ -284,7 +311,7 @@ bitcoin-cli getr..
                     
                 
                     
-                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
+                        <div class="content-box  " style="margin-bottom: 27px;">
                             <a class="post-hover" href="/2018/01/10/BCH发错地址是如何丢币的？/">
                             <div class="columns" style="min-height: 230px;">
                                 
@@ -480,7 +507,7 @@ AsicBoost和SegWit有什么关系
         <!--post数量和tag category 数量-->
         <div class="site-box is-flex">
             <div class="flex-1 is-flex flex-column center full-height right-line">
-                <strong>4</strong>
+                <strong>5</strong>
                 <p>Posts</p>
             </div>
             <div class="flex-1 is-flex flex-column center full-height">
@@ -510,7 +537,7 @@ AsicBoost和SegWit有什么关系
             <strong>Archives</strong>
         </div>
         <div class="content-inner">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a><span class="archive-list-count">4</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a><span class="archive-list-count">5</span></li></ul>
         </div>
     </div>
 </aside>
@@ -541,7 +568,7 @@ AsicBoost和SegWit有什么关系
         <br>
         Copyright © Copernicus 2018
         <br>
-        Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
       </div>
     </div>
   </div>
