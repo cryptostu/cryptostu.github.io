@@ -138,7 +138,7 @@
                 
 <div class="primary-container content-box is-flex-desktop clear-padding bottom-line" style="margin-bottom: 25px;">
     <div class="column  is-7-desktop">
-        <a href="/2018/01/12/翻译-BIP141隔离见证交易/">
+        <a href="/2018/01/15/翻译-BIP66严格的DER签名/">
             <div class="full-height post-hover"
                  style="
                          background-image: url('');
@@ -148,7 +148,7 @@
                          ">
                     <div class=" is-flex flex-column center content has-text-centered full-height has-padding content-bg-mask">
                         <h1 class="title text-shadow" style="margin-bottom: 15px;">
-                            [翻译]BIP141隔离见证交易
+                            [翻译]BIP66严格的DER签名
                         </h1>
                         <div>
                         
@@ -156,10 +156,10 @@
                         
                         </div>
                         <p class="post-content-text is-marginless has-padding text-shadow">
-                            综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该结构包含检查交易有效性所需的数据。此外，脚本和签名移动到了这个新结构。
-为了确保BIP软分叉的兼容性，该结构通过coinbase交易嵌套在区..
+                            综述：该提案定义了比特币交易有规则的变化，用来限制签名字段必须为严格的DER编码。
+动机：当前比特币的签名验证实现依赖于OpenSSL，这意味着OpenSSL隐式的定义了比特币的区块验证规则。不幸的是，openssl并没有定义严格的共识..
                         </p>
-                        <p class="date text-shadow">2018-01-12</p>
+                        <p class="date text-shadow">2018-01-15</p>
                         <button class="button is-info is-small">Read More</button>
                     </div>
             </div>
@@ -169,6 +169,26 @@
         <div class="full-height is-flex flex-column justify-space-between" style="min-height: 350px;">
             
                 
+<a class="post-hover" href="/2018/01/12/翻译-BIP141隔离见证交易/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                [翻译]BIP141隔离见证交易
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-12</p>
+        </div>
+    </div>
+</a>
+            
+            
+                
 <a class="post-hover" href="/2018/01/11/翻译-BIP146解决签名编码的延展性/" style="height: 48.5%">
     <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
         <div class="content-bg-mask full-width full-height has-padding">
@@ -184,26 +204,6 @@
 动机签名..
             </p>
             <p class="date text-shadow is-marginless">2018-01-11</p>
-        </div>
-    </div>
-</a>
-            
-            
-                
-<a class="post-hover" href="/2018/01/10/比特币-交易的数据结构/" style="height: 48.5%">
-    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
-        <div class="content-bg-mask full-width full-height has-padding">
-            <h3 class="title is-marginless text-shadow">
-                比特币:交易的数据结构
-            </h3>
-            
-            
-            
-            <p class="sub-title text-shadow"></p>
-            <p class="is-marginless text-shadow post-content-text">
-                比特币协议中最重要的部分就是交易，比特币协议其他的部分也都是为了确保交易的生成、广播、验证和打包..
-            </p>
-            <p class="date text-shadow is-marginless">2018-01-10</p>
         </div>
     </div>
 </a>
@@ -213,6 +213,26 @@
     <div class="column is-12 is-hidden-desktop">
         
         
+<a class="post-hover" href="/2018/01/12/翻译-BIP141隔离见证交易/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                [翻译]BIP141隔离见证交易
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该..
+            </p>
+            <p class="date text-shadow is-marginless">2018-01-12</p>
+        </div>
+    </div>
+</a>
+        
+        
+        
 <a class="post-hover" href="/2018/01/11/翻译-BIP146解决签名编码的延展性/" style="height: 48.5%">
     <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
         <div class="content-bg-mask full-width full-height has-padding">
@@ -232,30 +252,36 @@
     </div>
 </a>
         
-        
-        
-<a class="post-hover" href="/2018/01/10/比特币-交易的数据结构/" style="height: 48.5%">
-    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
-        <div class="content-bg-mask full-width full-height has-padding">
-            <h3 class="title is-marginless text-shadow">
-                比特币:交易的数据结构
-            </h3>
-            
-            
-            
-            <p class="sub-title text-shadow"></p>
-            <p class="is-marginless text-shadow post-content-text">
-                比特币协议中最重要的部分就是交易，比特币协议其他的部分也都是为了确保交易的生成、广播、验证和打包..
-            </p>
-            <p class="date text-shadow is-marginless">2018-01-10</p>
-        </div>
-    </div>
-</a>
-        
     </div>
 </div>
 
                     
+                    
+                
+                    
+                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
+                            <a class="post-hover" href="/2018/01/12/翻译-BIP141隔离见证交易/">
+                            <div class="columns" style="min-height: 230px;">
+                                
+                                <div class="column is-8-desktop post-content is-flex align-center">
+                                    <div class="content">
+                                        <h3>[翻译]BIP141隔离见证交易</h3>
+                                        
+                                        <p>
+                                            
+                                        </p>
+                                        <p>
+                                            综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该结构包含检查交易有效性所需的数据。此外，脚本和签名移动到了这个新结构。
+为了确保BIP软分叉的兼容性，该结构通过coinbase交易嵌套在区块已存在的merkle root。未来的硬分叉可以给该树分配一个自己的分支。
+动机整个交易的效果由引用的交易输出和新创建..
+                                        </p>
+                                        <p>2018-01-12</p>
+                                        <button class="button is-small">Read More</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        </div>
                     
                 
                     
@@ -284,7 +310,7 @@
                     
                 
                     
-                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
+                        <div class="content-box  " style="margin-bottom: 27px;">
                             <a class="post-hover" href="/2018/01/10/比特币-交易的数据结构/">
                             <div class="columns" style="min-height: 230px;">
                                 
@@ -507,7 +533,7 @@ AsicBoost和SegWit有什么关系
         <!--post数量和tag category 数量-->
         <div class="site-box is-flex">
             <div class="flex-1 is-flex flex-column center full-height right-line">
-                <strong>5</strong>
+                <strong>6</strong>
                 <p>Posts</p>
             </div>
             <div class="flex-1 is-flex flex-column center full-height">
@@ -537,7 +563,7 @@ AsicBoost和SegWit有什么关系
             <strong>Archives</strong>
         </div>
         <div class="content-inner">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a><span class="archive-list-count">5</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a><span class="archive-list-count">6</span></li></ul>
         </div>
     </div>
 </aside>

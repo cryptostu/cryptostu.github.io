@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>[翻译]BIP66严格的DER签名 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="综述：该提案定义了比特币交易有规则的变化，用来限制签名字段必须为严格的DER编码。 动机：当前比特币的签名验证实现依赖于OpenSSL，这意味着OpenSSL隐式的定义了比特币的区块验证规则。不幸的是，openssl并没有定义严格的共识行为(它不保证不同版本间的bug兼容);并且openssl库的改变将会影响比特币软件的稳定。一个特别重要的地方是：签名编码。直到最近，openssl库的发布版才可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]BIP66严格的DER签名">
+<meta property="og:url" content="http://yoursite.com/2018/01/15/翻译-BIP66严格的DER签名/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="综述：该提案定义了比特币交易有规则的变化，用来限制签名字段必须为严格的DER编码。 动机：当前比特币的签名验证实现依赖于OpenSSL，这意味着OpenSSL隐式的定义了比特币的区块验证规则。不幸的是，openssl并没有定义严格的共识行为(它不保证不同版本间的bug兼容);并且openssl库的改变将会影响比特币软件的稳定。一个特别重要的地方是：签名编码。直到最近，openssl库的发布版才可以">
+<meta property="og:updated_time" content="2018-01-15T03:36:02.049Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[翻译]BIP66严格的DER签名">
+<meta name="twitter:description" content="综述：该提案定义了比特币交易有规则的变化，用来限制签名字段必须为严格的DER编码。 动机：当前比特币的签名验证实现依赖于OpenSSL，这意味着OpenSSL隐式的定义了比特币的区块验证规则。不幸的是，openssl并没有定义严格的共识行为(它不保证不同版本间的bug兼容);并且openssl库的改变将会影响比特币软件的稳定。一个特别重要的地方是：签名编码。直到最近，openssl库的发布版才可以">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>[翻译]BIP66严格的DER签名</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-01-15</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="综述："><a href="#综述：" class="headerlink" title="综述："></a>综述：</h2><p>该提案定义了比特币交易有规则的变化，用来限制签名字段必须为严格的DER编码。</p>
+<h2 id="动机："><a href="#动机：" class="headerlink" title="动机："></a>动机：</h2><p>当前比特币的签名验证实现依赖于OpenSSL，这意味着OpenSSL隐式的定义了比特币的区块验证规则。不幸的是，openssl并没有定义严格的共识行为(它不保证不同版本间的bug兼容);并且openssl库的改变将会影响比特币软件的稳定。<br>一个特别重要的地方是：签名编码。直到最近，openssl库的发布版才可以接收不同的DER标准编码，并且认为签名时有效的。当openssl 从1.0.0p和1.0.1k升级时，它使一些节点产生拒绝承认主链的行为。<br>本提案的目的是：将有效签名限制在DER规定的范围内，从而使共识规则不依赖于openssl的签名解析。如果想从共识代码中移除所有的openssl，则需要这样的修改。</p>
+<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><p>每个传递到OP_CHECKSIG, OP_CHECKSIGVERIFY, OP_CHECKMULTISIG, or OP_CHECKMULTISIGVERIFY操作码的签名，将采用ECDSA的验证，同时这个签名必须采用严格的DER编码。<br>在公/私钥对组中，所有执行ECDSA验证的操作，将从栈顶向后迭代。对于每个签名，如果没有通过下面IsValidSignatureEncoding()方法的检查，则整个脚本执行立即失败。如果签名时有效的DER编码，但是没有通过ECDSA验证，操作继续像以前一样执行，操作码执行停止并向栈顶push false(但是不会立即使脚本失败)，在一些案例中，可能跳过一些签名(不使这些签名调用IsValidSignatureEncoding).</p>
+<h2 id="DER编码参考"><a href="#DER编码参考" class="headerlink" title="DER编码参考"></a>DER编码参考</h2><p>下面的代码指定了严格的DER检查行为。注意：这个函数测试一个签名字节向量，这个字节向量包含了一个额外字节的比特币签名哈希类型的标识。这个函数不会被长度为0的签名调用，以便为有意填充的无效签名提供一个简单，简短，高效的签名验证。<br>DER定义在 <a href="https://www.itu.int/rec/T-REC-X.690/en" target="_blank" rel="noopener">https://www.itu.int/rec/T-REC-X.690/en</a> .<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="keyword">static</span> <span class="title">IsValidSignatureEncoding</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">char</span>&gt; &amp;sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Format: 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S] [sighash]</span></span><br><span class="line">    <span class="comment">// * total-length: 1-byte length descriptor of everything that follows,</span></span><br><span class="line">    <span class="comment">//   excluding the sighash byte.</span></span><br><span class="line">    <span class="comment">// * R-length: 1-byte length descriptor of the R value that follows.</span></span><br><span class="line">    <span class="comment">// * R: arbitrary-length big-endian encoded R value. It must use the shortest</span></span><br><span class="line">    <span class="comment">//   possible encoding for a positive integers (which means no null bytes at</span></span><br><span class="line">    <span class="comment">//   the start, except a single one when the next byte has its highest bit set).</span></span><br><span class="line">    <span class="comment">// * S-length: 1-byte length descriptor of the S value that follows.</span></span><br><span class="line">    <span class="comment">// * S: arbitrary-length big-endian encoded S value. The same rules apply.</span></span><br><span class="line">    <span class="comment">// * sighash: 1-byte value indicating what data is hashed (not part of the DER</span></span><br><span class="line">    <span class="comment">//   signature)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Minimum and maximum size constraints.</span></span><br><span class="line">    <span class="keyword">if</span> (sig.size() &lt; <span class="number">9</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (sig.size() &gt; <span class="number">73</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// A signature is of type 0x30 (compound).</span></span><br><span class="line">    <span class="keyword">if</span> (sig[<span class="number">0</span>] != <span class="number">0x30</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Make sure the length covers the entire signature.</span></span><br><span class="line">    <span class="keyword">if</span> (sig[<span class="number">1</span>] != sig.size() - <span class="number">3</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Extract the length of the R element.</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> lenR = sig[<span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Make sure the length of the S element is still inside the signature.</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">5</span> + lenR &gt;= sig.size()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Extract the length of the S element.</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> lenS = sig[<span class="number">5</span> + lenR];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Verify that the length of the signature matches the sum of the length</span></span><br><span class="line">    <span class="comment">// of the elements.</span></span><br><span class="line">    <span class="keyword">if</span> ((<span class="keyword">size_t</span>)(lenR + lenS + <span class="number">7</span>) != sig.size()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// Check whether the R element is an integer.</span></span><br><span class="line">    <span class="keyword">if</span> (sig[<span class="number">2</span>] != <span class="number">0x02</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Zero-length integers are not allowed for R.</span></span><br><span class="line">    <span class="keyword">if</span> (lenR == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Negative numbers are not allowed for R.</span></span><br><span class="line">    <span class="keyword">if</span> (sig[<span class="number">4</span>] &amp; <span class="number">0x80</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Null bytes at the start of R are not allowed, unless R would</span></span><br><span class="line">    <span class="comment">// otherwise be interpreted as a negative number.</span></span><br><span class="line">    <span class="keyword">if</span> (lenR &gt; <span class="number">1</span> &amp;&amp; (sig[<span class="number">4</span>] == <span class="number">0x00</span>) &amp;&amp; !(sig[<span class="number">5</span>] &amp; <span class="number">0x80</span>)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check whether the S element is an integer.</span></span><br><span class="line">    <span class="keyword">if</span> (sig[lenR + <span class="number">4</span>] != <span class="number">0x02</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Zero-length integers are not allowed for S.</span></span><br><span class="line">    <span class="keyword">if</span> (lenS == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Negative numbers are not allowed for S.</span></span><br><span class="line">    <span class="keyword">if</span> (sig[lenR + <span class="number">6</span>] &amp; <span class="number">0x80</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Null bytes at the start of S are not allowed, unless S would otherwise be</span></span><br><span class="line">    <span class="comment">// interpreted as a negative number.</span></span><br><span class="line">    <span class="keyword">if</span> (lenS &gt; <span class="number">1</span> &amp;&amp; (sig[lenR + <span class="number">6</span>] == <span class="number">0x00</span>) &amp;&amp; !(sig[lenR + <span class="number">7</span>] &amp; <span class="number">0x80</span>)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>符号：p1 和 p2是有效的，序列化后的公钥。 s1 和 s2是对应于p1与 p2的有效签名。s1’与s2’是非DER的编码，但是使用相同公钥的有效签名。F是所有无效的DER兼容签名(包含0，这个空字符串)。F’是无效且非DER兼容的签名。</p>
+<ol>
+<li><code>S1&#39; P1 CHECKSIG</code> fails (<strong>changed</strong>)</li>
+<li><code>S1&#39; P1 CHECKSIG</code> NOT fails (unchanged)</li>
+<li><code>F P1 CHECKSIG</code> fails (unchanged）</li>
+<li><code>F P1 CHECKSIG</code> NOT can succeed (unchanged)</li>
+<li><code>F&#39; P1 CHECKSIG</code> fails (unchanged)</li>
+<li><code>F&#39; P1 CHECKSIG</code> NOT fails (<strong>changed</strong>)</li>
+<li><code>0 S1&#39; S2 2 P1 P2 2 CHECKMULTISIG</code> fails (<strong>changed</strong>)</li>
+<li><code>0 S1&#39; S2 2 P1 P2 2 CHECKMULTISIG</code> NOT fails (unchanged)</li>
+<li><code>0 F S2&#39; 2 P1 P2 2 CHECKMULTISIG</code> fails (unchanged)</li>
+<li><code>0 F S2&#39; 2 P1 P2 2 CHECKMULTISIG</code> NOT fails (<strong>changed</strong>)</li>
+<li><code>0 S1&#39; F 2 P1 P2 2 CHECKMULTISIG</code> fails (unchanged)</li>
+<li><code>0 S1&#39; F 2 P1 P2 2 CHECKMULTISIG</code> NOT can succeed (unchanged)</li>
+</ol>
+<p>注意：上面的例子表明：这种变化仅仅添加了额外的验证失败案例，正如软分叉所要求的那样。</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>我们重复使用BIP34的双阈值切换机制，使用相同的阈值，但是版本号为3.这个新的规则影响版本号为3的所有区块，并且每1000个区块至少含有750个版本号为3的区块。更进一步，当每1000个区块含有950个以上的版本号为3的区块，则版本号为2的区块变为无效，并且后面所有的新区块都将强制采用新规则。</p>
+<h2 id="兼容"><a href="#兼容" class="headerlink" title="兼容"></a>兼容</h2><p>自0.8.0版本后，签名要求严格强制执行DER编码，已被作为中继策略，并且2015年1月后，几乎没有违反该规则的交易被添加到主链上。除此之外，每个非兼容的签名可以平滑的转换到兼容签名，所以不会带来任何功能的丢失。本提案还有降低交易延展性的好处。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>原文链接：<a href="https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki</a></p>
+<hr>
+<p>本文由 Copernicus团队 姚永芯 翻译，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
