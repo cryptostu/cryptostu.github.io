@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/01/12/翻译-BIP141隔离见证交易/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该结构包含检查交易有效性所需的数据。此外，脚本和签名移动到了这个新结构。 为了确保BIP软分叉的兼容性，该结构通过coinbase交易嵌套在区块已存在的merkle root。未来的硬分叉可以给该树分配一个自己的分支。 动机整个交易的效果由引用的交易输出和新创建的交易输出决定。其他的交易数据，尤其是签名，">
-<meta property="og:updated_time" content="2018-01-12T08:27:58.061Z">
+<meta property="og:updated_time" content="2018-01-17T09:28:28.298Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[翻译]BIP141隔离见证交易">
 <meta name="twitter:description" content="综述本提案定义了一个新结构“witness”提交到区块中，与交易的merkle tree不同。该结构包含检查交易有效性所需的数据。此外，脚本和签名移动到了这个新结构。 为了确保BIP软分叉的兼容性，该结构通过coinbase交易嵌套在区块已存在的merkle root。未来的硬分叉可以给该树分配一个自己的分支。 动机整个交易的效果由引用的交易输出和新创建的交易输出决定。其他的交易数据，尤其是签名，">
@@ -186,7 +186,7 @@
 <li>解释为一个 pay-to-witness-public-key-hash (P2WPKH)程序。</li>
 <li>这个witness必须正好包含两个item,且每个item小于等于520字节。第一个是签名，第二个是公钥。</li>
 <li>公钥的hash160必须匹配20个字节的witness program。</li>
-<li>正常脚本评估后，签名和公钥通过CHECKSIG操作验证通过。验证必须在栈上chanTRUE的输出。</li>
+<li>正常脚本评估后，签名和公钥通过CHECKSIG操作验证通过。验证必须在栈上TRUE的输出。</li>
 </ul>
 <p>如果版本字节是0，并且witness program是32字节：</p>
 <ul>
