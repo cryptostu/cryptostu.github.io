@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/01/26/Bitcoin序列化库使用/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="Bitcoin序列化功能主要实现在serialize.h文件，整个代码主要是围绕stream和参与序列化反序列化的类型T展开。  stream这个模板形参表达具有read(char**, size_t) 和write(char**, size_t)方法的对象， 类似Golang 的io.reader ,io.writer。 简单的使用例子： 1234567891011121314151617181">
-<meta property="og:updated_time" content="2018-01-26T07:36:14.517Z">
+<meta property="og:updated_time" content="2018-01-26T07:37:30.688Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bitcoin序列化库使用">
 <meta name="twitter:description" content="Bitcoin序列化功能主要实现在serialize.h文件，整个代码主要是围绕stream和参与序列化反序列化的类型T展开。  stream这个模板形参表达具有read(char**, size_t) 和write(char**, size_t)方法的对象， 类似Golang 的io.reader ,io.writer。 简单的使用例子： 1234567891011121314151617181">
@@ -179,7 +179,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream&gt; </span><br><span class="line">T::T(deserialize_type, Stream&amp; s)</span><br></pre></td></tr></table></figure>
 <p>的反序列化构造器做分发， 目前主要是CTransaction, CMutableTransaction 类型:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream&gt;</span><br><span class="line">    CTransaction(deserialize_type, Stream&amp; s) : CTransaction(CMutableTransaction(deserialize, s)) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream&gt;</span><br><span class="line">    CMutableTransaction(deserialize_type, Stream&amp; s) &#123;</span><br><span class="line">        Unserialize(s);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <hr>
-<p>本文由<code>Copernicus团队 喻建</code>原创，转载无需授权。</p>
+<p>本文由<code>Copernicus团队 喻建</code>写作，转载无需授权。</p>
 
         </div>
         <div class="post-reply">
