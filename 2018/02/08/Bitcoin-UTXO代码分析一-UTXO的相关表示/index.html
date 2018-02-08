@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Bitcoin UTXO代码分析(一):UTXO的相关表示 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在Bitcoin代码中，使用Coin类来表示单个交易对象中某个输出的币:123456789101112131415class Coin&amp;#123;public:    //! unspent transaction output    CTxOut out;    //! whether containing transaction was a coinbase    unsigned int f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bitcoin UTXO代码分析(一):UTXO的相关表示">
+<meta property="og:url" content="http://yoursite.com/2018/02/08/Bitcoin-UTXO代码分析一-UTXO的相关表示/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="在Bitcoin代码中，使用Coin类来表示单个交易对象中某个输出的币:123456789101112131415class Coin&amp;#123;public:    //! unspent transaction output    CTxOut out;    //! whether containing transaction was a coinbase    unsigned int f">
+<meta property="og:updated_time" content="2018-02-08T00:44:25.633Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bitcoin UTXO代码分析(一):UTXO的相关表示">
+<meta name="twitter:description" content="在Bitcoin代码中，使用Coin类来表示单个交易对象中某个输出的币:123456789101112131415class Coin&amp;#123;public:    //! unspent transaction output    CTxOut out;    //! whether containing transaction was a coinbase    unsigned int f">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Bitcoin UTXO代码分析(一):UTXO的相关表示</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-02-08</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>在Bitcoin代码中，使用<em>Coin</em>类来表示单个交易对象中某个输出的币:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Coin</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//! unspent transaction output</span></span><br><span class="line">    CTxOut out;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! whether containing transaction was a coinbase</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> fCoinBase : <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//! at which height this containing transaction was included in the active block chain</span></span><br><span class="line">    <span class="keyword">uint32_t</span> nHeight : <span class="number">31</span>;</span><br><span class="line">    .....</span><br><span class="line">    .....</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据元素除了<code>CTxOut</code>中的币值(nValue)、花费条件(scriptPubKey)之外, 还附带了一些元信息：是否是coinbase, 所在交易在哪个高度被打包进入Blockchain。<br>再使用<code>CCoinsView</code>抽象类表达整个blockchain上的币的集合:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsView</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">/** Retrieve the Coin (unspent transaction output) for a given outpoint.</span></span><br><span class="line"><span class="comment">     *  Returns true only when an unspent coin was found, which is returned in coin.</span></span><br><span class="line"><span class="comment">     *  When false is returned, coin's value is unspecified.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">GetCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin &amp;coin)</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Just check whether a given outpoint is unspent.</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">HaveCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint)</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Retrieve the block hash whose state this CCoinsView currently represents</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> uint256 <span class="title">GetBestBlock</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Retrieve the range of blocks that may have been only partially written.</span></span><br><span class="line">    <span class="comment">//! If the database is in a consistent state, the result is the empty vector.</span></span><br><span class="line">    <span class="comment">//! Otherwise, a two-element vector is returned consisting of the new and</span></span><br><span class="line">    <span class="comment">//! the old block hash, in that order.</span></span><br><span class="line">    <span class="keyword">virtual</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;uint256&gt; GetHeadBlocks() <span class="keyword">const</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Do a bulk modification (multiple Coin changes + BestBlock change).</span></span><br><span class="line">    <span class="comment">//! The passed mapCoins can be modified.</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">BatchWrite</span><span class="params">(CCoinsMap &amp;mapCoins, <span class="keyword">const</span> uint256 &amp;hashBlock)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Get a cursor to iterate over the whole state</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> CCoinsViewCursor *<span class="title">Cursor</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! As we use CCoinsViews polymorphically, have a virtual destructor</span></span><br><span class="line">    <span class="keyword">virtual</span> ~CCoinsView() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Estimate database size (0 if not implemented)</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> size_t <span class="title">EstimateSize</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>Cinsview 类作为接口类，有很多具体实现子类:</p>
+<pre><code>               CCoinsView
+             /          \
+            /            \
+CCoinsViewDB            CCoinsViewBacked
+                         /          |     \               
+                        /           |      \
+                       /            |       \
+ CCoinsViewErrorCatcher   CCoinsViewMemPool   CCoinsViewCache
+</code></pre><p><code>CoinsViewDB</code>类主要服务于从Bitcoin数据目录下的<em>chainstate</em>子目录下保存和读取存盘的UTXO集合:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewDB</span> <span class="title">final</span> :</span> <span class="keyword">public</span> CCoinsView</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    CDBWrapper db;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">CCoinsViewDB</span><span class="params">(<span class="keyword">size_t</span> nCacheSize, <span class="keyword">bool</span> fMemory = <span class="literal">false</span>, <span class="keyword">bool</span> fWipe = <span class="literal">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">GetCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin &amp;coin)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">HaveCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function">uint256 <span class="title">GetBestBlock</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;uint256&gt; GetHeadBlocks() <span class="keyword">const</span> override;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">BatchWrite</span><span class="params">(CCoinsMap &amp;mapCoins, <span class="keyword">const</span> uint256 &amp;hashBlock)</span> override</span>;</span><br><span class="line">    <span class="function">CCoinsViewCursor *<span class="title">Cursor</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//! Attempt to update from an older database format. Returns whether an error occurred.</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">Upgrade</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="keyword">size_t</span> EstimateSize() <span class="keyword">const</span> override;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>此类只有一个全局实例，在<code>validation.cpp</code>中定义:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;CCoinsViewDB&gt; pcoinsdbview;</span><br></pre></td></tr></table></figure></p>
+<p>在init.cpp中进程启动时， 会对改对象进行初始化:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pcoinsdbview.reset(<span class="keyword">new</span> CCoinsViewDB(nCoinDBCache, <span class="literal">false</span>, fReset || fReindexChainState));</span><br></pre></td></tr></table></figure></p>
+<p>类<code>CCoinsViewBacked</code>本身没什么实际用处， 主要是作为多个Coinview层级之间的转接层， 它的数据成员 CCoinView *base 指向的就是后端即parent view , 如果某个coinsviewBacked的子类没有覆盖接口类CCoinsView 中的方法， 就会调用base指向的后端相应的方法。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewBacked</span> :</span> <span class="keyword">public</span> CCoinsView</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    CCoinsView *base;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CCoinsViewBacked(CCoinsView *viewIn);</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">GetCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin &amp;coin)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">HaveCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function">uint256 <span class="title">GetBestBlock</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;uint256&gt; GetHeadBlocks() <span class="keyword">const</span> override;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetBackend</span><span class="params">(CCoinsView &amp;viewIn)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">BatchWrite</span><span class="params">(CCoinsMap &amp;mapCoins, <span class="keyword">const</span> uint256 &amp;hashBlock)</span> override</span>;</span><br><span class="line">    <span class="function">CCoinsViewCursor *<span class="title">Cursor</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="keyword">size_t</span> EstimateSize() <span class="keyword">const</span> override;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">CCoinsViewBacked::CCoinsViewBacked(CCoinsView *viewIn) : base(viewIn) &#123; &#125;</span><br><span class="line"><span class="keyword">bool</span> CCoinsViewBacked::GetCoin(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin &amp;coin) <span class="keyword">const</span> &#123; <span class="keyword">return</span> base-&gt;GetCoin(outpoint, coin); &#125;</span><br><span class="line"><span class="keyword">bool</span> CCoinsViewBacked::HaveCoin(<span class="keyword">const</span> COutPoint &amp;outpoint) <span class="keyword">const</span> &#123; <span class="keyword">return</span> base-&gt;HaveCoin(outpoint); &#125;</span><br><span class="line">uint256 CCoinsViewBacked::GetBestBlock() <span class="keyword">const</span> &#123; <span class="keyword">return</span> base-&gt;GetBestBlock(); &#125;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;uint256&gt; CCoinsViewBacked::GetHeadBlocks() <span class="keyword">const</span> &#123; <span class="keyword">return</span> base-&gt;GetHeadBlocks(); &#125;</span><br><span class="line"><span class="keyword">void</span> CCoinsViewBacked::SetBackend(CCoinsView &amp;viewIn) &#123; base = &amp;viewIn; &#125;</span><br><span class="line"><span class="keyword">bool</span> CCoinsViewBacked::BatchWrite(CCoinsMap &amp;mapCoins, <span class="keyword">const</span> uint256 &amp;hashBlock) &#123; <span class="keyword">return</span> base-&gt;BatchWrite(mapCoins, hashBlock); &#125;</span><br><span class="line">CCoinsViewCursor *CCoinsViewBacked::Cursor() <span class="keyword">const</span> &#123; <span class="keyword">return</span> base-&gt;Cursor(); &#125;</span><br><span class="line"><span class="keyword">size_t</span> CCoinsViewBacked::EstimateSize() <span class="keyword">const</span> &#123; <span class="keyword">return</span> base-&gt;EstimateSize(); &#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>CCoinsViewErrorCatcher</code> ,  <code>CCoinsViewMemPool</code> , <code>CCoinsViewCache</code>  三个定制实现在初始化时需要指定parent view,所以要继承于CCoinsViewBacked类。<br>coinsviewErrorCatcher 主要用途是包装对数据库读取做错误处理，后端是全局的磁盘实现pcoinsdbview。 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewErrorCatcher</span> <span class="title">final</span> :</span> <span class="keyword">public</span> CCoinsViewBacked</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    explicit CCoinsViewErrorCatcher(CCoinsView* view) : CCoinsViewBacked(view) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">GetCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin &amp;coin)</span> <span class="keyword">const</span> override </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> CCoinsViewBacked::GetCoin(outpoint, coin);</span><br><span class="line">        &#125; <span class="keyword">catch</span>(<span class="keyword">const</span> <span class="built_in">std</span>::runtime_error&amp; e) &#123;</span><br><span class="line">            uiInterface.ThreadSafeMessageBox(_(<span class="string">"Error reading from database, shutting down."</span>), <span class="string">""</span>, CClientUIInterface::MSG_ERROR);</span><br><span class="line">            LogPrintf(<span class="string">"Error reading from database: %s\n"</span>, e.what());</span><br><span class="line">            <span class="built_in">abort</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>启动时的初始化代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//init.cpp  AppInitMain()</span><br><span class="line">pcoinscatcher.reset(new CCoinsViewErrorCatcher(pcoinsdbview.get()));</span><br></pre></td></tr></table></figure></p>
+<p><code>CCoinsViewCache</code> 类是一个内存缓存的实现，内部使用hashmap 存储了某个outpoint 到<code>Coin</code>对象的映射，有一个全局实例<code>pcoinsTip</code> , 指向atctiveChain 的utxo，后端是磁盘实现<code>CCoinsViewDB</code>对象pcoinsdbview。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewCache</span> :</span> <span class="keyword">public</span> CCoinsViewBacked</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Make mutable so that we can "fill the cache" even from Get-methods</span></span><br><span class="line"><span class="comment">     * declared as "const".  </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">mutable</span> uint256 hashBlock;</span><br><span class="line">    <span class="keyword">mutable</span> CCoinsMap cacheCoins;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Cached dynamic memory usage for the inner Coin objects. */</span></span><br><span class="line">    <span class="keyword">mutable</span> <span class="keyword">size_t</span> cachedCoinsUsage;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line">启动时的初始化代码:</span><br></pre></td></tr></table></figure>
+<p>//init.cpp  AppInitMain()<br>pcoinsTip.reset(new CCoinsViewCache(pcoinscatcher.get()));<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">它的内部hashmap使用了定制的hash 方法siphash, 没有使用默认的std::hash方法(不是加密学安全的hash)， 估计是防止hash的key冲突,:</span><br><span class="line">```c++</span><br><span class="line">typedef std::unordered_map&lt;COutPoint, CCoinsCacheEntry, SaltedOutpointHasher&gt; CCoinsMap;</span><br><span class="line"></span><br><span class="line">class SaltedOutpointHasher</span><br><span class="line">&#123;</span><br><span class="line">private:</span><br><span class="line">    /** Salt */</span><br><span class="line">    const uint64_t k0, k1;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    SaltedOutpointHasher();</span><br><span class="line"></span><br><span class="line">    size_t operator()(const COutPoint&amp; id) const &#123;</span><br><span class="line">        return SipHashUint256Extra(k0, k1, id.hash, id.n);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>这篇文章介绍了表示UTXO的相关表示的数据结构，下一篇文章将会UTXO的标记以及保存。</p>
+<hr>
+<p>本文由 <code>Copernicus团队</code> 喻建写作，转载无需授权</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
