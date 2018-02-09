@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Bitcoin UTXO代码分析(二):CCoinsViewCache | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在上一篇Bitcoin UTXO代码分析(一):UTXO的相关表示中，简要说明了UTXO在Bitcoin是使用那些类表示的，这篇文章继续分析下UTXO的标记和花费。  CCoinsViewCache类有几个重要的方法，下面介绍下主要方法的使用 Coin处理方法获取其中获取Coin的方法是: 12345678910111213141516CCoinsMap::iterator CCoinsView">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bitcoin UTXO代码分析(二):CCoinsViewCache">
+<meta property="og:url" content="http://yoursite.com/2018/02/09/Bitcoin-UTXO代码分析二-CCoinsViewCache/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="在上一篇Bitcoin UTXO代码分析(一):UTXO的相关表示中，简要说明了UTXO在Bitcoin是使用那些类表示的，这篇文章继续分析下UTXO的标记和花费。  CCoinsViewCache类有几个重要的方法，下面介绍下主要方法的使用 Coin处理方法获取其中获取Coin的方法是: 12345678910111213141516CCoinsMap::iterator CCoinsView">
+<meta property="og:updated_time" content="2018-02-09T03:07:36.013Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bitcoin UTXO代码分析(二):CCoinsViewCache">
+<meta name="twitter:description" content="在上一篇Bitcoin UTXO代码分析(一):UTXO的相关表示中，简要说明了UTXO在Bitcoin是使用那些类表示的，这篇文章继续分析下UTXO的标记和花费。  CCoinsViewCache类有几个重要的方法，下面介绍下主要方法的使用 Coin处理方法获取其中获取Coin的方法是: 12345678910111213141516CCoinsMap::iterator CCoinsView">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Bitcoin UTXO代码分析(二):CCoinsViewCache</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-02-09</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <blockquote>
+<p>在上一篇<a href="https://mp.weixin.qq.com/s/UKFW05QFTz9mGMG7-tCXXw" target="_blank" rel="noopener">Bitcoin UTXO代码分析(一):UTXO的相关表示</a>中，简要说明了UTXO在Bitcoin是使用那些类表示的，这篇文章继续分析下UTXO的标记和花费。</p>
+</blockquote>
+<p><code>CCoinsViewCache</code>类有几个重要的方法，下面介绍下主要方法的使用</p>
+<h2 id="Coin处理方法"><a href="#Coin处理方法" class="headerlink" title="Coin处理方法"></a>Coin处理方法</h2><h4 id="获取"><a href="#获取" class="headerlink" title="获取"></a>获取</h4><p>其中获取Coin的方法是:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">CCoinsMap::iterator CCoinsViewCache::FetchCoin(<span class="keyword">const</span> COutPoint &amp;outpoint) <span class="keyword">const</span> &#123;</span><br><span class="line">    CCoinsMap::iterator it = cacheCoins.find(outpoint);</span><br><span class="line">    <span class="keyword">if</span> (it != cacheCoins.end())</span><br><span class="line">        <span class="keyword">return</span> it;</span><br><span class="line">    Coin tmp;</span><br><span class="line">    <span class="keyword">if</span> (!base-&gt;GetCoin(outpoint, tmp))</span><br><span class="line">        <span class="keyword">return</span> cacheCoins.end();</span><br><span class="line">    CCoinsMap::iterator ret = cacheCoins.emplace(<span class="built_in">std</span>::piecewise_construct, <span class="built_in">std</span>::forward_as_tuple(outpoint), <span class="built_in">std</span>::forward_as_tuple(<span class="built_in">std</span>::move(tmp))).first;</span><br><span class="line">    <span class="keyword">if</span> (ret-&gt;second.coin.IsSpent()) &#123;</span><br><span class="line">        <span class="comment">// The parent only has an empty entry for this outpoint; we can consider our</span></span><br><span class="line">        <span class="comment">// version as fresh.</span></span><br><span class="line">        ret-&gt;second.flags = CCoinsCacheEntry::FRESH;</span><br><span class="line">    &#125;</span><br><span class="line">    cachedCoinsUsage += ret-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用传入的outpoint 对象作为key, 在coinViewCache 内部成员hashmap 中查找， 找到返回。</li>
+<li>找不到，调到coinViewCache对象初始化是传入的后端(parent view), 中查找， 找不到返回。 </li>
+<li>在parent view找到，使用此条目填充内部hashmap，如果找到的币已经被消费，标记此条目为fresh, 这样，在向后端(parent view)flush 时， 就跳过了此条目， 最后增加一个币的动态内存占用。</li>
+</ol>
+<h4 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h4><p>添加<code>Coin</code>的方法是:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> CCoinsViewCache::AddCoin(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin&amp;&amp; coin, <span class="keyword">bool</span> possible_overwrite) &#123;</span><br><span class="line">    assert(!coin.IsSpent());</span><br><span class="line">    <span class="keyword">if</span> (coin.out.scriptPubKey.IsUnspendable()) <span class="keyword">return</span>;</span><br><span class="line">    CCoinsMap::iterator it;</span><br><span class="line">    <span class="keyword">bool</span> inserted;</span><br><span class="line">    <span class="built_in">std</span>::tie(it, inserted) = cacheCoins.emplace(<span class="built_in">std</span>::piecewise_construct, <span class="built_in">std</span>::forward_as_tuple(outpoint), <span class="built_in">std</span>::tuple&lt;&gt;());</span><br><span class="line">    <span class="keyword">bool</span> fresh = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (!inserted) &#123;</span><br><span class="line">        cachedCoinsUsage -= it-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!possible_overwrite) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!it-&gt;second.coin.IsSpent()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="built_in">std</span>::logic_error(<span class="string">"Adding new coin that replaces non-pruned entry"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        fresh = !(it-&gt;second.flags &amp; CCoinsCacheEntry::DIRTY);</span><br><span class="line">    &#125;</span><br><span class="line">    it-&gt;second.coin = <span class="built_in">std</span>::move(coin);</span><br><span class="line">    it-&gt;second.flags |= CCoinsCacheEntry::DIRTY | (fresh ? CCoinsCacheEntry::FRESH : <span class="number">0</span>);</span><br><span class="line">    cachedCoinsUsage += it-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line">上述代码分析，断言：币没有被消费，币是可消费的，测试传入的outpoint有没有存在于cache, 如果没有，则减掉一个币的内存占用。 否则的话，更新coin对象，更新flags，增加一个币的内存占用。</span><br><span class="line">#### 花费</span><br><span class="line">花费Coin的方法是:</span><br><span class="line">```c++</span><br><span class="line"><span class="keyword">bool</span> CCoinsViewCache::SpendCoin(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin* moveout) &#123;</span><br><span class="line">    CCoinsMap::iterator it = FetchCoin(outpoint);</span><br><span class="line">    <span class="keyword">if</span> (it == cacheCoins.end()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    cachedCoinsUsage -= it-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">    <span class="keyword">if</span> (moveout) &#123;</span><br><span class="line">        *moveout = <span class="built_in">std</span>::move(it-&gt;second.coin);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (it-&gt;second.flags &amp; CCoinsCacheEntry::FRESH) &#123;</span><br><span class="line">        cacheCoins.erase(it);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        it-&gt;second.flags |= CCoinsCacheEntry::DIRTY;</span><br><span class="line">        it-&gt;second.coin.Clear();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>SpendCoin消费掉outpoint对应的币，根据传入moveout 指针是否为空，是否保存对应的coin对象，如果找到的条目状态是fresh 的，表明和后端视图一致，删除此条目， 否则此条目为dirty， 把币值设为-1。</p>
+<h4 id="保存"><a href="#保存" class="headerlink" title="保存"></a>保存</h4><p>保存的方法是:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> CCoinsViewCache::BatchWrite(CCoinsMap &amp;mapCoins, <span class="keyword">const</span> uint256 &amp;hashBlockIn) &#123;</span><br><span class="line">    <span class="keyword">for</span> (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end(); it = mapCoins.erase(it)) &#123;</span><br><span class="line">        <span class="comment">// Ignore non-dirty entries (optimization).</span></span><br><span class="line">        <span class="keyword">if</span> (!(it-&gt;second.flags &amp; CCoinsCacheEntry::DIRTY)) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        CCoinsMap::iterator itUs = cacheCoins.find(it-&gt;first);</span><br><span class="line">        <span class="keyword">if</span> (itUs == cacheCoins.end()) &#123;</span><br><span class="line">            <span class="comment">// The parent cache does not have an entry, while the child does</span></span><br><span class="line">            <span class="comment">// We can ignore it if it's both FRESH and pruned in the child</span></span><br><span class="line">            <span class="keyword">if</span> (!(it-&gt;second.flags &amp; CCoinsCacheEntry::FRESH &amp;&amp; it-&gt;second.coin.IsSpent())) &#123;</span><br><span class="line">                <span class="comment">// Otherwise we will need to create it in the parent</span></span><br><span class="line">                <span class="comment">// and move the data up and mark it as dirty</span></span><br><span class="line">                CCoinsCacheEntry&amp; entry = cacheCoins[it-&gt;first];</span><br><span class="line">                entry.coin = <span class="built_in">std</span>::move(it-&gt;second.coin);</span><br><span class="line">                cachedCoinsUsage += entry.coin.DynamicMemoryUsage();</span><br><span class="line">                entry.flags = CCoinsCacheEntry::DIRTY;</span><br><span class="line">                <span class="comment">// We can mark it FRESH in the parent if it was FRESH in the child</span></span><br><span class="line">                <span class="comment">// Otherwise it might have just been flushed from the parent's cache</span></span><br><span class="line">                <span class="comment">// and already exist in the grandparent</span></span><br><span class="line">                <span class="keyword">if</span> (it-&gt;second.flags &amp; CCoinsCacheEntry::FRESH) &#123;</span><br><span class="line">                    entry.flags |= CCoinsCacheEntry::FRESH;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// Assert that the child cache entry was not marked FRESH if the</span></span><br><span class="line">            <span class="comment">// parent cache entry has unspent outputs. If this ever happens,</span></span><br><span class="line">            <span class="comment">// it means the FRESH flag was misapplied and there is a logic</span></span><br><span class="line">            <span class="comment">// error in the calling code.</span></span><br><span class="line">            <span class="keyword">if</span> ((it-&gt;second.flags &amp; CCoinsCacheEntry::FRESH) &amp;&amp; !itUs-&gt;second.coin.IsSpent()) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="built_in">std</span>::logic_error(<span class="string">"FRESH flag misapplied to cache entry for base transaction with spendable outputs"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Found the entry in the parent cache</span></span><br><span class="line">            <span class="keyword">if</span> ((itUs-&gt;second.flags &amp; CCoinsCacheEntry::FRESH) &amp;&amp; it-&gt;second.coin.IsSpent()) &#123;</span><br><span class="line">                <span class="comment">// The grandparent does not have an entry, and the child is</span></span><br><span class="line">                <span class="comment">// modified and being pruned. This means we can just delete</span></span><br><span class="line">                <span class="comment">// it from the parent.</span></span><br><span class="line">                cachedCoinsUsage -= itUs-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">                cacheCoins.erase(itUs);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// A normal modification.</span></span><br><span class="line">                cachedCoinsUsage -= itUs-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">                itUs-&gt;second.coin = <span class="built_in">std</span>::move(it-&gt;second.coin);</span><br><span class="line">                cachedCoinsUsage += itUs-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">                itUs-&gt;second.flags |= CCoinsCacheEntry::DIRTY;</span><br><span class="line">               </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    hashBlock = hashBlockIn;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>CCoinsViewCache 的BatchWrite方法，主要是服务于coinViewCache 对象作为另一个coinview 对象的后端视图时，通过CoinsMap 对象接受上层视图的状态，更新此对象的内部状态：在迭代上层视图时，跳过非dirty的条目（即没有被修改的条目),  如果找到一个条目存在于上层视图，在本对象内部找不到，跳过fresh 且被消费掉的条目，剩下的刷新到本视图；如果找到了，条目在上层视图是fresh且被消费了，在本视图中删除掉同key的条目，否则就更新条目中的币，标记此条目dirty。</p>
+<h2 id="CCoinsViewCache的其他方法"><a href="#CCoinsViewCache的其他方法" class="headerlink" title="CCoinsViewCache的其他方法"></a>CCoinsViewCache的其他方法</h2><p>另外还有一些衍生的方法用来方便使用的，比如：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> CCoinsViewCache::HaveCoin(<span class="keyword">const</span> COutPoint &amp;outpoint) <span class="keyword">const</span> &#123;</span><br><span class="line">    CCoinsMap::const_iterator it = FetchCoin(outpoint);</span><br><span class="line">    <span class="keyword">return</span> it != cacheCoins.end() &amp;&amp; !it-&gt;second.coin.IsSpent();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> CCoinsViewCache::Uncache(<span class="keyword">const</span> COutPoint &amp;outpoint) &#123;</span><br><span class="line">    CCoinsMap::iterator it = cacheCoins.find(outpoint);</span><br><span class="line">    <span class="keyword">if</span> (it != cacheCoins.end() &amp;&amp; it-&gt;second.flags == <span class="number">0</span>) &#123;</span><br><span class="line">        cachedCoinsUsage -= it-&gt;second.coin.DynamicMemoryUsage();</span><br><span class="line">        cacheCoins.erase(it);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">onst CTxOut &amp;CCoinsViewCache::GetOutputFor(<span class="keyword">const</span> CTxIn &amp;input) <span class="keyword">const</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> Coin &amp;coin = AccessCoin(input.prevout);</span><br><span class="line">    assert(!coin.IsSpent());</span><br><span class="line">    <span class="keyword">return</span> coin.GetTxOut();</span><br><span class="line">&#125;</span><br><span class="line">......</span><br></pre></td></tr></table></figure></p>
+<p>以上方法是对一些简化逻辑的封装，更方面的被外部调用。</p>
+<p>另外<code>CCoinsViewCache</code>还会记录当前的最高块的hash，主要用来在判断当前的UTXO是在那个高度的UTXO,它对应的方法有:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">uint256 CCoinsViewCache::GetBestBlock() <span class="keyword">const</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (hashBlock.IsNull()) &#123;</span><br><span class="line">        hashBlock = base-&gt;GetBestBlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> hashBlock;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> CCoinsViewCache::SetBestBlock(<span class="keyword">const</span> uint256 &amp;hashBlockIn) &#123;</span><br><span class="line">    hashBlock = hashBlockIn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>本文由 <code>Copernicus团队</code> 喻建写作，转载无需授权</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
