@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/02/14/Bitcoin-UTXO代码分析三-和其它模块的交互/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互：新块被激活的时候如何更新UTXO，内存池中的交易和UTXO如何交互，以及UTXO的存储。 Blockchain激活Blockchain发生变化时UTXO相关的逻辑">
-<meta property="og:updated_time" content="2018-02-13T22:17:35.304Z">
+<meta property="og:updated_time" content="2018-02-13T22:18:50.119Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bitcoin UTXO代码分析(三):和其它模块的交互">
 <meta name="twitter:description" content="前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互：新块被激活的时候如何更新UTXO，内存池中的交易和UTXO如何交互，以及UTXO的存储。 Blockchain激活Blockchain发生变化时UTXO相关的逻辑">
@@ -202,6 +202,8 @@
 </blockquote>
 <p>总共33 字节， 未压缩的p2pk脚本， 首字节是0x04|(pubkey[64]&amp;0x01), 接着是32字节的pubkey的x 坐标。</p>
 <p>对于其它不能被压缩的脚本， 如segwit 的scriptPubKey，采用下面方法:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> nSize = script.size() + nSpecialScripts;</span><br><span class="line">s &lt;&lt; VARINT(nSize);</span><br><span class="line">s &lt;&lt; CFlatData(script);</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>本文由 <code>Copernicus团队</code> 喻建写作，转载无需授权</p>
 
         </div>
         <div class="post-reply">
