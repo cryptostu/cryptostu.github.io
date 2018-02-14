@@ -6,17 +6,17 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   
-  <title>Bitcoin UTXO代码分析(三):和其它模块的交互 | Cryptocurrency Tech</title>
+  <title>Bitcoin UTXO代码分析(三):与其它模块的交互 | Cryptocurrency Tech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互：新块被激活的时候如何更新UTXO，内存池中的交易和UTXO如何交互，以及UTXO的存储。 Blockchain激活Blockchain发生变化时UTXO相关的逻辑">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Bitcoin UTXO代码分析(三):和其它模块的交互">
-<meta property="og:url" content="http://yoursite.com/2018/02/14/Bitcoin-UTXO代码分析三-和其它模块的交互/index.html">
+<meta property="og:title" content="Bitcoin UTXO代码分析(三):与其它模块的交互">
+<meta property="og:url" content="http://yoursite.com/2018/02/14/Bitcoin-UTXO代码分析三-与其它模块的交互/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互：新块被激活的时候如何更新UTXO，内存池中的交易和UTXO如何交互，以及UTXO的存储。 Blockchain激活Blockchain发生变化时UTXO相关的逻辑">
-<meta property="og:updated_time" content="2018-02-13T22:22:21.727Z">
+<meta property="og:updated_time" content="2018-02-14T01:22:07.272Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Bitcoin UTXO代码分析(三):和其它模块的交互">
+<meta name="twitter:title" content="Bitcoin UTXO代码分析(三):与其它模块的交互">
 <meta name="twitter:description" content="前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互：新块被激活的时候如何更新UTXO，内存池中的交易和UTXO如何交互，以及UTXO的存储。 Blockchain激活Blockchain发生变化时UTXO相关的逻辑">
   
     <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
@@ -135,7 +135,7 @@
     <div class="container post-box">
         <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
             <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
-                <strong>Bitcoin UTXO代码分析(三):和其它模块的交互</strong>
+                <strong>Bitcoin UTXO代码分析(三):与其它模块的交互</strong>
             </h1>
             
             <div class="is-flex align-center">
