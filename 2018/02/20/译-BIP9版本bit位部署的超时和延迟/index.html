@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>[译]BIP9版本bit位部署的超时和延迟 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="综述本提案目标是：改变区块版本中 version字段的含义，允许同时部署多个向后兼容的更改(或称软分叉)。该功能的实现依赖于将 version字段解释为bit vector,每个bit位可以用来跟踪一个独立的更改。在每个目标周期统计部署该bit位的区块的个数，一旦部署达成共识或超时(失败)，接下来有一个暂停期，之后该bit 位可以被以后新的规则变化重新使用。 动机BIP34引入了一种不需要预先定义">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]BIP9版本bit位部署的超时和延迟">
+<meta property="og:url" content="http://yoursite.com/2018/02/20/译-BIP9版本bit位部署的超时和延迟/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="综述本提案目标是：改变区块版本中 version字段的含义，允许同时部署多个向后兼容的更改(或称软分叉)。该功能的实现依赖于将 version字段解释为bit vector,每个bit位可以用来跟踪一个独立的更改。在每个目标周期统计部署该bit位的区块的个数，一旦部署达成共识或超时(失败)，接下来有一个暂停期，之后该bit 位可以被以后新的规则变化重新使用。 动机BIP34引入了一种不需要预先定义">
+<meta property="og:image" content="https://github.com/bitcoin/bips/blob/master/bip-0009/states.png">
+<meta property="og:updated_time" content="2018-02-20T10:33:38.606Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]BIP9版本bit位部署的超时和延迟">
+<meta name="twitter:description" content="综述本提案目标是：改变区块版本中 version字段的含义，允许同时部署多个向后兼容的更改(或称软分叉)。该功能的实现依赖于将 version字段解释为bit vector,每个bit位可以用来跟踪一个独立的更改。在每个目标周期统计部署该bit位的区块的个数，一旦部署达成共识或超时(失败)，接下来有一个暂停期，之后该bit 位可以被以后新的规则变化重新使用。 动机BIP34引入了一种不需要预先定义">
+<meta name="twitter:image" content="https://github.com/bitcoin/bips/blob/master/bip-0009/states.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>[译]BIP9版本bit位部署的超时和延迟</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-02-20</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h2><p>本提案目标是：改变区块版本中 <code>version</code>字段的含义，允许同时部署多个向后兼容的更改(或称软分叉)。该功能的实现依赖于将 <code>version</code>字段解释为bit vector,每个bit位可以用来跟踪一个独立的更改。在每个目标周期统计部署该bit位的区块的个数，一旦部署达成共识或超时(失败)，接下来有一个暂停期，之后该bit 位可以被以后新的规则变化重新使用。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0034.mediawiki" target="_blank" rel="noopener">BIP34</a>引入了一种不需要预先定义时间戳或区块高度来进行软分叉的机制，而是依赖于通过统计矿工的支持率：即在块头中通过高版本号进行标示。这种方式依赖于将版本字段作为一个整型进行比较，所以它每次支持部署单个的更改，要求协调各种提案，并且不允许永久拒绝该提案：只要一个软分叉没有完成部署，就不会安排未来的另一个软分叉。<br>另外，当一个新的共识规则达到95%的阈值之后，<a href="https://github.com/bitcoin/bips/blob/master/bip-0034.mediawiki" target="_blank" rel="noopener">BIP34</a>将会做整型比较(当nversion &gt;= 2)，从有效的版本集合中移除2<sup>31</sup>+2(所有的负数，因为版本号被解释为一个有符号的整型，以及0和1)。这表明了这种方法的另一个缺点：每次升级都会永久限制允许使用的版本字段的集。在<a href="https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki" target="_blank" rel="noopener">BIP66</a><a href="https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki" target="_blank" rel="noopener">BIP65</a>也使用了该方法，又从有效集合中移除了版本2和3。如进一步所示，这是没有必要的。</p>
+<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><ol>
+<li>每个软分叉的部署被它当前所采用的链参数指定(详细描述如下：)<blockquote>
+<ol>
+<li><code>name</code>字段标识这个软分叉的简要描述，可以作为标识符来合理使用。对于在单个BIP中描述的部署，建议使用<code>bipN</code>作为它的名称，N标识对应的BIP号。</li>
+<li><code>bit</code>字段决定块的版本字段中，哪个bit位用将被用于通知某个软分叉将被锁定或激活。从{0,1,2,…28}中选择。</li>
+<li><code>starttime</code>字段定义了该bit位开始 起作用的最小时间(这里采用的是块的中位数时间MTP)</li>
+<li><code>timeout</code>字段定义了该bit为部署失败的时间。如果块的MTP时间 &gt;= timeout并且该软分叉至今未锁定，那么这个部署将从这个块开始被认为失败。</li>
+</ol>
+</blockquote>
+</li>
+</ol>
+<h2 id="选择指南"><a href="#选择指南" class="headerlink" title="选择指南"></a>选择指南</h2><p>建议使用下面的指南作为一个软分叉的参数</p>
+<blockquote>
+<ol>
+<li><code>name</code>应该被设计为 在两个同时部署的软分叉之间不存在名字冲突。</li>
+<li><code>bit</code>应该被设计为在两个同时部署的软分叉之间不存在bit冲突。</li>
+<li><code>starttime</code>应该被设计为包含这个软分叉的软件发布后的大约一个月开始。这样就可以允许发布延迟，同时可以阻止意外运行预发布软件造成功能的触发。</li>
+<li><code>timeout</code>应该被设计为<code>starttime</code>之后的一年以后。</li>
+</ol>
+</blockquote>
+<p>一个新的部署可以使用与原来部署相同的bit位，只要这个部署的<code>startTime</code>在原来部署的超时时间或激活时间之后，但是没有必要不鼓励这样做，并且如果非这样做，推荐有段休整期用来检测软件的BUG。</p>
+<h2 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h2><p>对于每个软分叉，关联了一系列部署状态，如下所述：</p>
+<blockquote>
+<ol>
+<li><code>DEFINED</code>:是每个软分叉的第一个状态，每个部署的初始块都被定义为该状态。</li>
+<li><code>STARTED</code>: 接收的区块进入了部署阶段。(&gt;=startTime)</li>
+<li><code>LOCKED_IN</code>: 在STARTED状态周期之后的每个周期，只要版本号中的部署达到阈值，标识下个周期进入LOCKED_IN。</li>
+<li><code>ACTIVE</code>:锁定周期之后的状态。</li>
+<li><code>FAILD</code>: 在block MTP &gt; timeout ,但是没有到达LOCKED_IN状态，则进入FAILD状态。</li>
+</ol>
+</blockquote>
+<h2 id="bit-标识"><a href="#bit-标识" class="headerlink" title="bit 标识"></a>bit 标识</h2><p>块头的版本字段被解释为一个32位的小端整型，并且在这个整数中bits作为1&lt;&lt; N的值，N是bit所在的位置索引。<br>在STARTED状态的区块的版本字段该bit位被设置为1，并且块的版本字段的高3位必须是001，所以版本字段的实际的范围是：[0x20000000 … 0x3FFFFFFF].<br>由于BIP34，BIP65，BIP66的限制，仅有0x7FFFFFFB些版本号的值可以使用。这限制最多可以有30个独立的部署。由于最高3比特位的限制，我们最多可以从本提案使用29个bit位，并且支持未来两种不同的升级(010,011).当一个块的版本号的高位不含有001，为了部署，就将所有的bits位都视为0.<br>矿工应该在LOCKED_IN阶段继续设置块版本字段的bit位，尽管这对共识规则没有影响。</p>
+<h2 id="新的共识规则"><a href="#新的共识规则" class="headerlink" title="新的共识规则"></a>新的共识规则</h2><p>当处于ACTIVE 状态时，每个块被强制执行软分叉所包含的新的共识规则。</p>
+<h2 id="状态转变"><a href="#状态转变" class="headerlink" title="状态转变"></a>状态转变</h2><p><img src="https://github.com/bitcoin/bips/blob/master/bip-0009/states.png" alt="状态转换图"><br>每个部署的初始块的状态为：<code>DEFINED</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">State GetStateForBlock(block) &#123;</span><br><span class="line">if (block.height == 0) &#123;</span><br><span class="line">    return DEFINED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在每个目标周期所有的块有相同的状态。这意味着如果 block1/2016 == block2/2016,则他们在每个部署中一定有相同的状态。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if ((block.height % 2016) != 0) &#123;</span><br><span class="line">    return GetStateForBlock(block.parent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>否则，接下来的状态依赖于先前的状态。<br> <code>switch (GetStateForBlock(GetAncestorAtHeight(block, block.height - 2016))) {</code><br> 保持这个初始状态，直到区块的MTP时间 &gt;= timeout/starttime. <code>GetMedianTimePast</code>获取一个块的MTP时间(包含这个块和它的10个祖先)。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">case DEFINED:</span><br><span class="line">    if (GetMedianTimePast(block.parent) &gt;= timeout) &#123;</span><br><span class="line">        return FAILED;</span><br><span class="line">    &#125;</span><br><span class="line">    if (GetMedianTimePast(block.parent) &gt;= starttime) &#123;</span><br><span class="line">        return STARTED;</span><br><span class="line">    &#125;</span><br><span class="line">    return DEFINED;</span><br></pre></td></tr></table></figure></p>
+<p>STARTED 状态周期之后，如果块的MTP时间&gt;= timeout,则返回FAILED状态。如果块的时间没有通过timeout，则统计设置bit的区块个数，如果在一个目标周期内，设置在版本字段的部署达到阈值，将状态转换为LOCKED_IN.主链中阈值&gt;= 1916(95% of 2016),测试链中阈值&gt;=1512(75% of 2016).注意：优先转换到FAILED状态，否则可能接下来会有歧义。同一个bit位上，可能有两个不重叠的部署，其中一个转换到了锁定状态而另一个同时转换到了STARTED状态，这意味着该bit位的设置同时有两种需求。<br>注意：该区块的状态只依赖于它的祖先，而不依赖自身。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">case STARTED: </span><br><span class="line">    if (GetMedianTimePast(block.parent) &gt;= timeout) &#123;</span><br><span class="line">        return FAILED;</span><br><span class="line">    &#125;</span><br><span class="line">    int count = 0;</span><br><span class="line">    walk = block;</span><br><span class="line">    for (i = 0; i &lt; 2016; i++) &#123;</span><br><span class="line">        walk = walk.parent;</span><br><span class="line">        if (walk.nVersion &amp; 0xE0000000 == 0x20000000 &amp;&amp; (walk.nVersion &gt;&gt; bit) &amp; 1 == 1) &#123;</span><br><span class="line">            count++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (count &gt;= threshold) &#123;</span><br><span class="line">        return LOCKED_IN;</span><br><span class="line">    &#125;</span><br><span class="line">    return STARTED;</span><br></pre></td></tr></table></figure></p>
+<p>一个<code>LOCKED_IN</code>周期之后，自动转换到<code>ACTIVE</code>状态。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">case LOCKED_IN:</span><br><span class="line">    return ACTIVE;</span><br></pre></td></tr></table></figure></p>
+<p><code>ACTIVE</code>和<code>FAILED</code>都是终止状态，一旦达到后，该部署将持续保持这种状态。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">case ACTIVE:</span><br><span class="line">    return ACTIVE;</span><br><span class="line">case FAILED:</span><br><span class="line">    return FAILED;</span><br></pre></td></tr></table></figure></p>
+<p>实现：应该与所有的分叉保持相同的状态，当重组发生时，可能需要重新计算块的状态。<br>对于给定的块和部署的组合，完全由它的祖先在当前目标周期之前确定。可以实现一种以它的父区块为索引，高效，安全的缓存每2016个块的状态。</p>
+<h3 id="警告机制"><a href="#警告机制" class="headerlink" title="警告机制"></a>警告机制</h3><p>为了支持升级警告，额外的<code>unknown upgrade</code>被跟踪。使用隐式的掩码即：<code>mask = (block.nVersion &amp; ~expectedVersion ) != 0</code>,当一个不认识的bit位在版本字段中被设置，mask将为非0. 当未知的升级被检测到处于LOCKED_IN状态时，软件应该大声的警告即将到来的软分叉。在未知版本号处于ACTIVE状态时，应该更大声的警告。</p>
+<h3 id="getblocktemplate-的变化"><a href="#getblocktemplate-的变化" class="headerlink" title="getblocktemplate 的变化"></a>getblocktemplate 的变化</h3><p>块模板请求对象被拓展包含一个新的条目<br>template request |<br>—|</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>rules</td>
+<td>No</td>
+<td>Array of Strings</td>
+<td>list of supported softfork deployments, by name </td>
+</tr>
+</tbody>
+</table>
+<p>模板对象也被如下拓展<br>template |<br>—|</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rules</td>
+<td>Yes</td>
+<td>Array of Strings</td>
+<td>list of softfork deployments, by name, that are active state</td>
+<td></td>
+</tr>
+<tr>
+<td>vbavailable</td>
+<td>Yes</td>
+<td>Object</td>
+<td>set of pending, supported softfork deployments; each uses the softfork name as the key, and the softfork bit as its value</td>
+</tr>
+<tr>
+<td>vbrequired</td>
+<td>No</td>
+<td>Number</td>
+<td>bit mask of softfork deployment version bits the server requires enabled in submissions</td>
+</tr>
+</tbody>
+</table>
+<p>模板的<code>version</code>字段被保留，通常用来暗示服务引用的部署。如果versionbits被使用，<code>version</code>必须在[0x20000000…0x3FFFFFFF]之间。矿工可以不使用指定的key，而在block的<code>version</code>字段中清空或设置bit位，只要矿工在模板的<code>vbavailable</code>列出并且(当设计清空时)不包含在<code>vbrequired</code>.<br>软分叉部署的名字列在<code>rules</code>字段，或在<code>vbavailable</code>中以<code>!</code>为前缀添加在keys中。不包含前缀时，GBT客户端可能认为该规则不会影响模板的使用。经典的例子是：以前有效的交易不会再认为有效，例如：BIPs 16，65，66，68，112和113.如果一个客户端不理解没有前缀的规则，它可能会使用未经修改的模板进行挖矿。另一方面，当使用前缀时，它标识块结构或创币交易有微妙的变化；例子是：BIP 34(它修改了coinbase的结构)和141(它修改了交易hash，并在创币交易中添加了一个承诺结构)。如果一个客户端不理解带<code>!</code>前缀的规则，一定不能用它来处理模板，并且一定不要尝试用它来进行挖矿，即使不对模板进行修改。</p>
+<h2 id="对未来变化的支持"><a href="#对未来变化的支持" class="headerlink" title="对未来变化的支持"></a>对未来变化的支持</h2><p>上述描述机制的非常通用，并且对于未来的软分叉也是可能的。下面有一些想法可以考虑。<br><strong>Modified thresholds(修改阈值)</strong>：1916这个阈值(基于BIP34 95%)不必永久保持，但是修改它时，对于警告系统的影响应该考虑。尤其是，不兼容的锁定阈值对于警告系统会有长期的影响，因为警告系统不能再依赖一个可永久检测的状态。<br><strong>Conflicting soft forks(软分叉冲突)</strong>：在这方面，由于两个相互互斥的软分叉可能被提议。传统的做法是不制造一个同时实施两个软分叉的软件，但是这是一个保证至少有一方未实现的赌注。更好的方法将”软分叉X不能被锁定”编码，作为冲突软分叉的共识规则，允许软件同时支持双方，但是由于上述的编码，所以从来不会触发冲突。<br><strong>Multi-stage soft forks(多级软分叉)</strong>：现在的软分叉通常被视为Boolean值：在块中从未激活到激活状态。或许在一些方面需要多级的软分叉，并且逐个启用额外的验证规则。通过解释一个bits集合作为一个整数，而不是仅仅作为一个独立的bit位，上述的机制可以适用这点。采用该机制将与警告机制兼容，因为对于递增的整数<code>(nVersion &amp; ~nExpectedVersion)</code>将一直为非0</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>超时失败机制允许重用一个bit位，即使软分叉从未被激活，很明显，新bit位引用了一个新的BIP。考虑到合理的开发和延迟部署情况，它被故意设计的非常粗糙。没有足够的失败建议导致提案设计有点不足。<br>软分叉结束的休闲期允许有一些客户端的BUG检查，并且给时间进行警告和软件升级。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>原文链接：<a href="https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki</a></p>
+<hr>
+<p>本文由 <code>Copernicus团队 姚永芯</code>翻译整理，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
