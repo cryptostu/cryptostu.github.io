@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Bitcoin源代码分析:VersionBits模块解析 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="BIP9允许部署多个向后兼容的软分叉，通过旷工在一个目标周期内投票，如果达到激活阈值nRuleChangeActivationThreshold,就能成功的启用该升级。在实现方面，通过重定义区块头信息中的version字段，将version字段解释为bit vector，每一个bit可以用来跟踪一个独立的部署，在满足激活条件之后，该部署将会生效，同时该bit可以被其他部署使用。目前通过BIP9成功">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bitcoin源代码分析:VersionBits模块解析">
+<meta property="og:url" content="http://yoursite.com/2018/02/21/Bitcoin源代码分析-VersionBits模块解析/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="BIP9允许部署多个向后兼容的软分叉，通过旷工在一个目标周期内投票，如果达到激活阈值nRuleChangeActivationThreshold,就能成功的启用该升级。在实现方面，通过重定义区块头信息中的version字段，将version字段解释为bit vector，每一个bit可以用来跟踪一个独立的部署，在满足激活条件之后，该部署将会生效，同时该bit可以被其他部署使用。目前通过BIP9成功">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4694144-9b8a21d3b8299e0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-02-21T04:25:56.259Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bitcoin源代码分析:VersionBits模块解析">
+<meta name="twitter:description" content="BIP9允许部署多个向后兼容的软分叉，通过旷工在一个目标周期内投票，如果达到激活阈值nRuleChangeActivationThreshold,就能成功的启用该升级。在实现方面，通过重定义区块头信息中的version字段，将version字段解释为bit vector，每一个bit可以用来跟踪一个独立的部署，在满足激活条件之后，该部署将会生效，同时该bit可以被其他部署使用。目前通过BIP9成功">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4694144-9b8a21d3b8299e0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Bitcoin源代码分析:VersionBits模块解析</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-02-21</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>BIP9允许部署多个向后兼容的软分叉，通过旷工在一个目标周期内投票，如果达到激活阈值<code>nRuleChangeActivationThreshold</code>,就能成功的启用该升级。在实现方面，通过重定义区块头信息中的version字段，将version字段解释为bit vector，每一个bit可以用来跟踪一个独立的部署，在满足激活条件之后，该部署将会生效，同时该bit可以被其他部署使用。目前通过BIP9成功进行软分叉有<code>BIP68, 112, 113</code>, 于2016-07-04 ，高度：419328成功激活.</p>
+<h2 id="BIP9部署设置"><a href="#BIP9部署设置" class="headerlink" title="BIP9部署设置"></a>BIP9部署设置</h2><p>每一个进行部署的BIP9，都必须设置bit位、开始时间、过期时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">struct BIP9Deployment &#123;</span><br><span class="line">    int bit;					</span><br><span class="line">    int64_t nStartTime;		</span><br><span class="line">    int64_t nTimeout;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// namespace:Consensus</span><br><span class="line">struct Params &#123;</span><br><span class="line">    ...</span><br><span class="line">    uint32_t nRuleChangeActivationThreshold;        </span><br><span class="line">    uint32_t nMinerConfirmationWindow;</span><br><span class="line">    BIP9Deployment vDeployments[MAX_VERSION_BITS_DEPLOYMENTS]; // BIP9</span><br><span class="line">    uint256 powLimit;</span><br><span class="line">    bool fPowAllowMinDifficultyBlocks;</span><br><span class="line">    bool fPowNoRetargeting;</span><br><span class="line">    int64_t nPowTargetSpacing;</span><br><span class="line">    int64_t nPowTargetTimespan;</span><br><span class="line">    ...</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+<p>bit通过<code>1 &lt;&lt; bit</code>方式转换成一个uint32_t的整数，在检验一个BIP9部署是否成功激活的时候使用了Condition(…)函数，来验证一个区块是否赞成该部署。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bool Condition(const CBlockIndex *pindex, const Consensus::Params &amp;params) const &#123;</span><br><span class="line">    return ((</span><br><span class="line">            (pindex-&gt;nVersion &amp; VERSIONBITS_TOP_MASK) ==VERSIONBITS_TOP_BITS) &amp;&amp; </span><br><span class="line">            (pindex-&gt;nVersion &amp; Mask(params)) != 0);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">uint32_t Mask(const Consensus::Params &amp;params) const &#123;</span><br><span class="line">    return ((uint32_t)1) &lt;&lt; params.vDeployments[id].bit;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>逻辑分析</p>
+<ul>
+<li>首先验证该version是有效的version设置(001)</li>
+<li>验证块的版本号中是否设置了指定的bit位<ul>
+<li>Mask()函数通过将1左移BIP9部署中设定的bit，生成一个该区块代表的version</li>
+</ul>
+</li>
+</ul>
+<p>开始时间和过期时间主要为了在检查BIP9部署状态时，提供状态判断的依据和临界值。比如如果区块的中位数时间超过了过期时间<code>nTimeTimeout</code>，则判断该BIP9部署已经失败(后面会详细拆解)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if (pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeTimeout) &#123;</span><br><span class="line">    stateNext = THRESHOLD_FAILED;</span><br><span class="line">&#125; else if (pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeStart) &#123;</span><br><span class="line">    stateNext = THRESHOLD_STARTED;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeTimeout) &#123;</span><br><span class="line">    stateNext = THRESHOLD_FAILED;</span><br><span class="line">    break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="部署状态转换"><a href="#部署状态转换" class="headerlink" title="部署状态转换"></a>部署状态转换</h2><p>BIP9部署中定义了所有软分叉升级的初始状态均为<code>THRESHOLD_DEFINED</code>,并定义创始区块状态为<code>THRESHOLD_DEFINED</code>, 另外如果在程序中遇到blockIndex为<code>nullptr</code>时，均返回<code>THRESHOLD_DEFINED</code>状态。</p>
+<p>具体转换过程如下：<code>THRESHOLD_DEFINED</code>为软分叉的初始状态，如果过去中位数时间(MTP)大于nStartTIme，则状态转换为<code>THRESHOLD_STARTED</code>，如果MTP大于等于nTimeout，则状态转换成<code>THRESHOLD_FAILED</code>；如果在一个目标周期(2016个区块)内赞成升级的区块数量占95%以上(大约1915个区块)，则状态转换成<code>THRESHOLD_LOCKED_IN</code>，否则转换成<code>THRESHOLD_FAILED</code>；在<code>THRESHOLD_LOCKED_IN</code>之后的下一个目标周期，状态转换成<code>THRESHOLD_ACTIVE</code>，同时该部署将保持该状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">enum ThresholdState &#123;</span><br><span class="line">    THRESHOLD_DEFINED,			</span><br><span class="line">    THRESHOLD_STARTED,</span><br><span class="line">    THRESHOLD_LOCKED_IN,</span><br><span class="line">    THRESHOLD_ACTIVE,</span><br><span class="line">    THRESHOLD_FAILED,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/4694144-9b8a21d3b8299e0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="states"></p>
+<h2 id="业务逻辑"><a href="#业务逻辑" class="headerlink" title="业务逻辑"></a>业务逻辑</h2><p>基类<code>AbstractThresholdConditionChecker</code>定义了通过共识规则检查BIP9部署的状态。有如下方法，其中最后两个方法在基类中实现，子类继承了该方法的实现:</p>
+<ul>
+<li>Condition(…)检测一个区块是否赞成一个软分叉升级：首先验证该区块version是否有效的version格式, 然后检测该version是否设置了相应个bit位</li>
+<li>BeginTime(…)返回共识规则中的开始投票时间(采用MTP验证 pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeStart)</li>
+<li>EndTime(…)返回共识规则中的设置的过期时间</li>
+<li>Period(…)返回共识规则中的一个目标周期(当前主链的目标周期为2016个区块)</li>
+<li>Threshold(…)返回nRuleChangeActivationThreshold，表示满足软分叉升级的最低要求</li>
+<li>GetStateFor(…)在提供共识规则、开始检索的区块索引、以及之前缓存的状态数据判断当前部署的状态(后面会详细分析其逻辑)</li>
+<li>GetStateSinceHeightFor(…)函数的作用是查找从哪个区块高度开始，该部署的状态就已经和当前一致</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class AbstractThresholdConditionChecker &#123;</span><br><span class="line">protected:</span><br><span class="line">    virtual bool Condition(const CBlockIndex *pindex, const Consensus::Params &amp;params) const = 0;</span><br><span class="line">    virtual int64_t BeginTime(const Consensus::Params &amp;params) const = 0;</span><br><span class="line">    virtual int64_t EndTime(const Consensus::Params &amp;params) const = 0;</span><br><span class="line">    virtual int Period(const Consensus::Params &amp;params) const = 0;</span><br><span class="line">    virtual int Threshold(const Consensus::Params &amp;params) const = 0;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line">    ThresholdState GetStateFor(const CBlockIndex *pindexPrev, const Consensus::Params &amp;params, ThresholdConditionCache &amp;cache) const;</span><br><span class="line">    int GetStateSinceHeightFor(const CBlockIndex *pindexPrev, const Consensus::Params &amp;params, ThresholdConditionCache &amp;cache) const;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>类<code>VersionBitsConditionChecker</code>继承了<code>AbstractThresholdConditionChecker</code>。实现了:</p>
+<ul>
+<li>BeginTime(const Consensus::Params &amp;params)</li>
+<li>EndTime(const Consensus::Params &amp;params)</li>
+<li>Period(const Consensus::Params &amp;params)</li>
+<li>Threshold(const Consensus::Params &amp;params)</li>
+<li>Condition(const CBlockIndex *pindex, const Consensus::Params &amp;params)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class VersionBitsConditionChecker : public AbstractThresholdConditionChecker &#123;</span><br><span class="line">private:</span><br><span class="line">	// maybe: DEPLOYMENT_TESTDUMMY,DEPLOYMENT_CSV,MAX_VERSION_BITS_DEPLOYMENTS</span><br><span class="line">    const Consensus::DeploymentPos id;</span><br><span class="line"></span><br><span class="line">protected:</span><br><span class="line">    int64_t BeginTime(const Consensus::Params &amp;params) const &#123;</span><br><span class="line">        return params.vDeployments[id].nStartTime;</span><br><span class="line">    &#125;</span><br><span class="line">    int64_t EndTime(const Consensus::Params &amp;params) const &#123;</span><br><span class="line">        return params.vDeployments[id].nTimeout;</span><br><span class="line">    &#125;</span><br><span class="line">    int Period(const Consensus::Params &amp;params) const &#123;</span><br><span class="line">        return params.nMinerConfirmationWindow;</span><br><span class="line">    &#125;</span><br><span class="line">    int Threshold(const Consensus::Params &amp;params) const &#123;</span><br><span class="line">        return params.nRuleChangeActivationThreshold;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    bool Condition(const CBlockIndex *pindex, const Consensus::Params &amp;params) const &#123;</span><br><span class="line">        return ((</span><br><span class="line">                (pindex-&gt;nVersion &amp; VERSIONBITS_TOP_MASK) == VERSIONBITS_TOP_BITS) &amp;&amp; (pindex-&gt;nVersion &amp; Mask(params)) != 0);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另个一重要的类<code>VersionBitsCache</code>,包括一个方法和一个数组。该数组作为内存缓存使用，该数组的成员是一个map，当检查一个BIP9部署的状态时，如果在检查过程中判断出部署状态，该map会以区块索引为键值，以状态信息(int)为值,缓存起来，在下次检查时可以在该区块位置直接得到其状态信息，对程序起到了优化的作用，避免重复的检索。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct VersionBitsCache &#123;</span><br><span class="line">    ThresholdConditionCache caches[Consensus::MAX_VERSION_BITS_DEPLOYMENTS];</span><br><span class="line"></span><br><span class="line">    void Clear();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef std::map&lt;const CBlockIndex *, ThresholdState&gt; ThresholdConditionCache;</span><br></pre></td></tr></table></figure>
+<p>另外<code>WarningBitsConditionChecker</code>类也继承了<code>AbstractThresholdConditionChecker</code>类，实现了对未知升级的追踪与警告。一旦nVersion中有未预料到的位被设置成1，mask将会生成非零的值。当未知升级被检测到处<code>THRESHOLD_LOCKED_IN</code>状态，软件应该警告用户即将到来未知的软分叉。在下一个目标周期，处于<code>THRESHOLD_ACTIVE</code>状态是，更应该强调警告用户。</p>
+<blockquote>
+<p>需要说明的是：未知升级只有处于LOCKED_IN或ACTIVE的条件下才会发出警告</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">WarningBitsConditionChecker checker(bit);</span><br><span class="line">ThresholdState state = checker.GetStateFor(pindex, chainParams.GetConsensus(), warningcache[bit]);</span><br><span class="line">if (state == THRESHOLD_ACTIVE || state == THRESHOLD_LOCKED_IN) &#123;</span><br><span class="line">    if (state == THRESHOLD_ACTIVE) &#123;</span><br><span class="line">        std::string strWarning =</span><br><span class="line">            strprintf(_(&quot;Warning: unknown new rules activated (versionbit %i)&quot;), bit);</span><br><span class="line">        SetMiscWarning(strWarning);</span><br><span class="line">        if (!fWarned) &#123;</span><br><span class="line">            AlertNotify(strWarning);</span><br><span class="line">            fWarned = true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        warningMessages.push_back(</span><br><span class="line">            strprintf(&quot;unknown new rules are about to activate (versionbit %i)&quot;, bit));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="代码拆解"><a href="#代码拆解" class="headerlink" title="代码拆解"></a>代码拆解</h2><ol>
+<li><p>GetAncestor(int height)函数在整个模块中的使用率非常高，其作用就是为了返回指定高度的区块索引，作用非常简单但是其代码逻辑不太好理解。可以把整个区块链简单的看成就是一个链表结构，为了获得指定高度的节点信息，一般通过依次移动指针到指定区块即可。在该模块中，使用CBlockIndex类中的pskip字段，配合<code>GetSkipHeight(int height)</code>函数，能够快速定位到指定高度的区块，优化了执行的效率。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">CBlockIndex *CBlockIndex::GetAncestor(int height) &#123;</span><br><span class="line">    if (height &gt; nHeight || height &lt; 0) &#123;</span><br><span class="line">        return nullptr;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CBlockIndex *pindexWalk = this;</span><br><span class="line">    int heightWalk = nHeight;</span><br><span class="line">    while (heightWalk &gt; height) &#123;</span><br><span class="line">        int heightSkip = GetSkipHeight(heightWalk);</span><br><span class="line">        int heightSkipPrev = GetSkipHeight(heightWalk - 1);</span><br><span class="line">        if (pindexWalk-&gt;pskip != nullptr &amp;&amp;</span><br><span class="line">            (heightSkip == height || (heightSkip &gt; height &amp;&amp; !(heightSkipPrev &lt; heightSkip - 2 &amp;&amp; heightSkipPrev &gt;= height)))) &#123;</span><br><span class="line"></span><br><span class="line">            pindexWalk = pindexWalk-&gt;pskip;</span><br><span class="line">            heightWalk = heightSkip;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            assert(pindexWalk-&gt;pprev);</span><br><span class="line">            pindexWalk = pindexWalk-&gt;pprev;</span><br><span class="line">            heightWalk--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return pindexWalk;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static inline int GetSkipHeight(int height) &#123;</span><br><span class="line">    if (height &lt; 2) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return (height &amp; 1) ? InvertLowestOne(InvertLowestOne(height - 1)) + 1 : InvertLowestOne(height);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在整个模块中进行时间比较判断是都使用了GetMedianTimePast(), 其作用就是找出当前区块前的10个区块，排序后，返回第5个元素的nTime</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">enum &#123; nMedianTimeSpan = 11 &#125;;</span><br><span class="line"></span><br><span class="line">int64_t GetMedianTimePast() const &#123;</span><br><span class="line">    int64_t pmedian[nMedianTimeSpan];</span><br><span class="line">    </span><br><span class="line">    int64_t *pbegin = &amp;pmedian[nMedianTimeSpan];</span><br><span class="line">    int64_t *pend = &amp;pmedian[nMedianTimeSpan];</span><br><span class="line"></span><br><span class="line">    const CBlockIndex *pindex = this;</span><br><span class="line"></span><br><span class="line">    for (int i = 0; i &lt; nMedianTimeSpan &amp;&amp; pindex; i++, pindex = pindex-&gt;pprev) &#123;</span><br><span class="line">        *(--pbegin) = pindex-&gt;GetBlockTime();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    std::sort(pbegin, pend);</span><br><span class="line">    </span><br><span class="line">    return pbegin[(pend - pbegin) / 2];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>逻辑如下:
+
+- 创建包含11个元素的数组，包括该区块和之前的10个区块
+- pbegin、pend两个游标(数组游标)指向数组末端
+- 遍历11个区块，pindex游标不断地向前移动
+- 数组游标向前移动，并将pindex获取的时间戳赋值给数组
+- 对数组排序(排序的原因是:区块时间戳是不可靠的字段，其大小与创建区块顺序可能不一致)
+- 11个区块去中间的元素，也就是数组下标为5的元素，因为是奇数个元素，所以不用进行判断下标无效的问题
+</code></pre><ol>
+<li><p>GetStateFor(…)函数在整个模块中至关重要，负责获取BIP9部署的状态信息。首先说明的是在一个目标周期之内，一个BIP9部署的状态是相同的，也就是说部署状态只会在难度目标发生改变之后才会更新。GetStateFor(…)函数获取的是上一个目标周期的最后一个区块的状态，如果该状态可以判断出部署状态则得出结果，并将结果保存在<code>VersionBitsCache</code>结构体中；如果该状态已经存在于缓存中则直接返回结果；最后如果该区块无法得出状态信息，则会依次寻找(pindexPrev.nHeight - nPeriod)高度的状态信息，直到能够得出结果。如果直到nullptr也没有，则返回<code>THRESHOLD_DEFINED</code>。其中比较重要的是，如果一个区块表明该部署状态处于<code>THRESHOLD_STARTED</code>，则会进行更为详细的判断，以证明其状态是否以及失败或者可以进入LOCKED_IN阶段。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">ThresholdState AbstractThresholdConditionChecker::GetStateFor(...)&#123;</span><br><span class="line">	...</span><br><span class="line">	if (pindexPrev != nullptr) &#123;</span><br><span class="line">        pindexPrev = pindexPrev-&gt;GetAncestor(</span><br><span class="line">            pindexPrev-&gt;nHeight - ((pindexPrev-&gt;nHeight + 1) % nPeriod));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    std::vector&lt;const CBlockIndex *&gt; vToCompute;</span><br><span class="line">    </span><br><span class="line">    while (cache.count(pindexPrev) == 0) &#123; </span><br><span class="line">        if (pindexPrev == nullptr) &#123;</span><br><span class="line">            cache[pindexPrev] = THRESHOLD_DEFINED;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">        if (pindexPrev-&gt;GetMedianTimePast() &lt; nTimeStart) &#123;</span><br><span class="line">            cache[pindexPrev] = THRESHOLD_DEFINED;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        vToCompute.push_back(pindexPrev);</span><br><span class="line">        pindexPrev = pindexPrev-&gt;GetAncestor(pindexPrev-&gt;nHeight - nPeriod);      </span><br><span class="line">	&#125;</span><br><span class="line">    assert(cache.count(pindexPrev));</span><br><span class="line">    ThresholdState state = cache[pindexPrev];</span><br><span class="line"></span><br><span class="line">    while (!vToCompute.empty()) &#123;</span><br><span class="line">        ThresholdState stateNext = state;          </span><br><span class="line">        pindexPrev = vToCompute.back();            </span><br><span class="line">        vToCompute.pop_back();                     </span><br><span class="line"></span><br><span class="line">        switch (state) &#123;</span><br><span class="line">            case THRESHOLD_DEFINED: &#123;</span><br><span class="line">                if (pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeTimeout) &#123;</span><br><span class="line">                    stateNext = THRESHOLD_FAILED;</span><br><span class="line">                &#125; else if (pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeStart) &#123;</span><br><span class="line">                    stateNext = THRESHOLD_STARTED;</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            case THRESHOLD_STARTED: &#123;	</span><br><span class="line">                if (pindexPrev-&gt;GetMedianTimePast() &gt;= nTimeTimeout) &#123;</span><br><span class="line">                    stateNext = THRESHOLD_FAILED;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                const CBlockIndex *pindexCount = pindexPrev;</span><br><span class="line">                int count = 0;</span><br><span class="line">                for (int i = 0; i &lt; nPeriod; i++) &#123;</span><br><span class="line">                    if (Condition(pindexCount, params)) &#123; </span><br><span class="line">                        count++;</span><br><span class="line">                    &#125;</span><br><span class="line">                    pindexCount = pindexCount-&gt;pprev;</span><br><span class="line">                &#125;</span><br><span class="line">                if (count &gt;= nThreshold) &#123;      </span><br><span class="line">                		stateNext = THRESHOLD_LOCKED_IN;</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            case THRESHOLD_LOCKED_IN: &#123;</span><br><span class="line">                stateNext = THRESHOLD_ACTIVE;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            case THRESHOLD_FAILED:</span><br><span class="line">            case THRESHOLD_ACTIVE: &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cache[pindexPrev] = state = stateNext;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 举例说明:</p>
+<ul>
+<li><p>从0 -&gt; 2015 -&gt; 4031 -&gt; 6047;</p>
+<ul>
+<li>状态转换：<code>THRESHOLD_DEFINED</code> -&gt; <code>THRESHOLD_STARTED</code> -&gt; <code>THRESHOLD_LOCKED_IN</code> -&gt; <code>THRESHOLD_ACTIVE</code></li>
+</ul>
+</li>
+<li><p>bitcoin 中的版本检测按照 <code>nMinerConfirmationWindow</code> 为一轮进行检测，在本轮之间的所有区块，都与本轮的第一个块状态相同。</p>
+<ul>
+<li>即 2015 -&gt; 4030 之间所有块的状态，都与索引为2015 的块的部署状态相同。</li>
+</ul>
+</li>
+<li>示例：<ul>
+<li>针对某个 bit 位的部署，height( 0 -&gt; 2014 )区块的所有状态都为THRESHOLD_DEFINED； </li>
+<li>当父区块的高度为 2015 时(即当每次获取本轮第二个区块时，才会对本轮的第一个块的状态进行赋值，然后本轮所有块的时间都与本轮第一个块的状态相同)，因为它不在全局缓存中，则进入条件，且它的MTP时间 &gt;= startTime, 将该块的索引加入临时集合中，并将指针向前推至上一轮的初始块(此时这个块在集合中),进入接下来的条件执行。<ul>
+<li>遍历临时集合，因为上一轮的撞态为<code>THRESHOLD_DEFINED</code>，且本轮初始块的时间 &gt;= startTime,将本轮的状态转换为<code>THRESHOLD_STARTED</code>；</li>
+</ul>
+</li>
+<li>当父区块的高度为 4031(即当前的块为4032时)，它不在全局缓存中，进入条件，且它的MTP时间 &gt;= startTime,将该块的索引加入临时集合中，并将指针向前推至上一轮的初始块(此时这个块在集合中),进入接下来的条件执行。<ul>
+<li>遍历临时集合，因为上一轮的状态为<code>THRESHOLD_STARTED</code>，且本轮初始块的时间 &lt; timeout, 将统计上一轮部署该bit位的区块个数(即从 2016 -&gt;4031),假设部署的个数超过阈值(95%),将本轮的状态转换为<code>LOCKED_IN</code>；</li>
+</ul>
+</li>
+<li>当父区块的高度为 6047(即当前的块为6048时)，它不在全局状态中，进入条件，且它的MTP时间 &gt;= startTime,将该块的索引加入临时集合中，并将指针向前推至上一轮的初始块(此时这个块在集合中),进入接下来的条件执行。<ul>
+<li>遍历临时集合，因为上一轮的状态为<code>THRESHOLD_LOCKED_IN</code>，将本轮的状态自动切换为<code>THRESHOLD_ACTIVE</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>GetStateSinceHeightFor()函数获取本轮状态开始时的区块所在高度； 开始这个状态轮次的第二个区块的高度(因为每轮块的状态更新，都是当计算每轮第二个块时，才会去计算，然后把计算的结果缓存在全局缓存中；因为所有块的状态都是根据它的父区块确定的);</p>
+<p> ```<br> int AbstractThresholdConditionChecker::GetStateSinceHeightFor(</p>
+<pre><code>const CBlockIndex *pindexPrev, const Consensus::Params &amp;params,
+ThresholdConditionCache &amp;cache) const {
+const ThresholdState initialState = GetStateFor(pindexPrev, params, cache);
+
+// BIP 9 about state DEFINED: &quot;The genesis block is by definition in this
+if (initialState == THRESHOLD_DEFINED) {
+    return 0;
+}
+
+const int nPeriod = Period(params);
+</code></pre></li>
+</ol>
+<pre><code>    pindexPrev = pindexPrev-&gt;GetAncestor(pindexPrev-&gt;nHeight - ((pindexPrev-&gt;nHeight + 1) % nPeriod));     
+    const CBlockIndex *previousPeriodParent = pindexPrev-&gt;GetAncestor(pindexPrev-&gt;nHeight - nPeriod);    
+
+    while (previousPeriodParent != nullptr &amp;&amp;
+           GetStateFor(previousPeriodParent, params, cache) == initialState) {
+        pindexPrev = previousPeriodParent;
+        previousPeriodParent =
+            pindexPrev-&gt;GetAncestor(pindexPrev-&gt;nHeight - nPeriod);
+    }
+
+    // Adjust the result because right now we point to the parent block.
+    return pindexPrev-&gt;nHeight + 1;
+}
+
+```    
+
+逻辑如下:
+
+- 获取本轮的块的状态, 如果为`THRESHOLD_DEFINED`直接返回0
+- 获取本目标周期的初始块和上一目标周期的初始块
+- 当上一轮的初始块不为NULL，并且状态与本轮状态相同时，进入循环逻辑
+    * 如果其状态与当前状态相同则向上一个目标周期寻找
+    * 当状态某个轮次的状态与本轮的状态不同时，退出上述循环，然后返回这种状态开始时的高度
+</code></pre><hr>
+<p>本文由<code>Copernicus团队</code> 戚帅、姚永芯写作，转载无需授权</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
