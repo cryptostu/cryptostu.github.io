@@ -6,18 +6,22 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   
-  <title>[译]BUIP039通过extension point的升级方式 | Cryptocurrency Tech</title>
+  <title>BIP09简述 | Cryptocurrency Tech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概要迄今为止，仅有硬分叉和软分叉两种方式来升级比特币网络。两种方式各有缺点，软分叉通过矿工激活，对于普通的节点操作者，没有途径来发出他们的声音，也没有机制来反对该分叉。另一方面，硬分叉需要大家一起升级，但是在激活时会有风险。 本提案的目的是：使用已知的拓展点来升级比特币网络，在其中引入新功能。因为当前节点们知道这些拓展点，所以他们可以注意到这些功能的激活，甚至即使他们不知道这些功能，也会采取与之相">
+  <meta name="description" content="首先明白：软分叉升级主要是在原有的主链上增加共识规则。 软分叉的目的是为了让老版本的客户端能够兼容。我们人为设定一个开始时间和结束时间，表示在这个范围内，我们进行软分叉升级，我们规定每到2016的整数倍作为一个升级的周期，那么在这个周期内，如果有80%的算力认可我的提议，那么就代表升级成功，将该提议添加为共识规则的一部分，如果不够80%，就进入下一个周期，也就是，在结束时间到达之前，我有可能已经升">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[译]BUIP039通过extension point的升级方式">
-<meta property="og:url" content="http://yoursite.com/2018/01/28/译-BUIP039通过extension-point的升级方式/index.html">
+<meta property="og:title" content="BIP09简述">
+<meta property="og:url" content="http://yoursite.com/2018/02/23/BIP09简述/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
-<meta property="og:description" content="概要迄今为止，仅有硬分叉和软分叉两种方式来升级比特币网络。两种方式各有缺点，软分叉通过矿工激活，对于普通的节点操作者，没有途径来发出他们的声音，也没有机制来反对该分叉。另一方面，硬分叉需要大家一起升级，但是在激活时会有风险。 本提案的目的是：使用已知的拓展点来升级比特币网络，在其中引入新功能。因为当前节点们知道这些拓展点，所以他们可以注意到这些功能的激活，甚至即使他们不知道这些功能，也会采取与之相">
-<meta property="og:updated_time" content="2018-01-28T12:29:07.465Z">
+<meta property="og:description" content="首先明白：软分叉升级主要是在原有的主链上增加共识规则。 软分叉的目的是为了让老版本的客户端能够兼容。我们人为设定一个开始时间和结束时间，表示在这个范围内，我们进行软分叉升级，我们规定每到2016的整数倍作为一个升级的周期，那么在这个周期内，如果有80%的算力认可我的提议，那么就代表升级成功，将该提议添加为共识规则的一部分，如果不够80%，就进入下一个周期，也就是，在结束时间到达之前，我有可能已经升">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-da65f0c21dd5b565.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-7756286557946d9c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-d79a31675322f480.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-02-23T01:25:21.306Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[译]BUIP039通过extension point的升级方式">
-<meta name="twitter:description" content="概要迄今为止，仅有硬分叉和软分叉两种方式来升级比特币网络。两种方式各有缺点，软分叉通过矿工激活，对于普通的节点操作者，没有途径来发出他们的声音，也没有机制来反对该分叉。另一方面，硬分叉需要大家一起升级，但是在激活时会有风险。 本提案的目的是：使用已知的拓展点来升级比特币网络，在其中引入新功能。因为当前节点们知道这些拓展点，所以他们可以注意到这些功能的激活，甚至即使他们不知道这些功能，也会采取与之相">
+<meta name="twitter:title" content="BIP09简述">
+<meta name="twitter:description" content="首先明白：软分叉升级主要是在原有的主链上增加共识规则。 软分叉的目的是为了让老版本的客户端能够兼容。我们人为设定一个开始时间和结束时间，表示在这个范围内，我们进行软分叉升级，我们规定每到2016的整数倍作为一个升级的周期，那么在这个周期内，如果有80%的算力认可我的提议，那么就代表升级成功，将该提议添加为共识规则的一部分，如果不够80%，就进入下一个周期，也就是，在结束时间到达之前，我有可能已经升">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/6967649-da65f0c21dd5b565.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
   
     <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
   
@@ -135,13 +139,13 @@
     <div class="container post-box">
         <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
             <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
-                <strong>[译]BUIP039通过extension point的升级方式</strong>
+                <strong>BIP09简述</strong>
             </h1>
             
             <div class="is-flex align-center">
                 <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
                 <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
-                <span class="post-date sub-title">at: 2018-01-28</span>
+                <span class="post-date sub-title">at: 2018-02-23</span>
             </div>
             
                 <div>
@@ -150,17 +154,19 @@
             
         </div>
         <div class="content" style="overflow: auto">
-            <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>迄今为止，仅有硬分叉和软分叉两种方式来升级比特币网络。两种方式各有缺点，软分叉通过矿工激活，对于普通的节点操作者，没有途径来发出他们的声音，也没有机制来反对该分叉。另一方面，硬分叉需要大家一起升级，但是在激活时会有风险。</p>
-<p>本提案的目的是：使用已知的拓展点来升级比特币网络，在其中引入新功能。因为当前节点们知道这些拓展点，所以他们可以注意到这些功能的激活，甚至即使他们不知道这些功能，也会采取与之相应的行动。</p>
-<p>本提案定义了<code>OP_NOP1, OP_NOP4, OP_NOP5, OP_NOP6, OP_NOP7, OP_NOP8, OP_NOP0 and OP_NOP10</code>操作码来作为拓展点，未来的BUIP应该指定它们在适当的时机添加的拓展点。</p>
-<p>BUIP激活后，软分叉必须考虑51%攻击和相应的处理，添加新的拓展点应使用现有的拓展点，或通过一个硬分叉。</p>
-<h2 id="拓展激活，信令和锁定"><a href="#拓展激活，信令和锁定" class="headerlink" title="拓展激活，信令和锁定"></a>拓展激活，信令和锁定</h2><p>为了使用一个新的拓展点，矿工可以使用BIP的信号集发信号，来通知他们的意图。当该拓展点激活时，节点可以使用拓展点来接受区块，或者使用他们的AD参数来等待，看该区块是否被网络上的大部分节点所接受，然后再决定是否接受该区块。如果节点不知道这些新功能，或者不希望激活它，如果有多数节点使用新的拓展点来拒绝该区块，该区块将成为孤块。</p>
-<p>该处理进程会被每个拓展点来重复。</p>
-<p>节点用户可以像他们在<code>MG/EB/AD</code>中所做的，以<strong>/</strong>分隔符他们的用户代理数据中，来信号通知它们愿意激活的拓展。对于OP_NOP操作码，节点可以使用OP_NOP前缀来发送信号，后面跟着一个星号分隔的数据列表，来说明他们想激活哪个OP_NOP操作码。例如：OP_NOP1,5,8 表明该节点希望激活OP_NOP1，OP_NOP5，OP_NOP8操作码。其它OP_NOP操作码的使用将被拒绝，直到AD区块被构建在使用该操作码的第一个块的顶部。</p>
-<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>该BUIP引入了一种升级机制来安全的关闭硬分叉，同时大大减少所涉及的风险。在过去几年，大多数对于共识代码的升级都符合该BUIP的描述，除了P2SH和SegWit。这个处理过程相对成功，并且应该成为未来升级的一种模式。增加了每个节点表达自己意图的能力，极大地保证了每个参与者的利益一致。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>原文链接: <a href="https://github.com/BitcoinUnlimited/BUIP/blob/master/039.mediawiki" target="_blank" rel="noopener">Upgrade via extension point</a></p>
+            <p>首先明白：软分叉升级主要是在原有的主链上增加共识规则。<br><img src="http://upload-images.jianshu.io/upload_images/6967649-da65f0c21dd5b565.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="versionbits"></p>
+<p>软分叉的目的是为了让老版本的客户端能够兼容。我们人为设定一个开始时间和结束时间，表示在这个范围内，我们进行软分叉升级，我们规定每到2016的整数倍作为一个升级的周期，那么在这个周期内，如果有80%的算力认可我的提议，那么就代表升级成功，将该提议添加为共识规则的一部分，如果不够80%，就进入下一个周期，也就是，在结束时间到达之前，我有可能已经升级成功，也有可能升级不成功。在升级过程中，没有成功的block，我按照原先的规则保留，但是升级成功之后，假设我又来来之前的一个block，我会进行check，然后将其抛弃掉。</p>
+<p>在主链中，我每要加入进去一个块，我就会进行一次check，看其是否符合当前的共识规则。但是如果在周期内的话，会有cache所以，咱们只需要知道最后一个块的状态信息，剩余在这个周期内的所有块都保存和它一样的状态信息。</p>
+<p>这里需要注意一个问题，我比较的时间并不是结束的时间，而是中位数时间（结束时间所在的块往前数10个块，加上本身是11个块），因为每一个块的时间是矿工随意填写的一个值，所以我拿到这11个块之后，进行一次排序，取第6个块的时间来作为我真正需要去比较的时间，众所周知，6个块的时候，我这个链就处于一个稳定的状态，所以，这种方式能够有效的降低随意性。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/6967649-7756286557946d9c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="bits"></p>
+<ul>
+<li>bits：标识位，代表我需要增加哪些共识规则</li>
+<li>startTime：开始时间</li>
+<li>endTime：结束时间</li>
+</ul>
+<p>version是一个32字节的bit，前三位是固定的：001，第5为是0或者1，1代表赞成，0代表不赞成。<br><img src="http://upload-images.jianshu.io/upload_images/6967649-d79a31675322f480.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="软分叉升级"></p>
 <hr>
-<p>本文由 <code>Copernicus团队 姚永芯</code>翻译，转载无需授权。</p>
+<p>本文由<code>copernicus 团队 冉小龙</code> 编写，转载无需授权！</p>
 
         </div>
         <div class="post-reply">
