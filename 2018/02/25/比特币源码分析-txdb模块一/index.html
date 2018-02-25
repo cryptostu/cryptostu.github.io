@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析:txdb模块(一) | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本小节主要介绍 txdb 以及其所引用到的代码中一些常量所表示的含义在 txdb.cpp中，我们能够看到其定义了很多 char 类型的常量: 12345678910static const char DB_COIN = &apos;C&apos;;static const char DB_COINS = &apos;c&apos;;static const char DB_BLOCK_FILES = &apos;f&apos;;static const c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析:txdb模块(一)">
+<meta property="og:url" content="http://yoursite.com/2018/02/25/比特币源码分析-txdb模块一/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="本小节主要介绍 txdb 以及其所引用到的代码中一些常量所表示的含义在 txdb.cpp中，我们能够看到其定义了很多 char 类型的常量: 12345678910static const char DB_COIN = &apos;C&apos;;static const char DB_COINS = &apos;c&apos;;static const char DB_BLOCK_FILES = &apos;f&apos;;static const c">
+<meta property="og:updated_time" content="2018-02-25T03:34:20.983Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析:txdb模块(一)">
+<meta name="twitter:description" content="本小节主要介绍 txdb 以及其所引用到的代码中一些常量所表示的含义在 txdb.cpp中，我们能够看到其定义了很多 char 类型的常量: 12345678910static const char DB_COIN = &apos;C&apos;;static const char DB_COINS = &apos;c&apos;;static const char DB_BLOCK_FILES = &apos;f&apos;;static const c">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析:txdb模块(一)</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-02-25</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p><em>本小节主要介绍 txdb 以及其所引用到的代码中一些常量所表示的含义</em><br>在 <code>txdb.cpp</code>中，我们能够看到其定义了很多 char 类型的常量:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_COIN = <span class="string">'C'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_COINS = <span class="string">'c'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_BLOCK_FILES = <span class="string">'f'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_TXINDEX = <span class="string">'t'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_BLOCK_INDEX = <span class="string">'b'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_BEST_BLOCK = <span class="string">'B'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_FLAG = <span class="string">'F'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_REINDEX_FLAG = <span class="string">'R'</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> DB_LAST_BLOCK = <span class="string">'l'</span>;</span><br></pre></td></tr></table></figure>
+<p>它们所代表的具体意思如下所示：</p>
+<h2 id="Block-模块（Key-value-pairs）"><a href="#Block-模块（Key-value-pairs）" class="headerlink" title="Block 模块（Key-value pairs）"></a>Block 模块（Key-value pairs）</h2><p>在LevelDB中，使用的键/值对解释如下：</p>
+<ol>
+<li>‘b’ + 32 字节的 block hash -&gt; 记录块索引，每个记录存储:<ul>
+<li>块头（block header）</li>
+<li>高度（height）</li>
+<li>交易的数量</li>
+<li>这个块在多大程度上被验证</li>
+<li>块数据被存储在哪个文件中</li>
+<li>undo data 被存储在哪个文件中</li>
+</ul>
+</li>
+<li>‘f’ + 4 字节的文件编号 -&gt; 记录文件信息。每个记录存储：<ul>
+<li>存储在具有该编号的块文件中的块的数量</li>
+<li>具有该编号的块文件的大小（$ DATADIR / blocks / blkNNNNN.dat）</li>
+<li>具有该编号的撤销文件的大小（$ DATADIR / blocks / revNNNNN.dat）</li>
+<li>使用该编号存储在块文件中的块的最低和最高高度</li>
+<li>使用该编号存储在块文件中的块的最小和最大时间戳</li>
+</ul>
+</li>
+<li>‘l’ - &gt; 4个字节的文件号：使用的最后一个块文件号。</li>
+<li>‘R’ - &gt; 1字节布尔值（如果为“1”）：是否处于重新索引过程中。</li>
+<li>‘F’+ 1个字节的标志名长度+标志名字符串 - &gt; 1个字节布尔型（’1’为真，’0’为假）：可以打开或关闭的各种标志。 目前定义的标志是  ‘txindex’：是否启用事务索引。</li>
+<li>‘t’+ 32字节的交易 hash - &gt;记录交易索引。 这些是可选的，只有当’txindex’被启用时才存在。 每个记录存储：<ul>
+<li>交易存储在哪个块文件号码中<ul>
+<li>哪个文件中的交易所属的块被抵消存储在</li>
+<li>从该块的开始到该交易本身被存储的位置的偏移量</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="utxo-模块（Key-value-pairs）"><a href="#utxo-模块（Key-value-pairs）" class="headerlink" title="utxo 模块（Key-value pairs）"></a>utxo 模块（Key-value pairs）</h2><ol>
+<li><p>‘c’+ 32字节的交易hash - &gt;记录该交易未花费交易输出。 这些记录仅对至少有一个未使用输出的事务处理。 每个记录存储：</p>
+<ul>
+<li>交易的版本。</li>
+<li>交易是否是一个coinbase或没有。</li>
+<li>哪个高度块包含交易。</li>
+<li>该交易的哪些输出未使用。</li>
+<li>scriptPubKey和那些未使用输出的数量。</li>
+</ul>
+</li>
+<li><p>‘B’ - &gt; 32字节block hash：记录UTXO是在那个block下产生的。</p>
+</li>
+</ol>
+<h2 id="txdb-h中的其他定义"><a href="#txdb-h中的其他定义" class="headerlink" title="txdb.h中的其他定义"></a><code>txdb.h</code>中的其他定义</h2><p>在 <code>txdb.h</code>文件中，我们还能够看到如下定义，它们所表示的含义如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在flush时，会额外补偿这么多的 memory peak</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> DB_PEAK_USAGE_FACTOR = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//如果当前可用空间在这个范围之内的话，则无需定期刷新。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> MAX_BLOCK_COINSDB_USAGE = <span class="number">200</span> * DB_PEAK_USAGE_FACTOR;</span><br><span class="line"><span class="comment">//如果少于这个空间仍然可用，会定期刷新</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> MIN_BLOCK_COINSDB_USAGE = <span class="number">50</span> * DB_PEAK_USAGE_FACTOR;</span><br><span class="line"><span class="comment">//DB Cache 的默认大小</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int64_t</span> nDefaultDbCache = <span class="number">450</span>;</span><br><span class="line"><span class="comment">//DB Cache的最大值</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int64_t</span> nMaxDbCache = <span class="keyword">sizeof</span>(<span class="keyword">void</span> *) &gt; <span class="number">4</span> ? <span class="number">16384</span> : <span class="number">1024</span>;</span><br><span class="line"><span class="comment">//DB Cache 的最小值</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int64_t</span> nMinDbCache = <span class="number">4</span>;</span><br><span class="line"><span class="comment">//如果没有txIndex的话，内存最大分配给block tree DB的空间。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int64_t</span> nMaxBlockDBCache = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//如果有 txIndex 的话，内存最大分配给block tree DB的空间。</span></span><br><span class="line"><span class="comment">//与UTXO数据库不同，对于leveldb缓存创建的txindex方案</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int64_t</span> nMaxBlockDBAndTxIndexCache = <span class="number">1024</span>;</span><br><span class="line"><span class="comment">//内存最大分配给coins DB的缓存大小</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int64_t</span> nMaxCoinsDBCache = <span class="number">8</span>;</span><br></pre></td></tr></table></figure></p>
+<h2 id="dbwrapper-h中的定义"><a href="#dbwrapper-h中的定义" class="headerlink" title="dbwrapper.h中的定义"></a><code>dbwrapper.h</code>中的定义</h2><p>在 <code>dbwrapper.h</code> 文件的 <code>class CDBWrapper</code> 下，定义了在操作<code>leveldb</code>时的一些选项，其具体含义如下所示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//该数据库使用自定义环境（在默认环境情况下,可以是nullptr）</span></span><br><span class="line">leveldb::Env *penv;</span><br><span class="line"><span class="comment">//数据库使用选项</span></span><br><span class="line">leveldb::Options options;</span><br><span class="line"><span class="comment">//从数据库读取时使用的选项</span></span><br><span class="line">leveldb::ReadOptions readoptions;</span><br><span class="line"><span class="comment">//迭代数据库的值时使用的选项</span></span><br><span class="line">leveldb::ReadOptions iteroptions;</span><br><span class="line"><span class="comment">//写入数据库时使用的选项</span></span><br><span class="line">leveldb::WriteOptions writeoptions;</span><br><span class="line"><span class="comment">//同步写入数据库时使用的选项</span></span><br><span class="line">leveldb::WriteOptions syncoptions;</span><br><span class="line"><span class="comment">//数据库本身</span></span><br><span class="line">leveldb::DB *pdb;</span><br></pre></td></tr></table></figure>
+<h2 id="常量和枚举的定义"><a href="#常量和枚举的定义" class="headerlink" title="常量和枚举的定义"></a>常量和枚举的定义</h2><p>在 <code>chain.h</code> 的 CBlockFileInfo 下，有如下常量：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBlockFileInfo</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//文件中存储的块的数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nBlocks;</span><br><span class="line">    <span class="comment">//块文件使用的字节数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nSize;</span><br><span class="line">    <span class="comment">//撤消文件需要使用的字节数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nUndoSize;</span><br><span class="line">    <span class="comment">//文件中块的最低高度</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nHeightFirst;</span><br><span class="line">    <span class="comment">//文件中块的最高高度</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nHeightLast;</span><br><span class="line">    <span class="comment">//文件中最早的块</span></span><br><span class="line">    <span class="keyword">uint64_t</span> nTimeFirst;</span><br><span class="line">    <span class="comment">//文件中最新的块的时间</span></span><br><span class="line">    <span class="keyword">uint64_t</span> nTimeLast;</span><br></pre></td></tr></table></figure></p>
+<p>在 <code>chain.h</code> 的 BlockStatus 文件下，列举了一些状态，用来标识 block的状态：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> BlockStatus : <span class="keyword">uint32_t</span> &#123;</span><br><span class="line">    <span class="comment">//未使用</span></span><br><span class="line">    BLOCK_VALID_UNKNOWN = <span class="number">0</span>,</span><br><span class="line">    <span class="comment">//解析正确、版本正确并且 hash 满足声明 PoW，1 &lt;= vtx count &lt;= max，时间戳正确。</span></span><br><span class="line">    BLOCK_VALID_HEADER = <span class="number">1</span>,</span><br><span class="line">    <span class="comment">//找到所有父标题，难度匹配，时间戳&gt; =中位数前一个检查点。意味着所有的父母至少也是TREE。</span></span><br><span class="line">    BLOCK_VALID_TREE = <span class="number">2</span>,</span><br><span class="line">    <span class="comment">// 只有第一个 tx 是 coinbase，2 &lt;= coinbase输入脚本长度&lt;= 100，</span></span><br><span class="line">    <span class="comment">//交易有效，没有重复的txids，sigops，大小，merkle根。</span></span><br><span class="line">    <span class="comment">//所有父母至少是TREE，但不一定是TRANSACTIONS。</span></span><br><span class="line">    <span class="comment">//当所有父块都有TRANSACTIONS时，CBlockIndex :: nChainTx将被设置。</span></span><br><span class="line">    BLOCK_VALID_TRANSACTIONS = <span class="number">3</span>,</span><br><span class="line">    <span class="comment">//输出不会超支输入，没有双重花费，coinbase输出正常，</span></span><br><span class="line">    <span class="comment">//没有不成熟的硬币，BIP30。</span></span><br><span class="line">    <span class="comment">//所有的父母也至少包含在链中。</span></span><br><span class="line">    BLOCK_VALID_CHAIN = <span class="number">4</span>,</span><br><span class="line">    <span class="comment">//脚本和签名确定。意味着所有的父母也至少是脚本。</span></span><br><span class="line">    BLOCK_VALID_SCRIPTS = <span class="number">5</span>,</span><br><span class="line">    <span class="comment">// 所有的有效位。</span></span><br><span class="line">    BLOCK_VALID_MASK = BLOCK_VALID_HEADER | BLOCK_VALID_TREE |</span><br><span class="line">                       BLOCK_VALID_TRANSACTIONS | BLOCK_VALID_CHAIN |</span><br><span class="line">                       BLOCK_VALID_SCRIPTS,</span><br><span class="line">    <span class="comment">//blk * .dat中的完整块</span></span><br><span class="line">    BLOCK_HAVE_DATA = <span class="number">8</span>,</span><br><span class="line">    <span class="comment">//撤销rev * .dat中的可用数据</span></span><br><span class="line">    BLOCK_HAVE_UNDO = <span class="number">16</span>,</span><br><span class="line">    BLOCK_HAVE_MASK = BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO,</span><br><span class="line">    <span class="comment">//上次达到有效性的阶段失败</span></span><br><span class="line">    BLOCK_FAILED_VALID = <span class="number">32</span>,</span><br><span class="line">    <span class="comment">//从失败块下降</span></span><br><span class="line">    BLOCK_FAILED_CHILD = <span class="number">64</span>,</span><br><span class="line">    BLOCK_FAILED_MASK = BLOCK_FAILED_VALID | BLOCK_FAILED_CHILD,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>源码：bitcoin-abc:<a href="https://github.com/Bitcoin-ABC/bitcoin-abc" target="_blank" rel="noopener">https://github.com/Bitcoin-ABC/bitcoin-abc</a><br>版本号：v0.16.0</p>
+<hr>
+<p>本文由<code>Copernicus 团对 冉小龙</code>分析编写，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
