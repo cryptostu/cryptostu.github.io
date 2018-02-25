@@ -138,7 +138,7 @@
                 
 <div class="primary-container content-box is-flex-desktop clear-padding bottom-line" style="margin-bottom: 25px;">
     <div class="column  is-7-desktop">
-        <a href="/2018/02/15/译-Bitcoin源码之levelDB/">
+        <a href="/2018/02/14/Bitcoin-UTXO代码分析三-与其它模块的交互/">
             <div class="full-height post-hover"
                  style="
                          background-image: url('');
@@ -148,7 +148,7 @@
                          ">
                     <div class=" is-flex flex-column center content has-text-centered full-height has-padding content-bg-mask">
                         <h1 class="title text-shadow" style="margin-bottom: 15px;">
-                            [译]Bitcoin源码之levelDB
+                            Bitcoin UTXO代码分析(三):与其它模块的交互
                         </h1>
                         <div>
                         
@@ -156,11 +156,9 @@
                         
                         </div>
                         <p class="post-content-text is-marginless has-padding text-shadow">
-                            Jeff Dean, Sanjay Ghemawat
-leveldb库提供了一个持久性的键值存储，键和值是任意字节数组。keys 根据用户指定的比较器功能在 key-value store 内排序。
-Opening A Database..
+                            前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互..
                         </p>
-                        <p class="date text-shadow">2018-02-15</p>
+                        <p class="date text-shadow">2018-02-14</p>
                         <button class="button is-info is-small">Read More</button>
                     </div>
             </div>
@@ -170,26 +168,6 @@ Opening A Database..
         <div class="full-height is-flex flex-column justify-space-between" style="min-height: 350px;">
             
                 
-<a class="post-hover" href="/2018/02/14/Bitcoin-UTXO代码分析三-与其它模块的交互/" style="height: 48.5%">
-    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
-        <div class="content-bg-mask full-width full-height has-padding">
-            <h3 class="title is-marginless text-shadow">
-                Bitcoin UTXO代码分析(三):与其它模块的交互
-            </h3>
-            
-            
-            
-            <p class="sub-title text-shadow"></p>
-            <p class="is-marginless text-shadow post-content-text">
-                前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析..
-            </p>
-            <p class="date text-shadow is-marginless">2018-02-14</p>
-        </div>
-    </div>
-</a>
-            
-            
-                
 <a class="post-hover" href="/2018/02/09/Bitcoin-UTXO代码分析二-CCoinsViewCache/" style="height: 48.5%">
     <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
         <div class="content-bg-mask full-width full-height has-padding">
@@ -205,6 +183,26 @@ Opening A Database..
 在上一篇Bitcoin UTXO代码分析(一):UTXO的相关表示中，简要说明了UTXO在Bi..
             </p>
             <p class="date text-shadow is-marginless">2018-02-09</p>
+        </div>
+    </div>
+</a>
+            
+            
+                
+<a class="post-hover" href="/2018/02/08/Bitcoin-UTXO代码分析一-UTXO的相关表示/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                Bitcoin UTXO代码分析(一):UTXO的相关表示
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                在Bitcoin代码中，使用Coin类来表示单个交易对象中某个输出的币:123456789101..
+            </p>
+            <p class="date text-shadow is-marginless">2018-02-08</p>
         </div>
     </div>
 </a>
@@ -214,26 +212,6 @@ Opening A Database..
     <div class="column is-12 is-hidden-desktop">
         
         
-<a class="post-hover" href="/2018/02/14/Bitcoin-UTXO代码分析三-与其它模块的交互/" style="height: 48.5%">
-    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
-        <div class="content-bg-mask full-width full-height has-padding">
-            <h3 class="title is-marginless text-shadow">
-                Bitcoin UTXO代码分析(三):与其它模块的交互
-            </h3>
-            
-            
-            
-            <p class="sub-title text-shadow"></p>
-            <p class="is-marginless text-shadow post-content-text">
-                前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析..
-            </p>
-            <p class="date text-shadow is-marginless">2018-02-14</p>
-        </div>
-    </div>
-</a>
-        
-        
-        
 <a class="post-hover" href="/2018/02/09/Bitcoin-UTXO代码分析二-CCoinsViewCache/" style="height: 48.5%">
     <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
         <div class="content-bg-mask full-width full-height has-padding">
@@ -253,35 +231,30 @@ Opening A Database..
     </div>
 </a>
         
+        
+        
+<a class="post-hover" href="/2018/02/08/Bitcoin-UTXO代码分析一-UTXO的相关表示/" style="height: 48.5%">
+    <div class="content is-hidden-touch full-height overflow-hidden" style="background-image: url('')">
+        <div class="content-bg-mask full-width full-height has-padding">
+            <h3 class="title is-marginless text-shadow">
+                Bitcoin UTXO代码分析(一):UTXO的相关表示
+            </h3>
+            
+            
+            
+            <p class="sub-title text-shadow"></p>
+            <p class="is-marginless text-shadow post-content-text">
+                在Bitcoin代码中，使用Coin类来表示单个交易对象中某个输出的币:123456789101..
+            </p>
+            <p class="date text-shadow is-marginless">2018-02-08</p>
+        </div>
+    </div>
+</a>
+        
     </div>
 </div>
 
                     
-                    
-                
-                    
-                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
-                            <a class="post-hover" href="/2018/02/14/Bitcoin-UTXO代码分析三-与其它模块的交互/">
-                            <div class="columns" style="min-height: 230px;">
-                                
-                                <div class="column is-8-desktop post-content is-flex align-center">
-                                    <div class="content">
-                                        <h3>Bitcoin UTXO代码分析(三):与其它模块的交互</h3>
-                                        
-                                        <p>
-                                            
-                                        </p>
-                                        <p>
-                                            前两篇介绍了UXTO表示以及CCoinViewCache的使用:Bitcoin UTXO代码分析(一):UTXO的相关表示和Bitcoin UTXO代码分析(二):CCoinsViewCache，这篇文章主要介绍UTXO和其他模块的交互：新块被激活的时候如何更新UTXO，内存池中的交易和UTXO如何交互，以及UTXO的存储。
-Blockchain激活Bl..
-                                        </p>
-                                        <p>2018-02-14</p>
-                                        <button class="button is-small">Read More</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        </div>
                     
                 
                     
@@ -314,7 +287,7 @@ Coin处理方法获取其中获取Coin的方法是:
                     
                 
                     
-                        <div class="content-box  " style="margin-bottom: 27px;">
+                        <div class="content-box  is-hidden-desktop" style="margin-bottom: 27px;">
                             <a class="post-hover" href="/2018/02/08/Bitcoin-UTXO代码分析一-UTXO的相关表示/">
                             <div class="columns" style="min-height: 230px;">
                                 
