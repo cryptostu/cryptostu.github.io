@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析-txdb模块(二) | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文主要从整体逻辑方面，抽象 txdb 模块的代码构建逻辑。 首先 txdb 模块主要是用来实现 block 和 utxo 两个模块的落盘逻辑，所以我们将分为两个大的部分，来对其逻辑一一梳理。 原始数据块首先，我们通过网络接收到原始块，进行块文件存储。 访问块数据文件块文件通过以下方式访问：  CDiskTxPos：一个 struct，CDiskTxPos 继承 CDiskBlockPos，CDi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析-txdb模块(二)">
+<meta property="og:url" content="http://yoursite.com/2018/02/26/比特币源码分析-txdb模块二/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="本文主要从整体逻辑方面，抽象 txdb 模块的代码构建逻辑。 首先 txdb 模块主要是用来实现 block 和 utxo 两个模块的落盘逻辑，所以我们将分为两个大的部分，来对其逻辑一一梳理。 原始数据块首先，我们通过网络接收到原始块，进行块文件存储。 访问块数据文件块文件通过以下方式访问：  CDiskTxPos：一个 struct，CDiskTxPos 继承 CDiskBlockPos，CDi">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-a8e57c92f4ffbf50.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-02-26T09:43:44.675Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析-txdb模块(二)">
+<meta name="twitter:description" content="本文主要从整体逻辑方面，抽象 txdb 模块的代码构建逻辑。 首先 txdb 模块主要是用来实现 block 和 utxo 两个模块的落盘逻辑，所以我们将分为两个大的部分，来对其逻辑一一梳理。 原始数据块首先，我们通过网络接收到原始块，进行块文件存储。 访问块数据文件块文件通过以下方式访问：  CDiskTxPos：一个 struct，CDiskTxPos 继承 CDiskBlockPos，CDi">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/6967649-a8e57c92f4ffbf50.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析-txdb模块(二)</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-02-26</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p><em>本文主要从整体逻辑方面，抽象 txdb 模块的代码构建逻辑。</em></p>
+<p>首先 <code>txdb</code> 模块主要是用来实现 <code>block</code> 和 <code>utxo</code> 两个模块的落盘逻辑，所以我们将分为两个大的部分，来对其逻辑一一梳理。</p>
+<h2 id="原始数据块"><a href="#原始数据块" class="headerlink" title="原始数据块"></a>原始数据块</h2><p>首先，我们通过网络接收到原始块，进行块文件存储。</p>
+<h2 id="访问块数据文件"><a href="#访问块数据文件" class="headerlink" title="访问块数据文件"></a>访问块数据文件</h2><p>块文件通过以下方式访问：</p>
+<ul>
+<li><strong>CDiskTxPos</strong>：一个 struct，<code>CDiskTxPos</code> 继承 <code>CDiskBlockPos</code>，<code>CDiskBlockPos</code>主要有两个参数 <code>nFile</code> 和 <code>nPos</code>, 指向一个块在磁盘上的位置的指针（一个文件号和偏移量）:</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CDiskTxPos</span> :</span> <span class="keyword">public</span> CDiskBlockPos &#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nTxOffset; <span class="comment">// after header</span></span><br><span class="line"></span><br><span class="line">    ADD_SERIALIZE_METHODS;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream, <span class="keyword">typename</span> Operation&gt;</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">SerializationOp</span><span class="params">(Stream &amp;s, Operation ser_action)</span> </span>&#123;</span><br><span class="line">        READWRITE(*(CDiskBlockPos *)<span class="keyword">this</span>);</span><br><span class="line">        READWRITE(VARINT(nTxOffset));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CDiskTxPos(<span class="keyword">const</span> CDiskBlockPos &amp;blockIn, <span class="keyword">unsigned</span> <span class="keyword">int</span> nTxOffsetIn)</span><br><span class="line">        : CDiskBlockPos(blockIn.nFile, blockIn.nPos), nTxOffset(nTxOffsetIn) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    CDiskTxPos() &#123; SetNull(); &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetNull</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        CDiskBlockPos::SetNull();</span><br><span class="line">        nTxOffset = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>CBlockFileInfo</strong> ：该函数用于执行如下任务：<ul>
+<li>确定新块是否适合当前文件或需要创建新文件</li>
+<li>按块和撤消文件计算总的磁盘使用率</li>
+<li>遍历块文件并找到可修剪的文件</li>
+</ul>
+</li>
+</ul>
+<p><em>数据库条目跟踪每个块文件已经有多少个字节使用，它有多少块，高度的范围是存在的以及日期的范围。</em></p>
+<h2 id="Block-index"><a href="#Block-index" class="headerlink" title="Block index"></a>Block index</h2><p>块索引保存所有已知块的元数据，包括块在磁盘上的存储位置。</p>
+<p>对于存储在磁盘上的已知块，区块链是按照树状结构来描述其基于主链的众多分支结构（可能有的分支会很小），从根部的生成区块开始，每个区块可能有多个候选区块作为下一个区块。 blockindex 可能有多个 pprev 指向它，但是它们中至多有一个可以是当前活动分支的一部分。</p>
+<p>实际上，LevelDB 的块索引是通过 txdb.h 中定义的  <code>CBlockTreeDB</code>包装类来访问的。 请注意，不同的节点会有略微不同的块树， 重要的是看他们是否认同所在的主链。</p>
+<p>存储在数据库中的块在内存中表示为 <code>CBlockIndex</code> 对象。 这种类型的对象首先在收到 header 后被创建; 代码不会等待收到完整的块。 当通过网络接收到 header时，它们使用 stream 的方式被传输到一个 <code>CBlockHeaders</code> 矢量中，然后对其进行检查。 检出的每个header 都会导致创建一个新的<code>CBlockIndex</code>，并将其存储到数据库中。</p>
+<p><strong>block index有两个重要的变量</strong></p>
+<ol>
+<li><strong>nTx</strong>：这个块的交易数量。nTx &gt; 0 表示该块的状态至少为<br>VALID_TRANSACTIONS。</li>
+<li><strong>nChainTx</strong>：包括此块在内的链中的交易数量，当且仅当此块及其所有父项的交易可用时，才会设置此值。</li>
+</ol>
+<p>因此，<code>nChainTx&gt; 0</code> 是一个 VALID_TRANSACTIONS 链的简写。 注意，这个信息不能通过块状态枚举来获得。 也就是说，VALID_TRANSACTIONS 只意味着它的父母是 TREE，而 VALID_CHAIN 意味着父母也是 CHAIN。 因此，从某种意义上来说，表达式（nChainTx！= 0）是可以被称为 “VALID_nChainTx = 3.5”的状态的缩写 - 因为它比VALID_TRANSACTIONS更多但是小于VALID_CHAIN。</p>
+<p>注意：<strong>nChainTx只存储在内存中; 数据库中没有对应的条目</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBlockIndex</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetNull</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       ...</span><br><span class="line">    &#125;</span><br><span class="line">    CBlockIndex() &#123; SetNull(); &#125;</span><br><span class="line">    CBlockIndex(<span class="keyword">const</span> CBlockHeader &amp;block) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">CDiskBlockPos <span class="title">GetBlockPos</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">CDiskBlockPos <span class="title">GetUndoPos</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">CBlockHeader <span class="title">GetBlockHeader</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">uint256 <span class="title">GetBlockHash</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> *phashBlock; &#125;</span><br><span class="line">    <span class="keyword">int64_t</span> GetBlockTime() <span class="keyword">const</span> &#123; <span class="keyword">return</span> (<span class="keyword">int64_t</span>)nTime; &#125;</span><br><span class="line">    <span class="keyword">int64_t</span> GetBlockTimeMax() <span class="keyword">const</span> &#123; <span class="keyword">return</span> (<span class="keyword">int64_t</span>)nTimeMax; &#125;</span><br><span class="line">    <span class="keyword">enum</span> &#123; nMedianTimeSpan = <span class="number">11</span> &#125;;</span><br><span class="line">    <span class="keyword">int64_t</span> GetMedianTimePast() <span class="keyword">const</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">ToString</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">       ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//! Check whether this block index entry is valid up to the passed validity</span></span><br><span class="line">    <span class="comment">//! level.</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">IsValid</span><span class="params">(<span class="keyword">enum</span> BlockStatus nUpTo = BLOCK_VALID_TRANSACTIONS)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//! Raise the validity level of this block index entry.</span></span><br><span class="line">    <span class="comment">//! Returns true if the validity was changed.</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">RaiseValidity</span><span class="params">(<span class="keyword">enum</span> BlockStatus nUpTo)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//! Build the skiplist pointer for this entry.</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">BuildSkip</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">//! Efficiently find an ancestor of this block.</span></span><br><span class="line">    <span class="function">CBlockIndex *<span class="title">GetAncestor</span><span class="params">(<span class="keyword">int</span> height)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">const</span> CBlockIndex *<span class="title">GetAncestor</span><span class="params">(<span class="keyword">int</span> height)</span> <span class="keyword">const</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在启动时，<code>LoadBlockIndexGuts</code> 将整个数据库加载到内存中，这只需要几秒钟。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> CBlockTreeDB::LoadBlockIndexGuts(</span><br><span class="line">    <span class="built_in">std</span>::function&lt;CBlockIndex *(<span class="keyword">const</span> uint256 &amp;)&gt; insertBlockIndex) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;CDBIterator&gt; pcursor(NewIterator());</span><br><span class="line">    pcursor-&gt;Seek(<span class="built_in">std</span>::make_pair(DB_BLOCK_INDEX, uint256()));</span><br><span class="line">    <span class="comment">// Load mapBlockIndex</span></span><br><span class="line">    <span class="keyword">while</span> (pcursor-&gt;Valid()) &#123;</span><br><span class="line">       ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="mapBlockIndex-map"><a href="#mapBlockIndex-map" class="headerlink" title="mapBlockIndex (map)"></a>mapBlockIndex (map<block_hash, cblockindex*="">)</block_hash,></h2><p>mapBlockIndex 包含所有已知的块（“块”–&gt;“块索引”）。上面我们提到，由于在收到 header 时就创建了块索引并将其存储在 LevelDB 中，因此在块映射中可能没有收到完整块的块索引，更不用说将其存储到磁盘了。</p>
+<p>mapBlockIndex 是没有排序的。只要把它想象成你的块块哈希（ LevelDB）在内存中。</p>
+<p>mapBlockIndex 是从 LoadBlockIndexGuts 中的数据库初始化的，LoadBlockIndexGuts 在启动的时运行。此后，无论何时通过网络接收到新块，都会更新。</p>
+<p>mapBlockIndex 只会增长，它永远不会缩小。 （还要注意，块索引的 LevelDB 包装器不包含从数据库中删除块的功能 - 它的写入函数（<code>WriteBatchSync</code>）只写入数据库。相比之下，chainstate 包装器的写入功能（<code>BatchWrite</code>）可以写入和删除。 </p>
+<p>块（ ‘b’ 键）被加载到全局  mapBlockIndex 变量中。 mapBlockIndex 是一个unordered_map，它为整个块树中的每个块保存 CBlockIndex。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> CBlockTreeDB::WriteBatchSync(</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::pair&lt;<span class="keyword">int</span>, <span class="keyword">const</span> CBlockFileInfo *&gt;&gt; &amp;fileInfo,</span><br><span class="line">    <span class="keyword">int</span> nLastFile, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">const</span> CBlockIndex *&gt; &amp;blockinfo) &#123;</span><br><span class="line">    <span class="function">CDBBatch <span class="title">batch</span><span class="params">(*<span class="keyword">this</span>)</span></span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::pair&lt;<span class="keyword">int</span>, <span class="keyword">const</span> CBlockFileInfo *&gt;&gt;::const_iterator</span><br><span class="line">             it = fileInfo.begin();</span><br><span class="line">         it != fileInfo.end(); it++) &#123;</span><br><span class="line">        batch.Write(<span class="built_in">std</span>::make_pair(DB_BLOCK_FILES, it-&gt;first), *it-&gt;second);</span><br><span class="line">    &#125;</span><br><span class="line">    batch.Write(DB_LAST_BLOCK, nLastFile);</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">const</span> CBlockIndex *&gt;::const_iterator it =</span><br><span class="line">             blockinfo.begin();</span><br><span class="line">         it != blockinfo.end(); it++) &#123;</span><br><span class="line">        batch.Write(<span class="built_in">std</span>::make_pair(DB_BLOCK_INDEX, (*it)-&gt;GetBlockHash()),</span><br><span class="line">                    CDiskBlockIndex(*it));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> WriteBatch(batch, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="block-状态"><a href="#block-状态" class="headerlink" title="block 状态"></a>block 状态</h2><p>其中一个关键特征就是它的 <strong>“验证状态”</strong> 。<br>验证状态不仅会验证当前块，还会去验证其祖先块。<br>该块的状态是下面的其中一种：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> BlockStatus : <span class="keyword">uint32_t</span> &#123;</span><br><span class="line">    <span class="comment">//未使用</span></span><br><span class="line">    BLOCK_VALID_UNKNOWN = <span class="number">0</span>,</span><br><span class="line">    <span class="comment">//解析时版本正常，哈希声明满足PoW，1 &lt;= vtx count &lt;= max，时间戳不在将来</span></span><br><span class="line">    BLOCK_VALID_HEADER = <span class="number">1</span>,</span><br><span class="line">    <span class="comment">//找到所有父标题，难度匹配，时间戳&gt; =中位数前一个检查点。 意味着所有的父母至少也是TREE。</span></span><br><span class="line">    BLOCK_VALID_TREE = <span class="number">2</span>,</span><br><span class="line">    <span class="comment">//只有第一个tx是coinbase，2 &lt;= coinbase输入脚本长度&lt;= 100，</span></span><br><span class="line">    <span class="comment">//交易有效，没有重复的txids，sigops，大小，merkle根。</span></span><br><span class="line">    <span class="comment">//意味着所有父母至少是TREE，但不一定是TRANSACTIONS。</span></span><br><span class="line">    <span class="comment">//当所有父块都有TRANSACTIONS时，CBlockIndex :: nChainTx将会被设置。</span></span><br><span class="line">    BLOCK_VALID_TRANSACTIONS = <span class="number">3</span>,</span><br><span class="line">    <span class="comment">// 输出不会超支输入，没有双重花费，coinbase输出正常，</span></span><br><span class="line">    <span class="comment">// 没有不成熟的硬币，BIP30。</span></span><br><span class="line">    <span class="comment">// 意味着所有的父母也至少在链中。</span></span><br><span class="line">    BLOCK_VALID_CHAIN = <span class="number">4</span>,</span><br><span class="line">    <span class="comment">// 脚本和签名确定。 意味着所有的父母也至少是脚本。</span></span><br><span class="line">    BLOCK_VALID_SCRIPTS = <span class="number">5</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="CDBWrapper"><a href="#CDBWrapper" class="headerlink" title="CDBWrapper"></a>CDBWrapper</h2><p><em>CDBWrapper是一个leveldb的包装函数，无论utxo还是block，均通过它写入leveldb，具体参照下图:</em></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/6967649-a8e57c92f4ffbf50.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="dbWrapper"></p>
+<p><code>CDBWrapper</code> 主要有如下参数:</p>
+<ul>
+<li>path –&gt;系统中存储leveldb数据的位置</li>
+<li>nCacheSize –&gt;配置各种leveldb缓存设置</li>
+<li>fMemory –&gt; 如果为true，则使用leveldb的内存环境</li>
+<li>fWipe –&gt; 如果为true，则删除所有现有数据</li>
+<li>obfuscate –&gt; 如果为true，则通过简单的XOR存储数据。 如果为false，则与零字节数组进行异或运算</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDBWrapper</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CDBWrapper(<span class="keyword">const</span> boost::filesystem::path &amp;path, <span class="keyword">size_t</span> nCacheSize,</span><br><span class="line">               <span class="keyword">bool</span> fMemory = <span class="literal">false</span>, <span class="keyword">bool</span> fWipe = <span class="literal">false</span>,</span><br><span class="line">               <span class="keyword">bool</span> obfuscate = <span class="literal">false</span>);</span><br><span class="line">    ~CDBWrapper();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="UTXO"><a href="#UTXO" class="headerlink" title="UTXO"></a>UTXO</h2><p>访问 UTXO 数据库比块索引复杂得多。 这是因为它的性能对比特币系统的整体性能至关重要。 块索引对于性能来说并不是很关键，因为只有几十万个块，在好的硬件上运行的节点可以在几秒钟内检索并滚动（而且不需要经常这样做）。在UTXO数据库中有数百万个coins，并且必须对每个进入mempool或包含在块中的每个输入的输入进行检查和修改。</p>
+<p>在 <code>init.cpp</code>文件的 1941-1946，我们会发现，utxo数据库在这里被初始化。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pblocktree = <span class="keyword">new</span> CBlockTreeDB(nBlockTreeDBCache, <span class="literal">false</span>, fReindex);</span><br><span class="line">pcoinsdbview = <span class="keyword">new</span> CCoinsViewDB(nCoinDBCache, <span class="literal">false</span>, fReindex || fReindexChainState);</span><br><span class="line">pcoinscatcher = <span class="keyword">new</span> CCoinsViewErrorCatcher(pcoinsdbview);</span><br><span class="line">pcoinsTip = <span class="keyword">new</span> CCoinsViewCache(pcoinscatcher);</span><br></pre></td></tr></table></figure>
+<p>上述代码首先初始化一个<code>CoinsViewDB</code>，它有从LevelDB中加载 coin 的方法。<br>接下来，初始化pCoinsTip，它是代表活动链状态的高速缓存，并由数据库视图支持。</p>
+<p><em><code>pCoinsTip</code>保存对应于活动链的提示的 UTXO 集合, 检索/刷新到数据库视图。</em></p>
+<p><strong><code>coins.cpp</code> 中的 <code>FetchCoins</code> 函数演示了代码如何使用缓存与数据库：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> CCoinsMap::iterator it = cacheCoins.find(outpoint);</span><br><span class="line"><span class="number">2</span>   <span class="keyword">if</span> (it != cacheCoins.end()) &#123;</span><br><span class="line"><span class="number">3</span>       <span class="keyword">return</span> it; &#125;</span><br><span class="line"><span class="number">4</span>    Coin tmp;</span><br><span class="line"><span class="number">5</span>    <span class="keyword">if</span> (!base-&gt;GetCoin(outpoint, tmp)) &#123;</span><br><span class="line"><span class="number">6</span>       <span class="keyword">return</span> cacheCoins.end(); &#125;</span><br><span class="line"><span class="number">7</span>    CCoinsMap::iterator ret = cacheCoins.emplace(<span class="built_in">std</span>::piecewise_construct, <span class="built_in">std</span>::forward_as_tuple(outpoint), <span class="built_in">std</span>::forward_as_tuple(<span class="built_in">std</span>::move(tmp))).first;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>首先，代码在缓存中搜索给定交易ID的硬币 （第1行）</li>
+<li>如果找到，它返回“提取”的硬币 （2-3行）</li>
+<li>如果不是，则搜索数据库 （第5行）</li>
+<li>如果在数据库中找到，它会更新缓存（第7行）</li>
+</ol>
+<p>##CCoinsViewDBCursor</p>
+<p><code>CCoinsViewDBCursor</code>继承自<code>CCoinsViewCursor</code>，专门用来迭代<code>CCoinsViewDB</code>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewDBCursor</span> :</span> <span class="keyword">public</span> CCoinsViewCursor &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ~CCoinsViewDBCursor() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">GetKey</span><span class="params">(COutPoint &amp;key)</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">GetValue</span><span class="params">(Coin &amp;coin)</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">GetValueSize</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">Valid</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Next</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    CCoinsViewDBCursor(CDBIterator *pcursorIn, <span class="keyword">const</span> uint256 &amp;hashBlockIn)</span><br><span class="line">        : CCoinsViewCursor(hashBlockIn), pcursor(pcursorIn) &#123;&#125;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;CDBIterator&gt; pcursor;</span><br><span class="line">    <span class="built_in">std</span>::pair&lt;<span class="keyword">char</span>, COutPoint&gt; keyTmp;</span><br><span class="line">    <span class="keyword">friend</span> <span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewDB</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="CCoinsViewDB"><a href="#CCoinsViewDB" class="headerlink" title="CCoinsViewDB"></a>CCoinsViewDB</h2><p><code>CCoinsViewDB</code> 继承自 <code>CCoinsView</code>，CCoinsView 由 coin 数据库备份（chainstate /），主要与 leveldb 进行交互。它会根据 <code>chainstate</code> 在 LevelDB 设置的 UTXO, 检索 coins 并且 flush 到 LevelDB 的变化: </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoinsViewDB</span> :</span> <span class="keyword">public</span> CCoinsView &#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    CDBWrapper db;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CCoinsViewDB(<span class="keyword">size_t</span> nCacheSize, <span class="keyword">bool</span> fMemory = <span class="literal">false</span>, <span class="keyword">bool</span> fWipe = <span class="literal">false</span>);</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">GetCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint, Coin &amp;coin)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">HaveCoin</span><span class="params">(<span class="keyword">const</span> COutPoint &amp;outpoint)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function">uint256 <span class="title">GetBestBlock</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">BatchWrite</span><span class="params">(CCoinsMap &amp;mapCoins, <span class="keyword">const</span> uint256 &amp;hashBlock)</span> override</span>;</span><br><span class="line">    <span class="function">CCoinsViewCursor *<span class="title">Cursor</span><span class="params">()</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">    <span class="comment">//! Attempt to update from an older database format.</span></span><br><span class="line">    <span class="comment">//! Returns whether an error occurred.</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">Upgrade</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="keyword">size_t</span> EstimateSize() <span class="keyword">const</span> override;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="CoinEntry"><a href="#CoinEntry" class="headerlink" title="CoinEntry"></a>CoinEntry</h2><p><code>CoinEntry</code>是一个基础结构，服务于<code>CCoinsViewDB</code>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CoinEntry</span> &#123;</span></span><br><span class="line">    COutPoint *outpoint;</span><br><span class="line">    <span class="keyword">char</span> key;</span><br><span class="line">    CoinEntry(<span class="keyword">const</span> COutPoint *ptr)</span><br><span class="line">        : outpoint(<span class="keyword">const_cast</span>&lt;COutPoint *&gt;(ptr)), key(DB_COIN) &#123;&#125;</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream&gt; <span class="function"><span class="keyword">void</span> <span class="title">Serialize</span><span class="params">(Stream &amp;s)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        s &lt;&lt; key;</span><br><span class="line">        s &lt;&lt; outpoint-&gt;hash;</span><br><span class="line">        s &lt;&lt; VARINT(outpoint-&gt;n);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream&gt; <span class="function"><span class="keyword">void</span> <span class="title">Unserialize</span><span class="params">(Stream &amp;s)</span> </span>&#123;</span><br><span class="line">        s &gt;&gt; key;</span><br><span class="line">        s &gt;&gt; outpoint-&gt;hash;</span><br><span class="line">        s &gt;&gt; VARINT(outpoint-&gt;n);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
+<li>源码：<a href="https://github.com/Bitcoin-ABC/bitcoin-abc" target="_blank" rel="noopener">bitcoin-abc</a></li>
+<li>版本号：v0.16.0</li>
+</ul>
+<hr>
+<p>本文由 <code>Copernicus 团队 冉小龙</code> 编写，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
