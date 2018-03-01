@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析：utxo刷盘 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="utxo的刷盘逻辑主要在txdb.cpp中实现，主要是 CoinsViewDB::batchwrite这个函数。下面我们来分析一下： 12345678910111213141516171819202122232425262728bool CCoinsViewDB::BatchWrite(CCoinsMap &amp;amp;mapCoins, const uint256 &amp;amp;hashBlock) &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析：utxo刷盘">
+<meta property="og:url" content="http://yoursite.com/2018/03/01/比特币源码分析：utxo刷盘/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="utxo的刷盘逻辑主要在txdb.cpp中实现，主要是 CoinsViewDB::batchwrite这个函数。下面我们来分析一下： 12345678910111213141516171819202122232425262728bool CCoinsViewDB::BatchWrite(CCoinsMap &amp;amp;mapCoins, const uint256 &amp;amp;hashBlock) &amp;">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-c69be5f4d754be45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-35fcd750376ea4cc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-03-01T07:49:43.038Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析：utxo刷盘">
+<meta name="twitter:description" content="utxo的刷盘逻辑主要在txdb.cpp中实现，主要是 CoinsViewDB::batchwrite这个函数。下面我们来分析一下： 12345678910111213141516171819202122232425262728bool CCoinsViewDB::BatchWrite(CCoinsMap &amp;amp;mapCoins, const uint256 &amp;amp;hashBlock) &amp;">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/6967649-c69be5f4d754be45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析：utxo刷盘</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-01</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>utxo的刷盘逻辑主要在<code>txdb.cpp</code>中实现，主要是 <code>CoinsViewDB::batchwrite</code>这个函数。下面我们来分析一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">bool CCoinsViewDB::BatchWrite(CCoinsMap &amp;mapCoins, const uint256 &amp;hashBlock) &#123;</span><br><span class="line">    CDBBatch batch(db);</span><br><span class="line">    size_t count = 0;</span><br><span class="line">    size_t changed = 0;</span><br><span class="line">    for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) &#123;</span><br><span class="line">        if (it-&gt;second.flags &amp; CCoinsCacheEntry::DIRTY) &#123;</span><br><span class="line">            CoinEntry entry(&amp;it-&gt;first);</span><br><span class="line">            if (it-&gt;second.coin.IsSpent()) &#123;</span><br><span class="line">                batch.Erase(entry);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                batch.Write(entry, it-&gt;second.coin);</span><br><span class="line">            &#125;</span><br><span class="line">            changed++;</span><br><span class="line">        &#125;</span><br><span class="line">        count++;</span><br><span class="line">        CCoinsMap::iterator itOld = it++;</span><br><span class="line">        mapCoins.erase(itOld);</span><br><span class="line">    &#125;</span><br><span class="line">    if (!hashBlock.IsNull()) &#123;</span><br><span class="line">        batch.Write(DB_BEST_BLOCK, hashBlock);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    bool ret = db.WriteBatch(batch);</span><br><span class="line">    LogPrint(&quot;coindb&quot;, &quot;Committed %u changed transaction outputs (out of %u) &quot;</span><br><span class="line">                       &quot;to coin database...\n&quot;,</span><br><span class="line">             (unsigned int)changed, (unsigned int)count);</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在前面我们介绍过 <code>CDBWrapper</code>主要是对 leveldb的一个简单封装，定义一个<code>CDBWrapper db;</code>我们拿着 db 就可以实现相应的操作。<br><img src="http://upload-images.jianshu.io/upload_images/6967649-c69be5f4d754be45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="CDBWrapper.png"></p>
+<p>接下来迭代mapCoins，并填充其值，这里最主要的就是作为k-v数据库的leveldb中的key与value如何获得：</p>
+<h3 id="key"><a href="#key" class="headerlink" title="key"></a>key</h3><p>CoinEntry是一个辅助工具类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">struct CoinEntry &#123;</span><br><span class="line">    COutPoint *outpoint;</span><br><span class="line">    char key;</span><br><span class="line">    CoinEntry(const COutPoint *ptr)</span><br><span class="line">        : outpoint(const_cast&lt;COutPoint *&gt;(ptr)), key(DB_COIN) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    template &lt;typename Stream&gt; void Serialize(Stream &amp;s) const &#123;</span><br><span class="line">        s &lt;&lt; key;</span><br><span class="line">        s &lt;&lt; outpoint-&gt;hash;</span><br><span class="line">        s &lt;&lt; VARINT(outpoint-&gt;n);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>key指向的是outpoint，具体结构如下：<br><img src="http://upload-images.jianshu.io/upload_images/6967649-35fcd750376ea4cc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="key"></p>
+<p>我们将序列化后的值当作key，作为entry的参数，同时作为<code>db.write</code>的key。</p>
+<blockquote>
+<p>关于db.write和db.WriteBatch二者之间的联系，前面已经详细分析。</p>
+<h3 id="value"><a href="#value" class="headerlink" title="value"></a>value</h3><p>value的值就是 coin 序列化后的值，而 coin 又包含了txout，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Coin &#123;</span><br><span class="line">    //! Unspent transaction output.</span><br><span class="line">    CTxOut out;</span><br><span class="line"></span><br><span class="line">    //! Whether containing transaction was a coinbase and height at which the</span><br><span class="line">    //! transaction was included into a block.</span><br><span class="line">    uint32_t nHeightAndIsCoinBase;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>同样的，我们进行序列化并使用<code>CTxOutCompressor</code>对txout进行压缩，REF是一个宏定义，是非const转换，我们首先断言这个币是否被消费：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename Stream&gt; void Serialize(Stream &amp;s) const &#123;</span><br><span class="line">       assert(!IsSpent());</span><br><span class="line">       ::Serialize(s, VARINT(nHeightAndIsCoinBase));</span><br><span class="line">       ::Serialize(s, CTxOutCompressor(REF(out)));</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p>txout主要包含：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class CTxOut &#123;</span><br><span class="line">public:</span><br><span class="line">    Amount nValue;</span><br><span class="line">    CScript scriptPubKey;</span><br></pre></td></tr></table></figure></p>
+<p>对nValue和scriptPubKey采用了不同的压缩方式来进行序列化，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class CTxOutCompressor &#123;</span><br><span class="line">private:</span><br><span class="line">    CTxOut &amp;txout;</span><br><span class="line">public:</span><br><span class="line">    template &lt;typename Stream, typename Operation&gt;</span><br><span class="line">    inline void SerializationOp(Stream &amp;s, Operation ser_action) &#123;</span><br><span class="line">        if (!ser_action.ForRead()) &#123;</span><br><span class="line">            uint64_t nVal = CompressAmount(txout.nValue);</span><br><span class="line">            READWRITE(VARINT(nVal));</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            uint64_t nVal = 0;</span><br><span class="line">            READWRITE(VARINT(nVal));</span><br><span class="line">            txout.nValue = DecompressAmount(nVal);</span><br><span class="line">        &#125;</span><br><span class="line">        CScriptCompressor cscript(REF(txout.scriptPubKey));</span><br><span class="line">        READWRITE(cscript);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>这时候我们就拿到了<code>db.write</code>的value值，这时候我们通过for循环，不断迭代，将值写入磁盘。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
