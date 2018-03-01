@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>[译]BCH恢复禁用的脚本操作代码-草案 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Version 0.1, 2018-01-19 - 草案供讨论 讨论草案为了讨论这个草案，附加说明包含在标题草案的标题中。这些打算从这个文件的finalalized版本被删除。可选规则由RULE OPTION表示，其中预期将在工作组内达成共识之后采用所呈现的选项。 引言本文档描述了重新激活几个脚本操作码的建议要求。 2011年，在OP_LSHIFT和OP_RETURN中发现了两个严重的错误，提示禁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]BCH恢复禁用的脚本操作代码-草案">
+<meta property="og:url" content="http://yoursite.com/2018/03/01/译-BCH恢复禁用的脚本操作代码草案/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="Version 0.1, 2018-01-19 - 草案供讨论 讨论草案为了讨论这个草案，附加说明包含在标题草案的标题中。这些打算从这个文件的finalalized版本被删除。可选规则由RULE OPTION表示，其中预期将在工作组内达成共识之后采用所呈现的选项。 引言本文档描述了重新激活几个脚本操作码的建议要求。 2011年，在OP_LSHIFT和OP_RETURN中发现了两个严重的错误，提示禁">
+<meta property="og:updated_time" content="2018-03-01T07:43:53.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]BCH恢复禁用的脚本操作代码-草案">
+<meta name="twitter:description" content="Version 0.1, 2018-01-19 - 草案供讨论 讨论草案为了讨论这个草案，附加说明包含在标题草案的标题中。这些打算从这个文件的finalalized版本被删除。可选规则由RULE OPTION表示，其中预期将在工作组内达成共识之后采用所呈现的选项。 引言本文档描述了重新激活几个脚本操作码的建议要求。 2011年，在OP_LSHIFT和OP_RETURN中发现了两个严重的错误，提示禁">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>[译]BCH恢复禁用的脚本操作代码-草案</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-01</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p><em>Version 0.1, 2018-01-19 - 草案供讨论</em></p>
+<h2 id="讨论草案"><a href="#讨论草案" class="headerlink" title="讨论草案"></a>讨论草案</h2><p>为了讨论这个草案，附加说明包含在标题草案的标题中。这些打算从这个文件的finalalized版本被删除。<br>可选规则由<code>RULE OPTION</code>表示，其中预期将在工作组内达成共识之后采用所呈现的选项。</p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文档描述了重新激活几个脚本操作码的建议要求。 2011年，在OP_LSHIFT和OP_RETURN中发现了两个严重的错误，提示禁用这些和另外13个操作码。 以下的禁用操作码列表按类别细分。</p>
+<p><strong>拼接操作</strong></p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>OpCode</th>
+<th>Hex</th>
+<th>Input</th>
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_CAT</td>
+<td>126</td>
+<td>0x7e</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>连接两个字节的字符串</td>
+</tr>
+<tr>
+<td>OP_SUBSTR</td>
+<td>127</td>
+<td>0x7f</td>
+<td>in begin size</td>
+<td>out</td>
+<td>返回一个字符串的一部分</td>
+</tr>
+<tr>
+<td>OP_LEFT</td>
+<td>128</td>
+<td>0x80</td>
+<td>in size</td>
+<td>out</td>
+<td>只保留字符串中指定点左侧的字符</td>
+</tr>
+<tr>
+<td>OP_RIGHT</td>
+<td>129</td>
+<td>0x81</td>
+<td>in size</td>
+<td>out</td>
+<td>只保留字符串中指定点的右侧字符</td>
+</tr>
+</tbody>
+</table>
+<p><strong>按位逻辑</strong></p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>OpCode</th>
+<th>Hex</th>
+<th>Input</th>
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_INVERT</td>
+<td>131</td>
+<td>0x83</td>
+<td>in</td>
+<td>out</td>
+<td>翻转输入的所有位</td>
+</tr>
+<tr>
+<td>OP_AND</td>
+<td>132</td>
+<td>0x84</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>布尔<em>AND</em>在输入的每一位之间</td>
+</tr>
+<tr>
+<td>OP_OR</td>
+<td>133</td>
+<td>0x85</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>布尔<em>OR</em>在输入的每一位之间</td>
+</tr>
+<tr>
+<td>OP_XOR</td>
+<td>134</td>
+<td>0x86</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>布尔 <em>EXCLUSIVE OR</em> 在输入的每一位之间</td>
+</tr>
+</tbody>
+</table>
+<p><strong>算术</strong></p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>OpCode</th>
+<th>Hex</th>
+<th>Input</th>
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_2MUL</td>
+<td>141</td>
+<td>0x8d</td>
+<td>in</td>
+<td>out</td>
+<td>输入乘以2</td>
+</tr>
+<tr>
+<td>OP_2DIV</td>
+<td>142</td>
+<td>0x8e</td>
+<td>in</td>
+<td>out</td>
+<td>输入除以2</td>
+</tr>
+<tr>
+<td>OP_MUL</td>
+<td>149</td>
+<td>0x95</td>
+<td>a b</td>
+<td>out</td>
+<td><em>a</em> 乘以 <em>b</em></td>
+</tr>
+<tr>
+<td>OP_DIV</td>
+<td>150</td>
+<td>0x96</td>
+<td>a b</td>
+<td>out</td>
+<td><em>a</em> 除以 <em>b</em></td>
+</tr>
+<tr>
+<td>OP_MOD</td>
+<td>151</td>
+<td>0x97</td>
+<td>a b</td>
+<td>out</td>
+<td>返回 <em>a</em> 除以 <em>b</em> 后的余数</td>
+</tr>
+<tr>
+<td>OP_LSHIFT</td>
+<td>152</td>
+<td>0x98</td>
+<td>a b</td>
+<td>out</td>
+<td>将 <em>a</em> 左移 <em>b</em> 位，保留符号</td>
+</tr>
+<tr>
+<td>OP_RSHIFT</td>
+<td>152</td>
+<td>0x99</td>
+<td>a b</td>
+<td>out</td>
+<td>将 <em>a</em> 右移 <em>b</em> 位，保留符号</td>
+</tr>
+</tbody>
+</table>
+<h5 id="建议操作码重新启用"><a href="#建议操作码重新启用" class="headerlink" title="建议操作码重新启用"></a>建议操作码重新启用</h5><p>建议在分阶段过程中重新引入这些操作码（或等效功能）。第一阶段是在五月硬叉中启用一个有限的子集。</p>
+<p>拼接操作：<code>OP_CAT</code>, <code>OP_SPLIT</code><br>按位逻辑：<code>OP_AND</code>, <code>OP_OR</code>, <code>OP_XOR</code><br>算术：<code>OP_DIV</code>, <code>OP_MOD</code></p>
+<p>New: </p>
+<ul>
+<li><code>x OP_BIN2NUM -&gt; n</code> - 将二进制数组“x”转换为有效（规范）数字元素</li>
+<li><code>n m OP_NUM2BIN -&gt; out</code> - 将数值“n”转换为长度为“m”的字节数组 </li>
+</ul>
+<p>提出了一个新的操作<code>OP_SPLIT</code>，作为<code>OP_SUBSTR</code>，<code>OP_LEFT</code>和<code>OP_RIGHT</code>的替代。所有三种操作都可以用<code>OP_SPLIT</code>，<code>OP_SWAP</code>和<code>OP_DROP</code>的不同组合来模拟。</p>
+<p>在按位操作下进一步讨论这些新操作的目的。</p>
+<h3 id="脚本数据类型"><a href="#脚本数据类型" class="headerlink" title="脚本数据类型"></a>脚本数据类型</h3><p>应该注意的是，在脚本操作中，堆栈中的数据值被解释为二进制字符串（即字节数组）或数字。 <strong>除非特别声明为解释为数字，否则堆栈上的所有数据都被解释为一个字节数组。</strong></p>
+<p>数字类型有特定的限制：</p>
+<ol>
+<li>使用的编码是带有明确的符号位（最后一个字节的最高位）的小端。</li>
+<li>它们的长度不能超过4个字节。</li>
+<li>它们必须使用尽可能最短的字节长度进行编码（没有零填充）3:规则3有一个例外：如果有多于一个字节并且第二个最重要字节的最高有效位被设置， 与符号位冲突。 在这种情况下，左边允许单个0x00或0x80字节。</li>
+<li>负零不被允许。</li>
+</ol>
+<p>新提出的opcode <code>x OP_BIN2NUM - &gt; out</code>可以用来在需要时将二进制数组转换为规范的数字。</p>
+<p>新提出的操作码<code>x OP_NUM2BIN</code>可用于将数字转换为长度为n的零填充二进制数组，同时保留符号位。</p>
+<p><strong>Endian符号</strong></p>
+<p>为了便于阅读，本文档中使用了十六进制字符串，其中使用了大端符号。即：0x0100表示十进制256而不是十进制1。</p>
+<h3 id="风险和哲学方法"><a href="#风险和哲学方法" class="headerlink" title="风险和哲学方法"></a>风险和哲学方法</h3><p>一般而言，采取的方法是尽可能地限制边缘案例的极简主义方法。 在可能的情况下，与现有的操作码结合使用的原始操作码可能被组合，以产生比一组更复杂的操作码更优选的更复杂的操作。 导致模糊或未定义行为的输入条件应该快速失败。</p>
+<p>应针对以下风险状况检查每个操作代码并明确定义缓解行为：</p>
+<ul>
+<li>操作数字节长度不匹配。在通常预期两个操作数具有匹配的字节长度的情况下，应当定义所产生的行为。</li>
+<li>带符号的整数是否有符号整数是允许的操作数并且是否需要特殊处理。</li>
+<li>堆栈大小的影响。元素的数量和元素的总大小。</li>
+<li>溢出。在操作结果超出MAX_SCRIPT_ELEMENT_SIZE的实例中定义的行为</li>
+<li>空字节向量操作数。是否允许空字节向量表示为零。</li>
+<li>空字节向量输出。 请注意，输出一个空字节数组的操作已经有效地将false推送到堆栈上。 如果这是脚本中的最后一个操作，或者如果条件操作符紧跟在脚本之后，则作者必须考虑这种可能性。 对于许多现有的操作码而言，这是现在的情况，所以继续允许这种行为是一致的。</li>
+</ul>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><ul>
+<li>堆栈内存使用 - 堆栈元素大小的总和 - 显示对内存使用的影响</li>
+<li>操作数顺序 - 按照惯例，其中指定了多个操作数，最上面的堆栈项是最后一个操作数。例如x1 x2 OP_CAT - &gt; x2是顶层堆栈项，x1是顶层的下一个堆栈项</li>
+<li>空字节数组 - 在整个文档中，OP_0用作空字节数组的简便表示。虽然这是一个推送数据操作代码，但它的效果是推空字节数组到堆栈。<h3 id="拼接操作"><a href="#拼接操作" class="headerlink" title="拼接操作"></a>拼接操作</h3><h4 id="OP-CAT"><a href="#OP-CAT" class="headerlink" title="OP_CAT"></a>OP_CAT</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Opcode (decimal): 126</span><br><span class="line">Opcode (hex): 0x7e</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>连接两个操作数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x1 x2 OP_CAT → out</span><br></pre></td></tr></table></figure></p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ox11 0x2233 OP_CAT -&gt; 0x112233</span><br></pre></td></tr></table></figure></p>
+<p>这个操作会失败如果：<br><code>0 &lt;= len（out）&lt;= MAX_SCRIPT_ELEMENT_SIZE</code> - 操作无法输出违反元素大小约束的元素</p>
+<p>请注意，零长度操作数的连接是有效的</p>
+<p>成功执行的影响：</p>
+<ul>
+<li>堆栈内存使用是不变的</li>
+<li>堆栈上的元素数量减少一个</li>
+</ul>
+<p>输出长度的限制可以防止内存耗尽攻击，导致操作对堆栈大小的影响比现有的OP_DUP操作符小。</p>
+<p>单元测试：</p>
+<ol>
+<li><code>a b OP_DIV - &gt; failure</code> 其中！ isnum（a）或 ！isnum（b） - 两个操作数都必须是有效的数字</li>
+<li><code>0 OP_DIV - &gt; failure</code> - 除以正零（所有大小），负零（所有大小），OP_0</li>
+<li><code>a b OP_DIV - &gt; out</code> 其中a &lt;0的结果必须是负数或任何形式的零。</li>
+<li>检查不同长度1..4的操作数的有效结果<h4 id="OP-MOD"><a href="#OP-MOD" class="headerlink" title="OP_MOD"></a>OP_MOD</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Opcode (decimal): 151</span><br><span class="line">Opcode (hex): 0x97</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>返回除以b后的余数。输出将使用所需的最少字节数来表示。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a b OP_MOD → out</span><br><span class="line">where a and b are interpreted as numbers</span><br></pre></td></tr></table></figure></p>
+<p>这个操作会失败如果：</p>
+<ol>
+<li><code>！isnum（a）|| ！isnum（b）</code> - 两个操作数都不是有效的数字</li>
+<li><code>b == 0</code> - b是负数或等于任何类型的零</li>
+</ol>
+<p>成功执行的影响：</p>
+<ul>
+<li>堆栈内存使用减少（删除一个元素）</li>
+<li>堆栈上的元素数量减少一个</li>
+</ul>
+<p>单元测试：</p>
+<ol>
+<li><code>a b OP_MOD - &gt; failure</code>其中<code>！isnum（a）</code>或<code>！isnum（b）</code> - 两个操作数都必须是有效的数字</li>
+<li><code>a 0 OP_MOD -&gt; failure</code> - 除以正零（所有大小），负零（所有大小），OP_0</li>
+<li><code>a b OP_MOD -&gt; failure</code>其中 a &lt; 0, b &lt; 0 - 两个操作数都必须是正数</li>
+<li>检查不同长度1..4的操作数的有效结果</li>
+</ol>
+<h3 id="新操作"><a href="#新操作" class="headerlink" title="新操作"></a>新操作</h3><p><strong>草案讨论</strong><br>为了便于按位逻辑的“操作数必须等长”规则。 需要额外的操作员为脚本作者提供填充操作数的合理方式。 填充字节数组和填充数字之间必须有明确的区别。<br><strong>结束草案讨论</strong></p>
+<h4 id="OP-BIN2NUM"><a href="#OP-BIN2NUM" class="headerlink" title="OP_BIN2NUM"></a>OP_BIN2NUM</h4><p><code>OP_BIN2NUM</code>取代<code>OP_LEFT</code>并使用它的操作码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Opcode (decimal): 128</span><br><span class="line">Opcode (hex): 0x80</span><br></pre></td></tr></table></figure></p>
+<p>另见<code>OP_NUM2BIN</code></p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x0000000002 OP_BIN2NUM -&gt; 0x02</span><br><span class="line">0x800005 OP_BIN2NUM -&gt; 0x85</span><br></pre></td></tr></table></figure></p>
+<p>这个操作会失败，如果：</p>
+<ol>
+<li>数字值超出可接受的数值范围（当前大小限制为4个字节）</li>
+</ol>
+<h4 id="OP-NUM2BIN"><a href="#OP-NUM2BIN" class="headerlink" title="OP_NUM2BIN"></a>OP_NUM2BIN</h4><p><code>OP_NUM2BIN</code>取代<code>OP_RIGHT</code>并使用它的操作码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Opcode (decimal): 129</span><br><span class="line">Opcode (hex): 0x81</span><br></pre></td></tr></table></figure></p>
+<p>将数字值转换为特定大小的二进制数组，考虑符号位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n m OP_NUM2BIN -&gt; x</span><br><span class="line"></span><br><span class="line">where m and n are interpreted as numbers</span><br></pre></td></tr></table></figure></p>
+<p>另见<code>OP_BIN2NUM</code>。</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x02 4 OP_NUM2BIN -&gt; 0x00000002</span><br><span class="line">0x85 4 OP_NUM2BIN -&gt; 0x80000005</span><br></pre></td></tr></table></figure></p>
+<p>这个操作会失败，如果：</p>
+<ol>
+<li>n或m不是有效的数字值</li>
+<li>m &lt;len（n）。 n是一个有效的数值，因此它已经以最小的表示</li>
+<li>m&gt; MAX_SCRIPT_ELEMENT_SIZE - 结果太大</li>
+</ol>
+<h3 id="参考实现"><a href="#参考实现" class="headerlink" title="参考实现"></a>参考实现</h3><p>TODO</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>[1] <a href="https://en.bitcoin.it/wiki/Script#Opcodes" target="_blank" rel="noopener">https://en.bitcoin.it/wiki/Script#Opcodes</a></p>
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>原文:<a href="https://github.com/shadders/uahf-spec/blob/reenable-op-codes/reenable-op-codes.md" target="_blank" rel="noopener">https://github.com/shadders/uahf-spec/blob/reenable-op-codes/reenable-op-codes.md</a></p>
+<hr>
+<p>本文由 <code>Copernicus 团队 冉小龙</code>翻译，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
