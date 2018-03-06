@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/03/06/译-BIP130发送消息头/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="概述当添加一个新消息-“sendheaders”时，比起“inv”消息来，节点更喜欢通过 “headers” 消息来接收新块的广播。 动机自 0.10 引入“headers-first”下载块以来，假设块不能够连接到（有效）头文件链，块将不会被处理。因此，块中继工作通常如下：  节点（N）用包含块 hash 的“inv”消息来广播新的提示 其他节点（P）用“getheaders”消息（请求 hea">
-<meta property="og:updated_time" content="2018-03-06T01:18:17.155Z">
+<meta property="og:updated_time" content="2018-03-06T03:05:46.638Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]BIP130发送消息头">
 <meta name="twitter:description" content="概述当添加一个新消息-“sendheaders”时，比起“inv”消息来，节点更喜欢通过 “headers” 消息来接收新块的广播。 动机自 0.10 引入“headers-first”下载块以来，假设块不能够连接到（有效）头文件链，块将不会被处理。因此，块中继工作通常如下：  节点（N）用包含块 hash 的“inv”消息来广播新的提示 其他节点（P）用“getheaders”消息（请求 hea">
@@ -165,7 +165,7 @@
 <li>通过检查协议 <code>version &gt;= 70012</code> 来启用功能发现</li>
 </ol>
 <h2 id="附加限制"><a href="#附加限制" class="headerlink" title="附加限制"></a>附加限制</h2><p>由于对sendheaders的支持是可选的，所以实现这一点的软件也可以选择性地施加其他的约束，例如只在建立连接后才去遵守sendheaders消息。</p>
-<h2 id="向后兼容"><a href="#向后兼容" class="headerlink" title="向后兼容"></a>向后兼容</h2><p>在这种变化之后，老客户仍然完全兼容并且可以互操作。</p>
+<h2 id="向后兼容"><a href="#向后兼容" class="headerlink" title="向后兼容"></a>向后兼容</h2><p>在这种变化之后，老客户端仍然完全兼容并且可以互操作。</p>
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><a href="https://github.com/bitcoin/bitcoin/pull/6494" target="_blank" rel="noopener">https://github.com/bitcoin/bitcoin/pull/6494</a></p>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>原文链接：<a href="https://github.com/bitcoin/bips/blob/master/bip-0130.mediawiki" target="_blank" rel="noopener">sendheaders message</a></p>
 <hr>
