@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="具有代表性的货币是用于任何没有内在价值但可以交换定义数量的商品（通常是黄金或白银）的代币的术语。 本节将讨论如何使用 satoshis 作为代表性货币，更一般地说，使用satoshis来代表所有权 - 例如股票，债券，实物，其他加密货币和“ICO”（初始货币产品） 被比特币社区命名为“彩色货币”。 我相信，以太坊最近的成功不是由复杂的合同（有一个问题是真正的，实际的合同是否会在区块链中有用），而">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/22188-7ff6ffc22ad7ac79.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2018-02-17T13:21:30.944Z">
+<meta property="og:updated_time" content="2018-03-06T01:06:41.818Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]BCH脚本应用程序:Tokens(OP_GROUP)">
 <meta name="twitter:description" content="具有代表性的货币是用于任何没有内在价值但可以交换定义数量的商品（通常是黄金或白银）的代币的术语。 本节将讨论如何使用 satoshis 作为代表性货币，更一般地说，使用satoshis来代表所有权 - 例如股票，债券，实物，其他加密货币和“ICO”（初始货币产品） 被比特币社区命名为“彩色货币”。 我相信，以太坊最近的成功不是由复杂的合同（有一个问题是真正的，实际的合同是否会在区块链中有用），而">
@@ -192,6 +192,23 @@
 <li>与脚本语言整合</li>
 <li>以及为匿名P2P交换使用半事务的能力</li>
 </ul>
+<h2 id="将组数据放入-OP-RETURN-中"><a href="#将组数据放入-OP-RETURN-中" class="headerlink" title="将组数据放入 OP_RETURN 中"></a>将组数据放入 OP_RETURN 中</h2><p>_注意：这不是关于在 OP<em>RETURN 中运行整个 meta-blockchain</em></p>
+<p>将数据放在单独存放数据的位置要比在脚本中放置有效的 vout 属性要好的多。然而，在 vout 中并没有这样的仅用于存放数据的位置，但我们可以尝试将其放在单独的标有 OP_RETURN 的 vout 中（技术上也是脚本，但完全是数据）。由于这些数据将完全包含OP_GROUP包含的内容，因此两者在功能上是等效的。然而在具体实现中存在以下一些问题：</p>
+<ol>
+<li>Vouts 是独立的。该提议在 OP_RETURN vout 和其它 vouts 之间创建验证依赖关系，这需要修改大量代码。</li>
+<li>OP_RETURN 可以被矿工丢弃。这基本上是它设计要做的，以及为什么它的“价值”必须是0。矿工们将不得不改变代码来保持它们，并打破OP_RETURN的原始目的。</li>
+<li>OP_RETURN 具有数据大小限制，即使提出的 OP_RETURN 大小限制增加（到220或520字节），也会大大限制 vout 的数量。</li>
+<li>部分交易签名将不再起作用，因为签名者需要签署vout N和OP_RETURN的一些子集。</li>
+<li>UTXO 集合数据库由 vouts 组织，所以基本上必须从 OP_RETURN 中提取相关数据并将其放入与 vout 相关的数据库记录中 - 但如果使用OP_GROUP，则这正是它已经存在的地方。</li>
+</ol>
+<h2 id="在-OP-RETURN-中放置一个-Meta-Blockchain"><a href="#在-OP-RETURN-中放置一个-Meta-Blockchain" class="headerlink" title="在 OP_RETURN 中放置一个 Meta-Blockchain"></a>在 OP_RETURN 中放置一个 Meta-Blockchain</h2><p>具体的技术如下所述，但存在以下常见问题：</p>
+<ol>
+<li>没有 SPV（手机）钱包。 构成 Meta-Blockchain 的 OP_RETURN 中的数据未经矿工验证。 所以伪造的信息可以放在区块链中。 这可能造成很多浪费，但更重要的是，这意味着所有事务都必须经过客户端验证，需要一个完整的节点。 它有效地将区块链减少到时间戳机器。 但比特币既是一个时间戳机器，也是一个交易验证器，原因很充分。</li>
+<li>有限的OP_RETURN空间。</li>
+<li>由于 Meta-Blockchain 大部分是独立的，因此与 “native” coins 融合不佳。从本质上讲，唯一的“整合”是你可以原子发布 BCH 和 Meta-Blockchain 交易。</li>
+<li>在原有基础上，增加了自己的脚本和共识规则，因此更复杂，代码和维护更加困难。</li>
+<li>独立更好。 任何 Meta-Blockchain 技术都可以更有效地实施为自己的独立链。 任何塞进 OP_RETURN 的技术都很难与其更实用，并且具有更高效的独立版本竞争。</li>
+</ol>
 <h2 id="EPOBC"><a href="#EPOBC" class="headerlink" title="EPOBC"></a>EPOBC</h2><p>项目地址:<a href="https://github.com/chromaway/ngcccbase/wiki/EPOBC_simple" target="_blank" rel="noopener">https://github.com/chromaway/ngcccbase/wiki/EPOBC_simple</a><br>这个系统使用satoshis作为代表性的钱币，所以基本的比特币功能和脚本是可能的。 但是，矿工不强制彩色硬币的语义。 这意味着从彩色硬币的角度来看，有可能犯下不明确或不正确的交易。 在这些情况下，协议将着色定义为“丢失”，这是主要的缺点。</p>
 <p>输入颜色通过此处描述的基于订单的方案分配给输出。 实质上，所有的输入satoshis排列，并按照它们出现的顺序用颜色标记。 接下来，所有的输出都与输入对齐，颜色从输入satoshi传输到1输出。 该算法导致一些复杂性; 首先，一个输出可能包含不同的标记，颜色不同（例如，如果前两个输入是每500个satoshis，红色和蓝色，第一个输出是1000 satoshis，那么输出的颜色将是红色和蓝色）。 必须记住每种颜色的数量和输出中的颜色顺序。 为了确定着色，必须将所有交易追溯到颜色成因，使得轻的钱包非常难以实施）。</p>
 <p>最后，严格的颜色排序使得使用半交易进行投标是不可能的，因为不能用第一次输入“红色”颜色和第一次输出“蓝色”颜色来创建部分交易。</p>
