@@ -6,18 +6,18 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   
-  <title>[译]BIP130发送消息头 | Cryptocurrency Tech</title>
+  <title>Cryptocurrency Tech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概述当添加一个新消息-“sendheaders”时，比起“inv”消息来，节点更喜欢通过 “headers” 消息来接收新块的广播。 动机自 0.10 引入“headers-first”下载块以来，假设块不能够连接到（有效）头文件链，块将不会被处理。因此，块中继工作通常如下：  节点（N）用包含块 hash 的“inv”消息来广播新的提示 其他节点（P）用“getheaders”消息（请求 hea">
+  <meta name="description" content="[译]BIP133 feefilter message摘要增加一个新的消息类型–“feefilter”，用于告知 peer 不要向该节点发送低于指定费率的交易的“inv”。 动机为了防止未开采的低费用的攻击和一些垃圾邮件的交易，Bitcoin Core 0.12中引入了有限 mempool 的概念。同时引入了拒绝过滤器，以防止同一交易因为费用不足而被拒绝时，重复请求的问题。 这些方法有助于保持节点">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[译]BIP130发送消息头">
-<meta property="og:url" content="http://yoursite.com/2018/03/06/译-BIP130发送消息头/index.html">
+<meta property="og:title" content="Cryptocurrency Tech">
+<meta property="og:url" content="http://yoursite.com/2018/03/09/译-BIP133 feefilter message/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
-<meta property="og:description" content="概述当添加一个新消息-“sendheaders”时，比起“inv”消息来，节点更喜欢通过 “headers” 消息来接收新块的广播。 动机自 0.10 引入“headers-first”下载块以来，假设块不能够连接到（有效）头文件链，块将不会被处理。因此，块中继工作通常如下：  节点（N）用包含块 hash 的“inv”消息来广播新的提示 其他节点（P）用“getheaders”消息（请求 hea">
-<meta property="og:updated_time" content="2018-03-06T03:05:46.638Z">
+<meta property="og:description" content="[译]BIP133 feefilter message摘要增加一个新的消息类型–“feefilter”，用于告知 peer 不要向该节点发送低于指定费率的交易的“inv”。 动机为了防止未开采的低费用的攻击和一些垃圾邮件的交易，Bitcoin Core 0.12中引入了有限 mempool 的概念。同时引入了拒绝过滤器，以防止同一交易因为费用不足而被拒绝时，重复请求的问题。 这些方法有助于保持节点">
+<meta property="og:updated_time" content="2018-03-09T01:04:21.439Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[译]BIP130发送消息头">
-<meta name="twitter:description" content="概述当添加一个新消息-“sendheaders”时，比起“inv”消息来，节点更喜欢通过 “headers” 消息来接收新块的广播。 动机自 0.10 引入“headers-first”下载块以来，假设块不能够连接到（有效）头文件链，块将不会被处理。因此，块中继工作通常如下：  节点（N）用包含块 hash 的“inv”消息来广播新的提示 其他节点（P）用“getheaders”消息（请求 hea">
+<meta name="twitter:title" content="Cryptocurrency Tech">
+<meta name="twitter:description" content="[译]BIP133 feefilter message摘要增加一个新的消息类型–“feefilter”，用于告知 peer 不要向该节点发送低于指定费率的交易的“inv”。 动机为了防止未开采的低费用的攻击和一些垃圾邮件的交易，Bitcoin Core 0.12中引入了有限 mempool 的概念。同时引入了拒绝过滤器，以防止同一交易因为费用不足而被拒绝时，重复请求的问题。 这些方法有助于保持节点">
   
     <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
   
@@ -135,13 +135,13 @@
     <div class="container post-box">
         <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
             <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
-                <strong>[译]BIP130发送消息头</strong>
+                <strong>Null</strong>
             </h1>
             
             <div class="is-flex align-center">
                 <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
                 <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
-                <span class="post-date sub-title">at: 2018-03-06</span>
+                <span class="post-date sub-title">at: 2018-03-09</span>
             </div>
             
                 <div>
@@ -150,26 +150,26 @@
             
         </div>
         <div class="content" style="overflow: auto">
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>当添加一个新消息-“sendheaders”时，比起“inv”消息来，节点更喜欢通过 “headers” 消息来接收新块的广播。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>自 0.10 引入“headers-first”下载块以来，假设块不能够连接到（有效）头文件链，块将不会被处理。因此，块中继工作通常如下：</p>
-<ol>
-<li>节点（N）用包含块 hash 的“inv”消息来广播新的提示</li>
-<li>其他节点（P）用“getheaders”消息（请求 headers 直到有新的提示出现）和新提示本身的“getdata”消息来响应“inv”</li>
-<li>N 用一个“headers”消息（带有新 block 的 headers 以及任何前面的 headers，P 未知）和包含一个新 block 的“block”消息来响应</li>
-</ol>
-<p>然而，在建立提示且其中一个新的 block 被广播的情况下，对于一个新区块这通常是更加高效的，就是这个节点 N 只广播block-header而不是去广播 block-hash 以及保存其他节点生成和传输的 getheaders 消息（和所需的块定位符）。</p>
-<p>在 reorg 的情况下，其中 1 个或多个 blocks 被断开连接，节点当前只是为新提示发送“inv”。在请求这些块之前，需要等到中间块的 headers 被交付，此时其他节点可以立即请求新的提示。 通过广播 headers，其他节点可以立即请求从上一个fork点开始到块公告中的新提示出现所有中间块。</p>
+            <h1 id="译-BIP133-feefilter-message"><a href="#译-BIP133-feefilter-message" class="headerlink" title="[译]BIP133 feefilter message"></a>[译]BIP133 feefilter message</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>增加一个新的消息类型–“feefilter”，用于告知 peer 不要向该节点发送低于指定费率的交易的“inv”。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>为了防止未开采的低费用的攻击和一些垃圾邮件的交易，Bitcoin Core 0.12中引入了有限 mempool 的概念。同时引入了拒绝过滤器，以防止同一交易因为费用不足而被拒绝时，重复请求的问题。 这些方法有助于保持节点上的资源利用率不受限制。</p>
+<p>但是，这些方法的有效性存在限制。 拒绝过滤器在每个块之后被重置，这意味着在较长时间段内被调用的交易将被重新申请，并且没有办法阻止第一次请求交易。 此外，对于接受到mempool的每个事务，inv数据至少被发送一次或发送给每个 peer，并且没有机制知道发送给指定的 peer 的 inv 不会导致 getdata 请求，因为它代表交易费用太少。</p>
+<p>在收到feefilter消息之后，节点可以在发送 inv 之前知道给定事务费率低于给定peer当前所需的最小值，这时候节点能预先得知，不用继续去将该事务的inv消息给该 peer。</p>
 <h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><ol>
-<li>sendheaders消息被定义为一个空的消息，其中 <code>pchCommand == “sendheaders”</code></li>
-<li>收到“sendheaders”消息后，将允许节点（但不是必需）通过发送新块的block-header来通知新的blocks（为了块连接，节点所认为的对等点可能需要与其他的块一起）</li>
-<li>通过检查协议 <code>version &gt;= 70012</code> 来启用功能发现</li>
+<li>feefilter消息被定义为：pchCommand ==“feefilter”的返回值是int64_t的一个消息。</li>
+<li>一旦收到“feefilter”消息，节点将被允许（但不是必需）执行这笔过滤交易的交易，这些交易的价格低于feefillter消息中提供的费率，解释为每 kilobyte 为 satoshis。</li>
+<li>feefilter 与交易过滤器相结合，因此如果 SPV 客户端要加载 bloom 过滤器并发送 feefilter 消息，则交易只有在它们通过两个过滤器后才会被执行。</li>
+<li>如果它存在，则从 mempool 消息生成的 Inv 也受到费用过滤器的限制。</li>
+<li>通过检查协议版本 &gt;= 70013 来启用功能发现</li>
 </ol>
-<h2 id="附加限制"><a href="#附加限制" class="headerlink" title="附加限制"></a>附加限制</h2><p>由于对sendheaders的支持是可选的，所以实现这一点的软件也可以选择性地施加其他的约束，例如只在建立连接后才去遵守sendheaders消息。</p>
-<h2 id="向后兼容"><a href="#向后兼容" class="headerlink" title="向后兼容"></a>向后兼容</h2><p>在这种变化之后，老客户端仍然完全兼容并且可以互操作。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><a href="https://github.com/bitcoin/bitcoin/pull/6494" target="_blank" rel="noopener">https://github.com/bitcoin/bitcoin/pull/6494</a></p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>原文链接：<a href="https://github.com/bitcoin/bips/blob/master/bip-0130.mediawiki" target="_blank" rel="noopener">sendheaders message</a></p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>网络交易的传播效率不应受到这种变化的不利影响。 通常，节点的mempool不接受的事务不会被此节点执行，并且使用此消息实现的功能仅用于过滤这些事务。 可能会有少量的极端情况，其中节点的 mempool 最小费用实际上小于其它节点意识到的过滤器值，并且现在将会重新禁止这些值之间的费率交易。</p>
+<p>如果设置了“-whitelistforcerelay”选项，则不会将 Feefilter 消息发送给已列入白名单的同伴。在这种情况下，即使交易不被接受，交易也会被转发。</p>
+<p>由于它广播了关于其mempool分钟费用的标识信息，因此对于节点的匿名问题存在隐私担忧。 为了帮助改善这种担忧，实现量化具有少量随机性的过滤器值广播，此外，消息在个别随机分布的时间被广播给其他不同的节点。</p>
+<p>如果一个节点使用 prioritisetransaction 接受其实际费用率可能低于节点的 mempool min费用的交易，则可能需要考虑 feefilter 禁用以确保其暴露于所有可能的txid。</p>
+<h2 id="向后兼容"><a href="#向后兼容" class="headerlink" title="向后兼容"></a>向后兼容</h2><p>在这种变化之后，老客户仍然完全兼容并且可以互操作。此外，实施此BIP的客户可以选择不发送任何费用过滤消息。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><a href="https://github.com/bitcoin/bitcoin/pull/7542" target="_blank" rel="noopener">https://github.com/bitcoin/bitcoin/pull/7542</a></p>
+<h2 id="版权"><a href="#版权" class="headerlink" title="版权"></a>版权</h2><p>该文件置于公共领域。</p>
 <hr>
-<p>本文由 <code>copernicus团队 冉小龙</code> 翻译，转载无需授权。</p>
+<p>本文由 copernicus 团队 冉小龙 翻译，转载无需授权。</p>
 
         </div>
         <div class="post-reply">
