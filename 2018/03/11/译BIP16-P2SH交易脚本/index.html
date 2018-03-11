@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>译BIP16:P2SH交易脚本 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="摘要这个BIP描述了比特币脚本系统中一个新的标准交易类型，定义了额外的验证规则，但是只能适用于新的交易。 动机pay-to-script-hash脚本类型的目的是将构建交易的成本从发送交易方转嫁到赎回方。 它的好处是允许交易发起者能够构建各种交易，不管多么复杂，只需要使用20字节固定长度的哈希，这个足够短的hash能够通过扫描二维码或者简单的复制粘贴完成。 说明一个新的交易类型，能够被转发并打包入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="译BIP16:P2SH交易脚本">
+<meta property="og:url" content="http://yoursite.com/2018/03/11/译BIP16-P2SH交易脚本/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="摘要这个BIP描述了比特币脚本系统中一个新的标准交易类型，定义了额外的验证规则，但是只能适用于新的交易。 动机pay-to-script-hash脚本类型的目的是将构建交易的成本从发送交易方转嫁到赎回方。 它的好处是允许交易发起者能够构建各种交易，不管多么复杂，只需要使用20字节固定长度的哈希，这个足够短的hash能够通过扫描二维码或者简单的复制粘贴完成。 说明一个新的交易类型，能够被转发并打包入">
+<meta property="og:updated_time" content="2018-03-11T01:04:13.421Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="译BIP16:P2SH交易脚本">
+<meta name="twitter:description" content="摘要这个BIP描述了比特币脚本系统中一个新的标准交易类型，定义了额外的验证规则，但是只能适用于新的交易。 动机pay-to-script-hash脚本类型的目的是将构建交易的成本从发送交易方转嫁到赎回方。 它的好处是允许交易发起者能够构建各种交易，不管多么复杂，只需要使用20字节固定长度的哈希，这个足够短的hash能够通过扫描二维码或者简单的复制粘贴完成。 说明一个新的交易类型，能够被转发并打包入">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>译BIP16:P2SH交易脚本</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-11</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>这个BIP描述了比特币脚本系统中一个新的标准交易类型，定义了额外的验证规则，但是只能适用于新的交易。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>pay-to-script-hash脚本类型的目的是将构建交易的成本从发送交易方转嫁到赎回方。</p>
+<p>它的好处是允许交易发起者能够构建各种交易，不管多么复杂，只需要使用20字节固定长度的哈希，这个足够短的hash能够通过扫描二维码或者简单的复制粘贴完成。</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>一个新的交易类型，能够被转发并打包入块，它被这样定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_HASH160 [20-byte-hash-value] OP_EQUAL</span><br></pre></td></tr></table></figure>
+<p>[20-byte-hash-value]应该被操作码(0x14)push到栈上，这个操作码紧跟着这个20字节的hash。这个新的交易通过一个标准的解锁脚本被赎回:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...signatures... &#123;serialized script&#125;</span><br></pre></td></tr></table></figure>
+<p>如果一个交易序列化的脚本(也成为赎回脚本)是其本身， 也就是其他标准交易类型的一种，那么这个交易就被认为是唯一标准的，能够赎回pay-to-script交易的输出。</p>
+<p>当在转发交易或将交易打包入块之前，这些交易输出的验证规则如下：</p>
+<ol>
+<li>如果在解锁脚本中存在任何的push data操作码以外的操作码，验证失败。</li>
+<li>初始化的栈空间通过签名和序列化脚本创建，如果序列化的脚本hash和outpoint中的hash不匹配时，验证立即失败。</li>
+<li>序列化脚本从初始栈弹出，使用弹出的栈和反序列化脚本作为锁定脚本，这个交易被认为是有效的。</li>
+</ol>
+<p>当验证一个交易时，这些新的规则只有在时间戳大于等于1333238400(2012年4月1日)才会被使用。一个早于1333238400时间戳的交易，使用新的交易验证规则会验证失败。旧的交易在在旧的交易验证规则下一定是有效的(查看向后兼容性的详细内容)。</p>
+<p>举例，含有锁定脚本以及与其对应的只有一个签名的解锁脚本的交易:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptSig: [signature] &#123;[pubkey] OP_CHECKSIG&#125;</span><br><span class="line">scriptPubKey: OP_HASH160 [20-byte-hash of &#123;[pubkey] OP_CHECKSIG&#125; ] OP_EQUAL</span><br></pre></td></tr></table></figure>
+<p>序列化脚本中的签名数需要低于一个区块20000个的最大限制，如下：</p>
+<ol>
+<li>不管它们是否被评估，<code>OP_CHECKSIG</code> 和 <code>OP_CHECKSIGVERIFY</code> 被认为是一个签名操作。</li>
+<li>不管它们是否被评估，<code>OP_CHECKMULTISIG</code> 和 <code>OP_CHECKMULTISIGVERIFY</code> 会在 <code>OP_1</code> 到 <code>OP_16</code> 操作码前，被认为1~16个签名操作。</li>
+<li>所有其他的 <code>OP_CHECKMULTISIG</code> 和 <code>OP_CHECKMULTISIGVERIFY</code> 被认为是20个签名操作。</li>
+</ol>
+<p>例如：</p>
+<p>+3签名操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;2 [pubkey1] [pubkey2] [pubkey3] 3 OP_CHECKMULTISIG&#125;</span><br></pre></td></tr></table></figure>
+<p>+22 signature operations</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;OP_CHECKSIG OP_IF OP_CHECKSIGVERIFY OP_ELSE OP_CHECKMULTISIGVERIFY OP_ENDIF&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>这个BIP代替了BIP12， BIP12试图通过新的交易码 <code>OP_EVAL</code> 完成这个BIP的所有事情并且更多。</p>
+<p>这个BIP(和BIP13，描述P2SH地址类型)的动机存在一些争议；很多人认为它是没必要的，复杂的多重签名交易类型可以简单的通过发起者完成序列化脚本来支持。但作者认为此这个BIP已经做到了最小化改变，来促使商家、交易所以及其他软件支持多重签名，将资金发送到base58编码的20字节的比特币地址。</p>
+<p>虽然识别一个特殊的锁定脚本格式，并执行额外的验证，这是非常令人厌恶的。但是一直认为要么实现越来越复杂，要么以一种非常危险的方式扩展表达语言的能力。</p>
+<p>这个签名操作的计数规则趋向于通过静态扫描序列化脚本能够简单快速的被实现。比特币规定了一个区块所能包含的最大签名数量，防止恶意的DOS攻击。假如没有这个限制，一个不诚实的旷工可能广播一个包含数十万个ECDSA签名的区块，当其他节点在验证当前这个区块的同时，这个不诚实的节点已经领先计算下一个区块。</p>
+<p>旧的实现存在一次确认攻击，但是在实践中这种攻击是非常昂贵和困难的。攻击如下：</p>
+<ol>
+<li>攻击者创建一个P2SH交易，这个交易被旧版本的软件认为是有效的，但是新的软件验证为非法的，攻击者使用这个交易给他们自己发送一些币。</li>
+<li>攻击者然后创建一个标准的交易，来花费这个P2SH交易，并支付给运行旧软件的受害者。</li>
+<li>攻击者创建一个区块，并包含这两个交易。</li>
+</ol>
+<p>如果受害者接受一次确认支付，由于其他节点验证该区块是非法的，因此覆盖了这个非法的区块，然而攻击者已经获胜了。</p>
+<p>然而这种攻击代价是十分昂贵的，首先攻击者要创建一个区块，而其他网络节点会认为其无效，创建一个区块本身也是非常困难的。因此，用户不应该接受金额非常大的一次确认交易。</p>
+<h2 id="向后兼容"><a href="#向后兼容" class="headerlink" title="向后兼容"></a>向后兼容</h2><p>这些交易对于旧版本的软件来说是非标准的，它们不会转发这些交易，也不会将这些交易打包入块。</p>
+<p>旧版本的软件在验证区块(由支持该BIP的新软件创建)将会验证序列化脚本hash的一致性，不会再做额外的验证。</p>
+<p>为了避免区块链通过恶意的P2SH交易而被分割，需要处理下面的这种情况：</p>
+<ul>
+<li>一个P2SH交易对于新版本软件是无效的，而对于旧版本软件是有效的。</li>
+</ul>
+<p>为了顺利的完成升级并确保不会发生永久的区块链分裂，需要超过50%的旷工同时从旧版本验证规则变成新版本验证规则，并支持新交易类型的完整验证规则。</p>
+<p>为了判断是否超过50%的算力支持该BIP，旷工被要求升级软件，并在他们创建区块创币交易输入中加入”/P2SH/“字符串。</p>
+<p>在2012年2月1日，区块链将会检查在过去7天内支持P2SH交易的区块数量。如果550个或更多的创币交易中包含”/P2SH/“，那么时间戳在2012年2月15日00:00:00 GMT之后的所有区块将完全支持P2SH交易。在一个星期内，大约有1000个区块被创建。因此，550，大约是55%的全网节点支持该新特性。</p>
+<p>如果大部分算力不支持这种新的验证规则，该BIP将会被延期，如果明确表明大部分算力将永远不会支持该提议，那么该BIP将会被取消。</p>
+<h3 id="序列化脚本的520字节限制"><a href="#序列化脚本的520字节限制" class="headerlink" title="序列化脚本的520字节限制"></a>序列化脚本的520字节限制</h3><p>作为向后兼容要求的结果，序列化脚本本身受到与任何其他 <code>PUSHDATA</code> 操作相同的规则，包括大于520字节的数据不会被push到栈中。因此，如果赎回脚本长度大于520字节，则不可能花费该P2SH交易。例如，当 <code>OP_CHECKMULTISIG</code> 操作码本身接收到多达20个pubkey时，使用33字节压缩的公钥，只能花费最多包含15个pubkey的P2SH赎回脚本：3个字节+ 15个pubkeys * 34个字节/pubkey = 513字节。</p>
+<h2 id="参考实现"><a href="#参考实现" class="headerlink" title="参考实现"></a>参考实现</h2><p><a href="https://gist.github.com/gavinandresen/3966071" target="_blank" rel="noopener">https://gist.github.com/gavinandresen/3966071</a></p>
+<h2 id="其它资料"><a href="#其它资料" class="headerlink" title="其它资料"></a>其它资料</h2><ul>
+<li><a href="https://bitcointalk.org/index.php?topic=46538" target="_blank" rel="noopener">https://bitcointalk.org/index.php?topic=46538</a></li>
+<li><a href="https://bitcointalk.org/index.php?topic=46538" target="_blank" rel="noopener">P2Sh地址格式</a></li>
+<li><a href="https://github.com/bitcoin/bips/blob/master/bip-0011.mediawiki" target="_blank" rel="noopener">M-of-N 多重签名</a></li>
+<li><a href="https://github.com/bitcoin/bips/blob/master/bip-0016/qa.mediawiki" target="_blank" rel="noopener">该BIP测试清单</a></li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://github.com/bitcoin/bitcoin/commit/8f188ece3c82c4cf5d52a3363e7643c23169c0ff" target="_blank" rel="noopener">移除命令行参数 -bip16和 -paytoscripthashtime</a></li>
+<li><a href="http://blockexplorer.com/tx/6a26d2ecb67f27d1fa5524763b49029d7106e91e3cc05743073461a719776192" target="_blank" rel="noopener">交易id:6a26d2ecb67f27d1fa5524763b49029d7106e91e3cc05743073461a719776192</a></li>
+</ul>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>原文链接: <a href="https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki</a></p>
+<hr>
+<p>本文由 Copernicus团队 戚帅 翻译，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
