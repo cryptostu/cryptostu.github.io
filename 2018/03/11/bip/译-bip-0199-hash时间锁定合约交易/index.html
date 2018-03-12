@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/03/11/bip/译-bip-0199-hash时间锁定合约交易/index.html">
 <meta property="og:site_name" content="Cryptocurrency Tech">
 <meta property="og:description" content="摘要该BIP主要描述了广义的 off-chain 合约谈判的脚本。 总结hash 时间锁定合约（HTLC）是一种脚本，允许指定方（“卖方”）通过公开 hash 的原始信息来花费资金。 在退款情况下，它还允许第二方（“买方”）在超时达到后花费这笔资金。 该脚本采用以下形式： 1234567OP_IF     [HASHOP] &amp;lt;digest&amp;gt; OP_EQUALVERIFY OP_DUP">
-<meta property="og:updated_time" content="2018-03-11T10:10:02.535Z">
+<meta property="og:updated_time" content="2018-03-12T10:21:46.529Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]bip-0199:hash时间锁定合约交易">
 <meta name="twitter:description" content="摘要该BIP主要描述了广义的 off-chain 合约谈判的脚本。 总结hash 时间锁定合约（HTLC）是一种脚本，允许指定方（“卖方”）通过公开 hash 的原始信息来花费资金。 在退款情况下，它还允许第二方（“买方”）在超时达到后花费这笔资金。 该脚本采用以下形式： 1234567OP_IF     [HASHOP] &amp;lt;digest&amp;gt; OP_EQUALVERIFY OP_DUP">
@@ -162,12 +162,12 @@
 <li>Victor（“买方”）和 Peggy（“卖方”）交换公共 hash 并在超时阈值前达成共识。 Peggy（“卖方”）提供了一个 hash 摘要, 双方现在都可以为HTLC构建脚本和P2SH地址。</li>
 <li>Victor（“买方”）将资金发送到P2SH地址。</li>
 <li>或者：<ul>
-<li>Peggy（“卖方”）花费了这笔资金，这样做揭示了 Victor（“买方”）在交易中的原始信息, 或者</li>
+<li>Peggy（“卖方”）花费这笔资金时，将交易中的原始信息提供给了 Victor（“买方”）, 或者</li>
 <li>Victor（“买方”）在超时时间到达后恢复资金</li>
 </ul>
 </li>
 </ul>
-<p>Victor（“买方”）希望减少暂停时间，以减少在    Peggy（“卖方”）不透露原始信息的情况下资金投入的时间。 Peggy（“卖方”）对希望尽快到达超时时间，因为在没有达到超时时间的时候，你是不能花费这笔资金的，或者更糟糕的是，她的交易花费的资金在Victor（“买方”）之前没有进入区块链，但确实向Victor（“买方”）揭示了它的原始信息。</p>
+<p>Victor（“买方”）希望降低超时时间，来减少在    Peggy（“卖方”）不透露原始信息的情况下资金投入的时间。 Peggy（“卖方”）希望增加超时时间，来减少超时时间到达之前，他无法花费这些资金的风险，或者更糟糕的是，Peggy（“卖方”）的交易花费的资金在Victor（“买方”）之前没有进入区块链，但却向Victor（“买方”）告知了它的原始信息。</p>
 <h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>在许多 off-chain 协议中，揭露秘密被用作解决机制的一部分。 在另一些情况下，秘密本身很有价值。 由于能够从不合作的交易对手那里收回资金，HTLC 交易是一种在区块链上交换金钱秘密的安全和便宜的方法，并且秘密拥有者必须在发生这种退款之前收到资金。</p>
 <h3 id="闪电网络"><a href="#闪电网络" class="headerlink" title="闪电网络"></a>闪电网络</h3><p>在闪电网络中，HTLC脚本用于在支付渠道之间执行原子交换。</p>
 <p>Alice 构造 K 并通过 hash 产生 L，她将 HTLC 支付发送给 Bob 以获得 L 的原始信息.Bob 将 HTLC 支付发送给 Carol 以获得相同的原始信息和金额。 只有当 Alice 公开原始信息， K 才可能进行相应的价值交换，并且由于每一步都泄露了秘密，所有各方都得到补偿。 如果在任何时候有些参与方不合作，这个过程可以通过退款条件中止。</p>
