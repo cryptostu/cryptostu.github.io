@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>golang-event在以太坊中的使用 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="go-ethereum中go-event库的使用github.com/ethereum/go-ethereum/event包实现了一个事件发布订阅的库,使用接口主要是event.Feed 类型，以前还有event.TypeMux 类型，看代码注释，说过时了，目前主要使用Feed 类型。 12345678910111213141516171819202122232425262728293031323">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang-event在以太坊中的使用">
+<meta property="og:url" content="http://yoursite.com/2018/03/15/golang-event在以太坊中的使用/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="go-ethereum中go-event库的使用github.com/ethereum/go-ethereum/event包实现了一个事件发布订阅的库,使用接口主要是event.Feed 类型，以前还有event.TypeMux 类型，看代码注释，说过时了，目前主要使用Feed 类型。 12345678910111213141516171819202122232425262728293031323">
+<meta property="og:updated_time" content="2018-03-15T13:34:37.953Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="golang-event在以太坊中的使用">
+<meta name="twitter:description" content="go-ethereum中go-event库的使用github.com/ethereum/go-ethereum/event包实现了一个事件发布订阅的库,使用接口主要是event.Feed 类型，以前还有event.TypeMux 类型，看代码注释，说过时了，目前主要使用Feed 类型。 12345678910111213141516171819202122232425262728293031323">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>golang-event在以太坊中的使用</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-15</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="go-ethereum中go-event库的使用"><a href="#go-ethereum中go-event库的使用" class="headerlink" title="go-ethereum中go-event库的使用"></a>go-ethereum中go-event库的使用</h2><p><a href="github.com/ethereum/go-ethereum/event">github.com/ethereum/go-ethereum/event</a>包实现了一个事件发布订阅的库,使用接口主要是event.Feed 类型，以前还有event.TypeMux 类型，看代码注释，说过时了，目前主要使用Feed 类型。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"github.com/ethereum/go-ethereum/event"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">type</span> someEvent <span class="keyword">struct</span>&#123; I <span class="keyword">int</span> &#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> feed event.Feed</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> someEvent)</span><br><span class="line">	sub := feed.Subscribe(ch)</span><br><span class="line"></span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">for</span> event := <span class="keyword">range</span> ch &#123;</span><br><span class="line">			fmt.Printf(<span class="string">"Received: %#v\n"</span>, event.I)</span><br><span class="line">		&#125;</span><br><span class="line">		sub.Unsubscribe()</span><br><span class="line">		fmt.Println(<span class="string">"done"</span>)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	feed.Send(someEvent&#123;<span class="number">5</span>&#125;)</span><br><span class="line">	feed.Send(someEvent&#123;<span class="number">10</span>&#125;)</span><br><span class="line">	feed.Send(someEvent&#123;<span class="number">7</span>&#125;)</span><br><span class="line">	feed.Send(someEvent&#123;<span class="number">14</span>&#125;)</span><br><span class="line">	<span class="built_in">close</span>(ch)</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过调用event.Feed 类型的<code>Subscrible</code>方法订阅事件通知，需要使用者提前指定接收事件的channel，Subscribe返回Subscription对象，是一个接口类型:<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Subscription <span class="keyword">interface</span> &#123;</span><br><span class="line">            Err() &lt;-<span class="keyword">chan</span> error      <span class="comment">// returns the error channel</span></span><br><span class="line">            Unsubscribe()           <span class="comment">// cancels sending of events, closing the error channel</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>Err()</code> 返回获取error 的channel，调用<code>Unsubscribe()</code>取消事件订阅。事件的发布者调用 <code>Send()</code> 方法，发送事件。<br>可以使用同一个channel实例，多次调用Feed 的<code>Subscrible()</code>方法:<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/ethereum/go-ethereum/event"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> (</span><br><span class="line">		feed   event.Feed</span><br><span class="line">		recv   sync.WaitGroup</span><br><span class="line">		sender sync.WaitGroup</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	feed.Subscribe(ch)</span><br><span class="line">	feed.Subscribe(ch)</span><br><span class="line">	feed.Subscribe(ch)</span><br><span class="line"></span><br><span class="line">	expectSends := <span class="function"><span class="keyword">func</span><span class="params">(value, n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> sender.Done()</span><br><span class="line">		<span class="keyword">if</span> nsent := feed.Send(value); nsent != n &#123;</span><br><span class="line">			fmt.Printf(<span class="string">"send delivered %d times, want %d\n"</span>, nsent, n)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	expectRecv := <span class="function"><span class="keyword">func</span><span class="params">(wantValue, n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> recv.Done()</span><br><span class="line">		<span class="keyword">for</span> v := <span class="keyword">range</span> ch &#123;</span><br><span class="line">			<span class="keyword">if</span> v != wantValue &#123;</span><br><span class="line">				fmt.Printf(<span class="string">"received %d, want %d\n"</span>, v, wantValue)</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				fmt.Printf(<span class="string">"recv v = %d\n"</span>, v)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	sender.Add(<span class="number">3</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">3</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> expectSends(<span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		sender.Wait()</span><br><span class="line">		<span class="built_in">close</span>(ch)</span><br><span class="line">	&#125;()</span><br><span class="line">	recv.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> expectRecv(<span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">	recv.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个例子中， 有三个订阅者， 有三个发送者， 每个发送者发送三次1， 同一个channel ch 里面被推送了9个1.<br>ethereum event 库还提供了一些高级别的方便接口， 比如<code>event.NewSubscription</code>函数，接收一个函数类型，作为数据的生产者， producer本身在后台一个单独的goroutine内执行， 后台goroutine往用户的channel 发送数据:<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/ethereum/go-ethereum/event"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	sub := event.NewSubscription(<span class="function"><span class="keyword">func</span><span class="params">(quit &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> ch &lt;- i:</span><br><span class="line">			<span class="keyword">case</span> &lt;-quit:</span><br><span class="line">				fmt.Println(<span class="string">"unsubscribed"</span>)</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="keyword">range</span> ch &#123;</span><br><span class="line">		fmt.Println(i)</span><br><span class="line">		<span class="keyword">if</span> i == <span class="number">4</span> &#123;</span><br><span class="line">			sub.Unsubscribe()</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>库也提供了event.SubscriptionScope类型用于追踪多个订阅者，提供集中的取消订阅功能:<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/ethereum/go-ethereum/event"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// This example demonstrates how SubscriptionScope can be used to control the lifetime of</span></span><br><span class="line"><span class="comment">// subscriptions.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Our example program consists of two servers, each of which performs a calculation when</span></span><br><span class="line"><span class="comment">// requested. The servers also allow subscribing to results of all computations.</span></span><br><span class="line"><span class="keyword">type</span> divServer <span class="keyword">struct</span>&#123; results event.Feed &#125;</span><br><span class="line"><span class="keyword">type</span> mulServer <span class="keyword">struct</span>&#123; results event.Feed &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *divServer)</span> <span class="title">do</span><span class="params">(a, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	r := a / b</span><br><span class="line">	s.results.Send(r)</span><br><span class="line">	<span class="keyword">return</span> r</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *mulServer)</span> <span class="title">do</span><span class="params">(a, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	r := a * b</span><br><span class="line">	s.results.Send(r)</span><br><span class="line">	<span class="keyword">return</span> r</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The servers are contained in an App. The app controls the servers and exposes them</span></span><br><span class="line"><span class="comment">// through its API.</span></span><br><span class="line"><span class="keyword">type</span> App <span class="keyword">struct</span> &#123;</span><br><span class="line">	divServer</span><br><span class="line">	mulServer</span><br><span class="line">	scope event.SubscriptionScope</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *App)</span> <span class="title">Calc</span><span class="params">(op <span class="keyword">byte</span>, a, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> op &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="string">'/'</span>:</span><br><span class="line">		<span class="keyword">return</span> s.divServer.do(a, b)</span><br><span class="line">	<span class="keyword">case</span> <span class="string">'*'</span>:</span><br><span class="line">		<span class="keyword">return</span> s.mulServer.do(a, b)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">"invalid op"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The app's SubscribeResults method starts sending calculation results to the given</span></span><br><span class="line"><span class="comment">// channel. Subscriptions created through this method are tied to the lifetime of the App</span></span><br><span class="line"><span class="comment">// because they are registered in the scope.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *App)</span> <span class="title">SubscribeResults</span><span class="params">(op <span class="keyword">byte</span>, ch <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span> <span class="title">event</span>.<span class="title">Subscription</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> op &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="string">'/'</span>:</span><br><span class="line">		<span class="keyword">return</span> s.scope.Track(s.divServer.results.Subscribe(ch))</span><br><span class="line">	<span class="keyword">case</span> <span class="string">'*'</span>:</span><br><span class="line">		<span class="keyword">return</span> s.scope.Track(s.mulServer.results.Subscribe(ch))</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">"invalid op"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Stop stops the App, closing all subscriptions created through SubscribeResults.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *App)</span> <span class="title">Stop</span><span class="params">()</span></span> &#123;</span><br><span class="line">	s.scope.Close()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> (</span><br><span class="line">		app  App</span><br><span class="line">		wg   sync.WaitGroup</span><br><span class="line">		divs = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">		muls = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line">	divsub := app.SubscribeResults(<span class="string">'/'</span>, divs)</span><br><span class="line">	mulsub := app.SubscribeResults(<span class="string">'*'</span>, muls)</span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(<span class="string">"subscriber exited"</span>)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> result := &lt;-divs:</span><br><span class="line">				fmt.Println(<span class="string">"division happened:"</span>, result)</span><br><span class="line">			<span class="keyword">case</span> result := &lt;-muls:</span><br><span class="line">				fmt.Println(<span class="string">"multiplication happened:"</span>, result)</span><br><span class="line">			<span class="keyword">case</span> divErr := &lt;-divsub.Err():</span><br><span class="line">				fmt.Println(<span class="string">"divsub.Err() :"</span>, divErr)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			<span class="keyword">case</span> mulErr := &lt;-mulsub.Err():</span><br><span class="line">				fmt.Println(<span class="string">"mulsub.Err() :"</span>, mulErr)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	app.Calc(<span class="string">'/'</span>, <span class="number">22</span>, <span class="number">11</span>)</span><br><span class="line">	app.Calc(<span class="string">'*'</span>, <span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">	app.Stop()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>SubscriptionScope的Close() 方法接收Track方法的返回值 ， Track 方法负责追踪订阅者。</p>
+<hr>
+<p>本文由 <code>Copernicus团队 喻建</code>写作，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>

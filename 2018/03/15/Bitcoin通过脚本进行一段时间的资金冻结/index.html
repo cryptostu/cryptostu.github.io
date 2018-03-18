@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Bitcoin通过脚本进行一段时间的资金冻结 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="该脚本的格式 锁定脚本: &amp;lt; expiry time &amp;gt; OP_CHECKLOCKTIMEVERIFY OP_DROP OP_DUP OP_HASH160 &amp;lt; pubKeyHash &amp;gt; OP_EQUALVERIFY OP_CHECKSIG 解锁脚本: &amp;lt; sig &amp;gt; &amp;lt; pubKey &amp;gt; 允许一个交易的输出在未来某个时间之后才可以进行花费。即可以将资">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bitcoin通过脚本进行一段时间的资金冻结">
+<meta property="og:url" content="http://yoursite.com/2018/03/15/Bitcoin通过脚本进行一段时间的资金冻结/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="该脚本的格式 锁定脚本: &amp;lt; expiry time &amp;gt; OP_CHECKLOCKTIMEVERIFY OP_DROP OP_DUP OP_HASH160 &amp;lt; pubKeyHash &amp;gt; OP_EQUALVERIFY OP_CHECKSIG 解锁脚本: &amp;lt; sig &amp;gt; &amp;lt; pubKey &amp;gt; 允许一个交易的输出在未来某个时间之后才可以进行花费。即可以将资">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5181674-89508e0f08cbcf26.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-03-15T03:35:17.190Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bitcoin通过脚本进行一段时间的资金冻结">
+<meta name="twitter:description" content="该脚本的格式 锁定脚本: &amp;lt; expiry time &amp;gt; OP_CHECKLOCKTIMEVERIFY OP_DROP OP_DUP OP_HASH160 &amp;lt; pubKeyHash &amp;gt; OP_EQUALVERIFY OP_CHECKSIG 解锁脚本: &amp;lt; sig &amp;gt; &amp;lt; pubKey &amp;gt; 允许一个交易的输出在未来某个时间之后才可以进行花费。即可以将资">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/5181674-89508e0f08cbcf26.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Bitcoin通过脚本进行一段时间的资金冻结</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-15</span>
+            </div>
+            
+                <div>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="该脚本的格式"><a href="#该脚本的格式" class="headerlink" title="该脚本的格式"></a>该脚本的格式</h2><ul>
+<li>锁定脚本: &lt; expiry time &gt; OP_CHECKLOCKTIMEVERIFY OP_DROP OP_DUP OP_HASH160 &lt; pubKeyHash &gt; OP_EQUALVERIFY OP_CHECKSIG</li>
+<li>解锁脚本: &lt; sig &gt; &lt; pubKey &gt;</li>
+<li>允许一个交易的输出在未来某个时间之后才可以进行花费。即可以将资金锁定在未来的某个时间之后才可以使用。</li>
+</ul>
+<h2 id="程序的执行"><a href="#程序的执行" class="headerlink" title="程序的执行"></a>程序的执行</h2><h3 id="操作码的执行"><a href="#操作码的执行" class="headerlink" title="操作码的执行"></a>操作码的执行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">bool EvalScript(...)&#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    case OP_CHECKLOCKTIMEVERIFY: &#123;</span><br><span class="line">        if (!(flags &amp; SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY)) &#123;</span><br><span class="line">            // not enabled; treat as a NOP2  </span><br><span class="line">            if (flags &amp;</span><br><span class="line">                SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS) &#123;</span><br><span class="line">                return set_error(</span><br><span class="line">                    serror,</span><br><span class="line">                    SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS);</span><br><span class="line">            &#125;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">        if (stack.size() &lt; 1) &#123;</span><br><span class="line">            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        const CScriptNum nLockTime(stacktop(-1), fRequireMinimal, 5);</span><br><span class="line">        if (nLockTime &lt; 0) &#123;</span><br><span class="line">            return set_error(serror, SCRIPT_ERR_NEGATIVE_LOCKTIME);</span><br><span class="line">        &#125;</span><br><span class="line">        if (!checker.CheckLockTime(nLockTime)) &#123;</span><br><span class="line">            return set_error(serror, SCRIPT_ERR_UNSATISFIED_LOCKTIME);</span><br><span class="line">        &#125;</span><br><span class="line">        break;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述为脚本中包含OP_CHECKLOCKTIMEVERIFY 操作码时，执行的验证过程:</p>
+<ul>
+<li>查看时间检测功能是否启用；如果未启用，接着查看客户端是否允许启用OP_NOPn 操作码，禁止的情况下，直接报错；否则执行OP_NOPn 原始操作，即无操作，跳出。</li>
+<li>此时执行时间的检查：此时栈上的数据量，因为此时栈中应至少含有脚本的锁定时间。</li>
+<li>将栈顶的时间数据转换为可比较类型；</li>
+<li>进行锁定时间的检测</li>
+</ul>
+<h3 id="时间的检测"><a href="#时间的检测" class="headerlink" title="时间的检测"></a>时间的检测</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">bool TransactionSignatureChecker::CheckLockTime(const CScriptNum &amp;nLockTime) const &#123;</span><br><span class="line">    if (!((txTo-&gt;nLockTime &lt; LOCKTIME_THRESHOLD &amp;&amp; nLockTime &lt; LOCKTIME_THRESHOLD) ||</span><br><span class="line">          (txTo-&gt;nLockTime &gt;= LOCKTIME_THRESHOLD &amp;&amp; nLockTime &gt;= LOCKTIME_THRESHOLD))) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    if (nLockTime &gt; int64_t(txTo-&gt;nLockTime)) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    if (CTxIn::SEQUENCE_FINAL == txTo-&gt;vin[nIn].nSequence) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述为拿到脚本的锁定时间后进行的检测:</p>
+<ul>
+<li>时间锁定分为两种：一种是基于区块高度的锁定，一种是基于时间的锁定；二者通过与 LOCKTIME_THRESHOLD=500000000 进行比较来区分；</li>
+<li>当小于LOCKTIME_THRESHOLD时，即为高度；否则为时间。</li>
+<li>此时交易的时间戳应该与脚本的锁定时间处于同一 区间(高度或时间)；否则无法进行比较，直接返回错误。</li>
+<li>只有当交易的时间大于等于脚本时间时，该笔资金才会解冻；否则直接返回错误。</li>
+<li>当该笔交易输入的 nSequence 字段 = SEQUENCE_FINAL该值时，相当于绕过了脚本的时间锁定，不允许这样做。</li>
+</ul>
+<h2 id="操作码的描述"><a href="#操作码的描述" class="headerlink" title="操作码的描述"></a>操作码的描述</h2><p>OP_CHECKLOCKTIMEVERIFY : 如果栈顶项大于交易的时间戳字段，标识该交易无效，否则脚本继续执行。在以下几种情况时，同样标识脚本无效：</p>
+<ul>
+<li>栈为空；</li>
+<li>栈顶项为负数；</li>
+<li>栈顶项大于等于LOCKTIME_THRESHOLD(500000000)；而交易的时间戳小于LOCKTIME_THRESHOLD； 反之也无效。</li>
+<li>交易输入的nSequence等于SEQUENCE_FINAL(0xffffffff).</li>
+</ul>
+<p>OP_DROP : 移除栈顶项；</p>
+<h2 id="脚本执行流程图"><a href="#脚本执行流程图" class="headerlink" title="脚本执行流程图"></a>脚本执行流程图</h2><p><img src="https://upload-images.jianshu.io/upload_images/5181674-89508e0f08cbcf26.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="脚本执行.png"></p>
+<hr>
+<p>本文由 <code>Copernicus团队 姚永芯</code>写作，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
