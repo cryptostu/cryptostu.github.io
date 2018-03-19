@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析:多线程检查脚本 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="多线程脚本检查启动多线程脚本检查启动代码:123456789101112131415bool AppInitMain(Config &amp;amp;config, boost::thread_group &amp;amp;threadGroup, CScheduler &amp;amp;scheduler) &amp;#123;    ...    if (nScriptCheckThreads) &amp;#123;">
+<meta name="keywords" content="Bitcoin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析:多线程检查脚本">
+<meta property="og:url" content="http://yoursite.com/2018/03/19/比特币源码分析-多线程检查脚本/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="多线程脚本检查启动多线程脚本检查启动代码:123456789101112131415bool AppInitMain(Config &amp;amp;config, boost::thread_group &amp;amp;threadGroup, CScheduler &amp;amp;scheduler) &amp;#123;    ...    if (nScriptCheckThreads) &amp;#123;">
+<meta property="og:updated_time" content="2018-03-19T14:18:39.735Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析:多线程检查脚本">
+<meta name="twitter:description" content="多线程脚本检查启动多线程脚本检查启动代码:123456789101112131415bool AppInitMain(Config &amp;amp;config, boost::thread_group &amp;amp;threadGroup, CScheduler &amp;amp;scheduler) &amp;#123;    ...    if (nScriptCheckThreads) &amp;#123;">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析:多线程检查脚本</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-19</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Bitcoin/">Bitcoin</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="多线程脚本检查启动"><a href="#多线程脚本检查启动" class="headerlink" title="多线程脚本检查启动"></a>多线程脚本检查启动</h2><p>多线程脚本检查启动代码:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">AppInitMain</span><span class="params">(Config &amp;config, boost::thread_group &amp;threadGroup, CScheduler &amp;scheduler)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (nScriptCheckThreads) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nScriptCheckThreads - <span class="number">1</span>; i++) &#123;</span><br><span class="line">            threadGroup.create_thread(&amp;ThreadScriptCheck);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> CCheckQueue&lt;CScriptCheck&gt; scriptcheckqueue(<span class="number">128</span>);     </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ThreadScriptCheck</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RenameThread(<span class="string">"bitcoin-scriptch"</span>);</span><br><span class="line">    scriptcheckqueue.Thread();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在 <code>AppInitMain</code> 中根据选项，创建多个线程。<br>此处使用了boost的线程库，在绑定的线程函数<code>ThreadScriptCheck</code>中，调用一个全局状态的任务队列<code>scriptcheckqueue</code>。每个线程都去该队列中去任务，当队列中无任务可执行时，线程被条件变量阻塞。</p>
+<h2 id="任务队列"><a href="#任务队列" class="headerlink" title="任务队列"></a>任务队列</h2><p>任务队列代码:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="class"><span class="keyword">class</span> <span class="title">CCheckQueue</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    boost::mutex mutex;</span><br><span class="line">    boost::condition_variable condWorker;</span><br><span class="line">    boost::condition_variable condMaster;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; <span class="built_in">queue</span>;</span><br><span class="line">    <span class="keyword">int</span> nIdle;</span><br><span class="line">    <span class="keyword">int</span> nTotal;</span><br><span class="line">    <span class="keyword">bool</span> fAllOk;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nTodo;</span><br><span class="line">    <span class="keyword">bool</span> fQuit;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nBatchSize;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">Loop</span><span class="params">(<span class="keyword">bool</span> fMaster = <span class="literal">false</span>)</span></span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//! Create a new check queue</span></span><br><span class="line">    CCheckQueue(<span class="keyword">unsigned</span> <span class="keyword">int</span> nBatchSizeIn)</span><br><span class="line">            : nIdle(<span class="number">0</span>), nTotal(<span class="number">0</span>), fAllOk(<span class="literal">true</span>), nTodo(<span class="number">0</span>), fQuit(<span class="literal">false</span>),</span><br><span class="line">              nBatchSize(nBatchSizeIn) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Thread</span><span class="params">()</span> </span>&#123; Loop(); &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">Wait</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> Loop(<span class="literal">true</span>); &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Add</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; &amp;vChecks)</span> </span>&#123;</span><br><span class="line">        boost::unique_lock&lt;boost::mutex&gt; lock(mutex);</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">for</span> (T &amp;check : vChecks) &#123;</span><br><span class="line">            <span class="built_in">queue</span>.push_back(<span class="built_in">std</span>::move(check));</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        nTodo += vChecks.size();</span><br><span class="line">        <span class="keyword">if</span> (vChecks.size() == <span class="number">1</span>) &#123;</span><br><span class="line">            condWorker.notify_one();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (vChecks.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            condWorker.notify_all();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">IsIdle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        boost::unique_lock&lt;boost::mutex&gt; lock(mutex);</span><br><span class="line">        <span class="keyword">return</span> (nTotal == nIdle &amp;&amp; nTodo == <span class="number">0</span> &amp;&amp; fAllOk == <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    ~CCheckQueue() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> CCheckQueue::Loop(<span class="keyword">bool</span> fMaster = <span class="literal">false</span>)&#123;</span><br><span class="line">    boost::condition_variable &amp;cond = fMaster ? condMaster : condWorker;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; vChecks; </span><br><span class="line">    vChecks.reserve(nBatchSize);</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nNow = <span class="number">0</span>;      </span><br><span class="line">    <span class="keyword">bool</span> fOk = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        &#123;</span><br><span class="line">            boost::unique_lock&lt;boost::mutex&gt; lock(mutex);       </span><br><span class="line">            <span class="comment">// first do the clean-up of the previous loop run (allowing us</span></span><br><span class="line">            <span class="comment">// to do it in the same critsect)  </span></span><br><span class="line">            <span class="keyword">if</span> (nNow) &#123;</span><br><span class="line">                fAllOk &amp;= fOk;</span><br><span class="line">                nTodo -= nNow;</span><br><span class="line">                <span class="keyword">if</span> (nTodo == <span class="number">0</span> &amp;&amp; !fMaster)</span><br><span class="line">                    <span class="comment">// We processed the last element; inform the master it</span></span><br><span class="line">                    <span class="comment">// can exit and return the result  </span></span><br><span class="line">                    condMaster.notify_one();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                nTotal++;</span><br><span class="line">            &#125;</span><br><span class="line">           </span><br><span class="line">            <span class="keyword">while</span> (<span class="built_in">queue</span>.empty()) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((fMaster || fQuit) &amp;&amp; nTodo == <span class="number">0</span>) &#123;</span><br><span class="line">                    nTotal--;</span><br><span class="line">                    <span class="keyword">bool</span> fRet = fAllOk;     </span><br><span class="line">                    <span class="comment">// reset the status for new work later</span></span><br><span class="line">                    <span class="keyword">if</span> (fMaster) fAllOk = <span class="literal">true</span>;</span><br><span class="line">                    <span class="keyword">return</span> fRet;</span><br><span class="line">                &#125;</span><br><span class="line">                nIdle++;</span><br><span class="line">                cond.wait(lock); </span><br><span class="line">                nIdle--;</span><br><span class="line">            &#125;</span><br><span class="line">            nNow = <span class="built_in">std</span>::max(</span><br><span class="line">                <span class="number">1U</span>, <span class="built_in">std</span>::min(nBatchSize, (<span class="keyword">unsigned</span> <span class="keyword">int</span>)<span class="built_in">queue</span>.size() /</span><br><span class="line">                                             (nTotal + nIdle + <span class="number">1</span>)));</span><br><span class="line">            vChecks.resize(nNow);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nNow; i++) &#123;</span><br><span class="line">                vChecks[i].swap(<span class="built_in">queue</span>.back());</span><br><span class="line">                <span class="built_in">queue</span>.pop_back();       <span class="comment">//将放到局部队列中的任务清除</span></span><br><span class="line">            &#125;</span><br><span class="line">            fOk = fAllOk;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// execute work； 执行本线程刚分到的工作。</span></span><br><span class="line">        <span class="keyword">for</span> (T &amp;check : vChecks) &#123;</span><br><span class="line">            <span class="keyword">if</span> (fOk) fOk = check();</span><br><span class="line">        &#125;</span><br><span class="line">        vChecks.clear();</span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="literal">true</span>);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用解读：</p>
+<ul>
+<li><code>boost::mutex mutex;</code>: 互斥锁保护内部的状态</li>
+<li><code>boost::condition_variable condWorker;</code>: 在没有工作时，工作线程阻塞条件变量</li>
+<li><code>boost::condition_variable condMaster;</code>: 在没有工作时，master线程阻塞条件变量</li>
+<li><code>std::vector&lt;T&gt; queue;</code>: 要处理元素的队列</li>
+<li><code>int nIdle;</code>: 空闲的工作线程数量(包含主线程)</li>
+<li><code>int nTotal;</code>: 总的工作线程的数量，包含主线程</li>
+<li><code>bool fAllOk;</code>: 临时评估结果</li>
+<li><code>unsigned int nTodo;</code>: 还有多少验证任务没有完成，包括不在排队的，但仍在工作线程自己的批次中的任务数量</li>
+<li><code>bool fQuit;</code>: 是否需要退出</li>
+<li><code>unsigned int nBatchSize;</code>: 每个批次最大的元素处理数量</li>
+</ul>
+<p>队列中使用了模板类，执行的验证任务由T标识，T都必须提供一个重载的operator()方法，并且反回一个bool。<br>默认为主线程push 批量任务到队列中，其他的工作线程去处理这些任务，当主线程push完任务后，也去处理这些任务，直到任务队列全部处理完毕。<br>上述是队列的实现：主要的任务处理是在<code>Loop()</code>函数中;<br>该队列会进行两种调用，来处理队列中的任务:</p>
+<ol>
+<li>添加任务后：自动唤醒阻塞的工作线程去处理添加的任务；细节请看：<code>void Add(std::vector&lt;T&gt; &amp;vChecks)</code></li>
+<li>主线程添加完任务后，调用<code>bool Wait()</code>，也去处理队列中的任务，队列中的全部任务处理完后，主线程退出。<br><code>void Add()</code>:给类的内部队列批量添加任务，本次操作受锁保护，并更新所有的状态。<blockquote>
+<p>如果刚添加的任务数量为1，只唤醒一个工作线程去处理；否则，唤醒全部工作线程。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="采用RAII机制去操作任务队列"><a href="#采用RAII机制去操作任务队列" class="headerlink" title="采用RAII机制去操作任务队列"></a>采用RAII机制去操作任务队列</h2><p>RAII机制(Resource Acquisition Is Initialization)是Bjarne Stroustrup首先提出的。要解决的是这样一个问题:</p>
+<blockquote>
+<p>在C++中，如果在这个程序段结束时需要完成一些资源释放工作，那么正常情况下自然是没有什么问题，但是当一个异常抛出时，释放资源的语句就不会被执行。 于是 [Bjarne Stroustrup] 就想到确保能运行资源释放代码的地方就是在这个程序段（栈帧）中放置的对象的析构函数了，因为 stack winding 会保证它们的析构函数都会被执行。</p>
+</blockquote>
+<p>将初始化和资源释放都移动到一个包装类中的好处：</p>
+<ul>
+<li>保证了资源的正常释放</li>
+<li>省去了在异常处理中冗长而重复甚至有些还不一定执行到的清理逻辑，进而确保了代码的异常安全。</li>
+<li>简化代码体积。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="class"><span class="keyword">class</span> <span class="title">CCheckQueueControl</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    CCheckQueue&lt;T&gt; *pqueue;</span><br><span class="line">    <span class="keyword">bool</span> fDone;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CCheckQueueControl(CCheckQueue&lt;T&gt; *pqueueIn)</span><br><span class="line">        : pqueue(pqueueIn), fDone(<span class="literal">false</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (pqueue != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            <span class="keyword">bool</span> isIdle = pqueue-&gt;IsIdle();    </span><br><span class="line">            assert(isIdle);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">Wait</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (pqueue == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">bool</span> fRet = pqueue-&gt;Wait();    </span><br><span class="line">        fDone = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">return</span> fRet;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Add</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; &amp;vChecks)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (pqueue != <span class="literal">nullptr</span>) pqueue-&gt;Add(vChecks);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ~CCheckQueueControl() &#123;</span><br><span class="line">        <span class="keyword">if</span> (!fDone) Wait();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>该类主要是用来管理 <code>CCheckQueue</code>对象；采用RAII机制，保证每次析构该类的对象时，<code>CCheckQueue</code>中的任务队列被全部处理。<br>用来构建该对象的任务队列只能是nil, 或者队列中无任务。<br>因为创建的该对象在析构时会调用任务队列的wait()方法去处理完队列中所有的任务，然后退出。<br>方法解释:</p>
+<ul>
+<li><code>bool Wait()</code>处理完队列中的所有任务后，该方法退出，并返回这些任务的处理结果</li>
+<li><code>void Add()</code>向 CCheckQueue 中添加任务，唤醒子线程去处理</li>
+<li><code>~CCheckQueueControl()</code>对象析构时，调用wait()方法保证了该队列中的所有任务都被处理</li>
+</ul>
+<h2 id="CCheckQueue的使用"><a href="#CCheckQueue的使用" class="headerlink" title="CCheckQueue的使用"></a>CCheckQueue的使用</h2><p>在块来的时候激活主链使用使用了检查队列:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">ConnectBlock</span><span class="params">(<span class="keyword">const</span> Config &amp;config, <span class="keyword">const</span> CBlock &amp;block, CValidationState &amp;state, CBlockIndex *pindex,</span></span></span><br><span class="line"><span class="function"><span class="params">    CCoinsViewCache &amp;view, <span class="keyword">const</span> CChainParams &amp;chainparams, <span class="keyword">bool</span> fJustCheck = <span class="literal">false</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    CCheckQueueControl&lt;CScriptCheck&gt; control(fScriptChecks ? &amp;scriptcheckqueue : <span class="literal">nullptr</span>);</span><br><span class="line">        ...</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; block.vtx.size(); i++) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> (!tx.IsCoinBase()) &#123;</span><br><span class="line">            Amount fee = view.GetValueIn(tx) - tx.GetValueOut();</span><br><span class="line">            nFees += fee.GetSatoshis();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Don't cache results if we're actually connecting blocks (still</span></span><br><span class="line">            <span class="comment">// consult the cache, though).</span></span><br><span class="line">            <span class="keyword">bool</span> fCacheResults = fJustCheck;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;CScriptCheck&gt; vChecks;</span><br><span class="line">          </span><br><span class="line">            <span class="keyword">if</span> (!CheckInputs(tx, state, view, fScriptChecks, flags,</span><br><span class="line">                             fCacheResults, fCacheResults,</span><br><span class="line">                             PrecomputedTransactionData(tx), &amp;vChecks)) &#123;</span><br><span class="line">                <span class="keyword">return</span> error(<span class="string">"ConnectBlock(): CheckInputs on %s failed with %s"</span>,</span><br><span class="line">                             tx.GetId().ToString(), FormatStateMessage(state));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            control.Add(vChecks);   </span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>ConnectBlock</code>将该区块链接到当前激活链上，并更新UTXO集合。<br>在该方法中：使用了全局对象<code>scriptcheckqueue</code>去构造了一个临时的管理对象，并通过该管理对象来操作全局任务队列，用来添加任务，以及执行任务。当该临时的管理对象析构时，会调用wait()方法，加入任务处理，处理完所有任务后，该对象析构完成。</p>
+<h2 id="CScriptCheck-根据每个交易输入构造的检查任务"><a href="#CScriptCheck-根据每个交易输入构造的检查任务" class="headerlink" title="CScriptCheck(根据每个交易输入构造的检查任务)"></a>CScriptCheck(根据每个交易输入构造的检查任务)</h2><p>CScriptCheck源代码:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CScriptCheck</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    CScript scriptPubKey;   </span><br><span class="line">    Amount amount;      </span><br><span class="line">    <span class="keyword">const</span> CTransaction *ptxTo;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nIn;         </span><br><span class="line">    <span class="keyword">uint32_t</span> nFlags;          </span><br><span class="line">    <span class="keyword">bool</span> cacheStore;</span><br><span class="line">    ScriptError error;       </span><br><span class="line">    PrecomputedTransactionData txdata;  </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CScriptCheck()</span><br><span class="line">        : amount(<span class="number">0</span>), ptxTo(<span class="number">0</span>), nIn(<span class="number">0</span>), nFlags(<span class="number">0</span>), cacheStore(<span class="literal">false</span>),</span><br><span class="line">          error(SCRIPT_ERR_UNKNOWN_ERROR), txdata() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    CScriptCheck(<span class="keyword">const</span> CScript &amp;scriptPubKeyIn, <span class="keyword">const</span> Amount amountIn,</span><br><span class="line">                 <span class="keyword">const</span> CTransaction &amp;txToIn, <span class="keyword">unsigned</span> <span class="keyword">int</span> nInIn,</span><br><span class="line">                 <span class="keyword">uint32_t</span> nFlagsIn, <span class="keyword">bool</span> cacheIn,</span><br><span class="line">                 <span class="keyword">const</span> PrecomputedTransactionData &amp;txdataIn)</span><br><span class="line">        : scriptPubKey(scriptPubKeyIn), amount(amountIn), ptxTo(&amp;txToIn),</span><br><span class="line">          nIn(nInIn), nFlags(nFlagsIn), cacheStore(cacheIn),</span><br><span class="line">          error(SCRIPT_ERR_UNKNOWN_ERROR), txdata(txdataIn) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span></span>;   </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(CScriptCheck &amp;check)</span> </span>&#123;</span><br><span class="line">        scriptPubKey.swap(check.scriptPubKey);</span><br><span class="line">        <span class="built_in">std</span>::swap(ptxTo, check.ptxTo);</span><br><span class="line">        <span class="built_in">std</span>::swap(amount, check.amount);</span><br><span class="line">        <span class="built_in">std</span>::swap(nIn, check.nIn);</span><br><span class="line">        <span class="built_in">std</span>::swap(nFlags, check.nFlags);</span><br><span class="line">        <span class="built_in">std</span>::swap(cacheStore, check.cacheStore);</span><br><span class="line">        <span class="built_in">std</span>::swap(error, check.error);</span><br><span class="line">        <span class="built_in">std</span>::swap(txdata, check.txdata);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">ScriptError <span class="title">GetScriptError</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> error; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>代码解释:</p>
+<ul>
+<li><code>CScript scriptPubKey;</code> 锁定脚本(即该验证交易的某个引用输出对应的锁定脚本)</li>
+<li><code>Amount amount;</code> 上述锁定脚本对应的金额(即花费的UTXO的金额)</li>
+<li><code>const CTransaction *ptxTo;</code>  正在花费的交易，即要检查的交易</li>
+<li><code>unsigned int nIn;</code>           要检查该交易的第几个输入；</li>
+<li><code>uint32_t nFlags;</code>            检查标识</li>
+<li><code>ScriptError error;</code>          验证出错的原因</li>
+<li><code>bool operator()();</code> 此处重载了()运算符，执行脚本检查操作；</li>
+</ul>
+<p>详情见下篇文章:《脚本验证》</p>
+<hr>
+<p>本文由 <code>Copernicus团队 姚永芯</code>写作，转载无需授权。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
