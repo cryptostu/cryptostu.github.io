@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析-网络（三） | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前两篇文章主要从整体逻辑上对代码进行了梳理，这篇文章将主要讲述网络模块主要的函数，以及其具体实现。 监听连接：ThreadSocketHandler断开没有使用的节点，首先遍历节点数组vNodesCopy，如果节点标识断开连接(fDisconnect)，或者没有任何引用、发送接收消息，则移除节点，关闭socket，添加到断开连接节点数组 (vNodesDisconnected) 123456789">
+<meta name="keywords" content="Bitcoin Cash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析-网络（三）">
+<meta property="og:url" content="http://yoursite.com/2018/03/26/比特币源码分析-网络（三）/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="前两篇文章主要从整体逻辑上对代码进行了梳理，这篇文章将主要讲述网络模块主要的函数，以及其具体实现。 监听连接：ThreadSocketHandler断开没有使用的节点，首先遍历节点数组vNodesCopy，如果节点标识断开连接(fDisconnect)，或者没有任何引用、发送接收消息，则移除节点，关闭socket，添加到断开连接节点数组 (vNodesDisconnected) 123456789">
+<meta property="og:updated_time" content="2018-03-26T02:07:39.849Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析-网络（三）">
+<meta name="twitter:description" content="前两篇文章主要从整体逻辑上对代码进行了梳理，这篇文章将主要讲述网络模块主要的函数，以及其具体实现。 监听连接：ThreadSocketHandler断开没有使用的节点，首先遍历节点数组vNodesCopy，如果节点标识断开连接(fDisconnect)，或者没有任何引用、发送接收消息，则移除节点，关闭socket，添加到断开连接节点数组 (vNodesDisconnected) 123456789">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析-网络（三）</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-26</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Bitcoin-Cash/">Bitcoin Cash</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p><em>前两篇文章主要从整体逻辑上对代码进行了梳理，这篇文章将主要讲述网络模块主要的函数，以及其具体实现。</em></p>
+<h2 id="监听连接：ThreadSocketHandler"><a href="#监听连接：ThreadSocketHandler" class="headerlink" title="监听连接：ThreadSocketHandler"></a>监听连接：ThreadSocketHandler</h2><p>断开没有使用的节点，首先遍历节点数组vNodesCopy，如果节点标识断开连接(fDisconnect)，或者没有任何引用、发送接收消息，则移除节点，关闭socket，添加到断开连接节点数组 (vNodesDisconnected)</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Disconnect unused nodes</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;CNode *&gt; vNodesCopy = vNodes;</span><br><span class="line">   <span class="keyword">for</span> (CNode *pnode : vNodesCopy) &#123;</span><br><span class="line">       <span class="keyword">if</span> (pnode-&gt;fDisconnect) &#123;</span><br><span class="line">          <span class="comment">// remove from vNodes</span></span><br><span class="line">        	vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode),</span><br><span class="line">                         vNodes.end());</span><br><span class="line"></span><br><span class="line">          <span class="comment">// release outbound grant (if any)</span></span><br><span class="line">          pnode-&gt;grantOutbound.Release();</span><br><span class="line"></span><br><span class="line">          <span class="comment">// close socket and cleanup</span></span><br><span class="line">          pnode-&gt;CloseSocketDisconnect();</span><br><span class="line"></span><br><span class="line">          <span class="comment">// hold in disconnected pool until all refs are released</span></span><br><span class="line">          pnode-&gt;Release();</span><br><span class="line">          vNodesDisconnected.push_back(pnode);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>遍历断开连接节点数组，当节点没有引用，且能获取节点的相关锁，则移除节点，删除此节点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Delete disconnected nodes</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">list</span>&lt;CNode *&gt; vNodesDisconnectedCopy = vNodesDisconnected;</span><br><span class="line">   <span class="keyword">for</span> (CNode *pnode : vNodesDisconnectedCopy) &#123;</span><br><span class="line">      <span class="comment">// wait until threads are done using it</span></span><br><span class="line">      <span class="keyword">if</span> (pnode-&gt;GetRefCount() &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">         <span class="keyword">bool</span> fDelete = <span class="literal">false</span>;</span><br><span class="line">         &#123;</span><br><span class="line">             TRY_LOCK(pnode-&gt;cs_inventory, lockInv);</span><br><span class="line">             <span class="keyword">if</span> (lockInv) &#123;</span><br><span class="line">                TRY_LOCK(pnode-&gt;cs_vSend, lockSend);</span><br><span class="line">                <span class="keyword">if</span> (lockSend) &#123;</span><br><span class="line">                    fDelete = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">if</span> (fDelete) &#123;</span><br><span class="line">             vNodesDisconnected.remove(pnode);</span><br><span class="line">             DeleteNode(pnode);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>重新设置节点数量。 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> vNodesSize;</span><br><span class="line">&#123;</span><br><span class="line">    LOCK(cs_vNodes);</span><br><span class="line">    vNodesSize = vNodes.size();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (vNodesSize != nPrevNodeCount) &#123;</span><br><span class="line">    nPrevNodeCount = vNodesSize;</span><br><span class="line">    <span class="keyword">if</span> (clientInterface) &#123;</span><br><span class="line">       clientInterface-&gt;NotifyNumConnectionsChanged(nPrevNodeCount);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>遍历监听SOCKET数组(vhListenSocket)、节点数组，为每个节点的socket 设置发送、接收fd_set</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> ListenSocket &amp;hListenSocket : vhListenSocket) &#123;</span><br><span class="line">    FD_SET(hListenSocket.socket, &amp;fdsetRecv);</span><br><span class="line">    hSocketMax = <span class="built_in">std</span>::max(hSocketMax, hListenSocket.socket);</span><br><span class="line">    have_fds = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用select函数监听socket。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> nSelect = select(have_fds ? hSocketMax + <span class="number">1</span> : <span class="number">0</span>, &amp;fdsetRecv,</span><br><span class="line">             &amp;fdsetSend, &amp;fdsetError, &amp;timeout);</span><br></pre></td></tr></table></figure>
+<p>遍历监听socket数组，当接收到数据，且socket有效时，接受连接，新建节点，添加到节点数组</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> ListenSocket &amp;hListenSocket : vhListenSocket) &#123;</span><br><span class="line">    <span class="keyword">if</span> (hListenSocket.socket != INVALID_SOCKET &amp;&amp;</span><br><span class="line">        FD_ISSET(hListenSocket.socket, &amp;fdsetRecv)) &#123;</span><br><span class="line">        AcceptConnection(hListenSocket);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>遍历节点数组，增加节点的引用次数。 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;CNode *&gt; vNodesCopy;</span><br><span class="line">&#123;</span><br><span class="line">   LOCK(cs_vNodes);</span><br><span class="line">   vNodesCopy = vNodes;</span><br><span class="line">   <span class="keyword">for</span> (CNode *pnode : vNodesCopy) &#123;</span><br><span class="line">       pnode-&gt;AddRef();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>遍历节点数组，接收网络数据，解析成消息，添加到节点的接收消息数组 (vRecvMsg)。当发送集合有数据时，把节点的发送消息(vSendMsg)发送出去：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (CNode *pnode : vNodesCopy) &#123;                                          </span><br><span class="line">    <span class="keyword">if</span> (interruptNet) &#123;                                                    </span><br><span class="line">        <span class="keyword">return</span>;                                                            </span><br><span class="line">    &#125;                                                                                                                                         </span><br><span class="line">    <span class="comment">// Receive                                                                                                                                 </span></span><br><span class="line">    <span class="keyword">bool</span> recvSet = <span class="literal">false</span>;                                                  </span><br><span class="line">    <span class="keyword">bool</span> sendSet = <span class="literal">false</span>;                                                  </span><br><span class="line">    <span class="keyword">bool</span> errorSet = <span class="literal">false</span>;                                                 </span><br><span class="line">    &#123;                                                                      </span><br><span class="line">        LOCK(pnode-&gt;cs_hSocket);                                           </span><br><span class="line">        <span class="keyword">if</span> (pnode-&gt;hSocket == INVALID_SOCKET) &#123;                            </span><br><span class="line">            <span class="keyword">continue</span>;                                                      </span><br><span class="line">        &#125;                                                                  </span><br><span class="line">        recvSet = FD_ISSET(pnode-&gt;hSocket, &amp;fdsetRecv);                    </span><br><span class="line">        sendSet = FD_ISSET(pnode-&gt;hSocket, &amp;fdsetSend);                    </span><br><span class="line">        errorSet = FD_ISSET(pnode-&gt;hSocket, &amp;fdsetError);                  </span><br><span class="line">    &#125;                                                                      </span><br><span class="line">    <span class="keyword">if</span> (recvSet || errorSet) &#123;                                             </span><br><span class="line">        ....                                                        </span><br><span class="line">    &#125;                                                                                                                                         </span><br><span class="line">    <span class="comment">// Send                                                                                                                                    </span></span><br><span class="line">    <span class="keyword">if</span> (sendSet) &#123;                                                         </span><br><span class="line">        LOCK(pnode-&gt;cs_vSend);                                             </span><br><span class="line">        <span class="keyword">size_t</span> nBytes = SocketSendData(pnode);                             </span><br><span class="line">        <span class="keyword">if</span> (nBytes) &#123;                                                      </span><br><span class="line">            RecordBytesSent(nBytes);                                       </span><br><span class="line">        &#125;                                                                  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>满足以下几点是不活跃的socke连接:</p>
+<ul>
+<li>没有任何发送、接收消息(nLastSend、nLastRecv)</li>
+<li>距离上次发送消息超过了90分钟(nLastSend)，且距离上次把全部消息发送<br>出去也超过了90分钟(nLastSendEmpty)</li>
+<li>距离上次接收消息超过了90分钟(nLastRecv)</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int64_t</span> nTime = GetSystemTimeInSeconds();                              </span><br><span class="line"><span class="keyword">if</span> (nTime - pnode-&gt;nTimeConnected &gt; <span class="number">60</span>) &#123;                              </span><br><span class="line">    <span class="keyword">if</span> (pnode-&gt;nLastRecv == <span class="number">0</span> || pnode-&gt;nLastSend == <span class="number">0</span>) &#123;              </span><br><span class="line">        LogPrint(<span class="string">"net"</span>, <span class="string">"socket no message in first 60 seconds, %d "</span>   </span><br><span class="line">                        <span class="string">"%d from %d\n"</span>,                                </span><br><span class="line">                 pnode-&gt;nLastRecv != <span class="number">0</span>, pnode-&gt;nLastSend != <span class="number">0</span>,         </span><br><span class="line">                 pnode-&gt;id);                                           </span><br><span class="line">        pnode-&gt;fDisconnect = <span class="literal">true</span>;                                     </span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nTime - pnode-&gt;nLastSend &gt; TIMEOUT_INTERVAL) &#123;          </span><br><span class="line">        LogPrintf(<span class="string">"socket sending timeout: %is\n"</span>,                     </span><br><span class="line">                  nTime - pnode-&gt;nLastSend);                           </span><br><span class="line">        pnode-&gt;fDisconnect = <span class="literal">true</span>;                                     </span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nTime - pnode-&gt;nLastRecv &gt;                              </span><br><span class="line">               (pnode-&gt;nVersion &gt; BIP0031_VERSION ? TIMEOUT_INTERVAL   </span><br><span class="line">                                                  : <span class="number">90</span> * <span class="number">60</span>)) &#123;        </span><br><span class="line">        LogPrintf(<span class="string">"socket receive timeout: %is\n"</span>,                     </span><br><span class="line">                  nTime - pnode-&gt;nLastRecv);                           </span><br><span class="line">        pnode-&gt;fDisconnect = <span class="literal">true</span>;                                     </span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pnode-&gt;nPingNonceSent &amp;&amp;                                </span><br><span class="line">               pnode-&gt;nPingUsecStart + TIMEOUT_INTERVAL * <span class="number">1000000</span> &lt;    </span><br><span class="line">                   GetTimeMicros()) &#123;                                  </span><br><span class="line">        LogPrintf(<span class="string">"ping timeout: %fs\n"</span>,                               </span><br><span class="line">                  <span class="number">0.000001</span> *                                           </span><br><span class="line">                      (GetTimeMicros() - pnode-&gt;nPingUsecStart));      </span><br><span class="line">        pnode-&gt;fDisconnect = <span class="literal">true</span>;                                     </span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!pnode-&gt;fSuccessfullyConnected) &#123;                       </span><br><span class="line">        LogPrintf(<span class="string">"version handshake timeout from %d\n"</span>, pnode-&gt;id);   </span><br><span class="line">        pnode-&gt;fDisconnect = <span class="literal">true</span>;                                     </span><br><span class="line">    &#125;                                                                  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="发送接收消息：ThreadMessageHandler"><a href="#发送接收消息：ThreadMessageHandler" class="headerlink" title="发送接收消息：ThreadMessageHandler"></a>发送接收消息：ThreadMessageHandler</h2><p>此线程为无限循环，每隔0.1秒循环一次：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!flagInterruptMsgProc) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>遍历节点数组，增加节点引用次数，检查节点是否需要同步:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;CNode *&gt; vNodesCopy;      </span><br><span class="line">&#123;                                     </span><br><span class="line">    LOCK(cs_vNodes);                  </span><br><span class="line">    vNodesCopy = vNodes;              </span><br><span class="line">    <span class="keyword">for</span> (CNode *pnode : vNodesCopy) &#123; </span><br><span class="line">        pnode-&gt;AddRef();              </span><br><span class="line">    &#125;                                 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>遍历节点数组， 处理接收的消息，发送消息。遍历节点数组，减少节点引用次数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for (CNode *pnode : vNodesCopy) &#123; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="接收消息"><a href="#接收消息" class="headerlink" title="接收消息"></a>接收消息</h2><p>节点接收消息后，循环遍历节点的消息缓冲区，解析消息头、数据，校验消息的有效性，再处理消息数据，处理过程中如果发生异常，则节点发送拒绝消息，此节点停止发送、接收消息。<br>  消息的有效性检查主要检查以下4项: </p>
+<ol>
+<li>接收到的消息是否完整 ，类CNetMessage的complete()函数校验完整性，in_data为TRUE，且消<br>息大小与消息数据偏移相等，则消息是完整的。   </li>
+<li>消息头开始字符串是否与环境参数中的字符串相同。 </li>
+<li>消息头是否有效。 </li>
+<li>消息头校验和是否正确。 </li>
+</ol>
+<p>重新计算数据的校验和，检验与消息头中的校验和是否相等。 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (pnode-&gt;fDisconnect) &#123;                                </span><br><span class="line">    <span class="keyword">continue</span>;                                            </span><br><span class="line">&#125;                                                        </span><br><span class="line">                                                         </span><br><span class="line"><span class="comment">// Receive messages                                                                                           </span></span><br><span class="line"><span class="keyword">bool</span> fMoreNodeWork = GetNodeSignals().ProcessMessages(   </span><br><span class="line">    *config, pnode, *<span class="keyword">this</span>, flagInterruptMsgProc);        </span><br><span class="line">fMoreWork |= (fMoreNodeWork &amp;&amp; !pnode-&gt;fPauseSend);      </span><br><span class="line"><span class="keyword">if</span> (flagInterruptMsgProc) &#123;                              </span><br><span class="line">    <span class="keyword">return</span>;                                              </span><br><span class="line">&#125;                                                        </span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">## 发送消息</span><br><span class="line"></span><br><span class="line">```c++</span><br><span class="line">&#123;                                                        </span><br><span class="line">    LOCK(pnode-&gt;cs_sendProcessing);                      </span><br><span class="line">    GetNodeSignals().SendMessages(*config, pnode, *<span class="keyword">this</span>, </span><br><span class="line">                                  flagInterruptMsgProc); </span><br><span class="line">&#125;                                                        </span><br><span class="line"><span class="keyword">if</span> (flagInterruptMsgProc) &#123;                              </span><br><span class="line">    <span class="keyword">return</span>;                                              </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用这个函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">SendMessages</span><span class="params">(<span class="keyword">const</span> Config &amp;config, CNode *pto, CConnman &amp;connman,</span></span></span><br><span class="line"><span class="function"><span class="params">                  <span class="keyword">const</span> <span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; &amp;interruptMsgProc)</span> </span>&#123;</span><br><span class="line">                  </span><br><span class="line">     ...</span><br><span class="line">     ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>发送消息时，检验5个命令是否需要发送，分别是:ping、addr、getblocks、 inv、getdata。</p>
+<p>当用户在RPC中请求ping命令(节点的fPingQueued为TRUE)，或者距离上一次发送命令超过了30分钟，且发送消息队列为空，则发送ping命令。当节点的版本大于BIP0031_VERSION时，设置发送ping命令的开始时间，发送ping命令时带随机数，随机数保存在节点的nPingNonceSent中。低于此版本时，不设置开始时间，不带随机数。 </p>
+<p>随机选择一个节点，发送addr消息发送节点的发送地址数组中的地址，同时把地址插入到已知地址集中，每次最多发送1000个地址。发送完毕后，清空节点的发送地址数组。</p>
+<p>当节点需要同步时，且不处于导入、重建索引，则发送getblocks消息获取区块。获取区块时，指定开始区块、结束区块。同时保存开始的区块索引到节点的 pindexLastGetBlocksBegin中，保存结束区块索引值到节点hashLastGetBlocksEnd中。当获取区块时，检查这2项，如果已经获取了最新的区块，则不再获取区块，避免重复发送getblocks消息。 </p>
+<p>遍历节点的发送Inventory数组，发送inv消息。发送的Inventory必须时尚未处理的，即不在节点已知Inventory集中(setInventoryKnown)，发送后添加到已知 Inventory集中。发送inv消息时最多发送1000个inventory。如果是随机节点，且 inventory的类型时MSG_TX，则只发送1/4的inventory，先计算随机值，随机值的低 2bit位为0的inventory发送出去，不为0的inventory保留在节点的发送inventory数组 (vInventoryToSend)中。</p>
+<p>如果节点存在当前时间早的延迟的inventory，则发送getdata消息。延迟的 inventory保存在节点的mapAskFor数组。发送的inventory必须是节点中没有的。每次发送getdata消息时最多发送1000个inventory。同时删除节点的mapAskFor中的一项。 </p>
+<h2 id="主动与外部节点建立连接：ThreadOpenConnections"><a href="#主动与外部节点建立连接：ThreadOpenConnections" class="headerlink" title="主动与外部节点建立连接：ThreadOpenConnections"></a>主动与外部节点建立连接：ThreadOpenConnections</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> CConnman::ThreadOpenConnections() &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此线程也是无限循环，每隔500毫秒连接一次。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!interruptNet) &#123;</span><br><span class="line"> <span class="keyword">if</span> (!interruptNet.sleep_for(<span class="built_in">std</span>::chrono::milliseconds(<span class="number">500</span>))) &#123;  </span><br><span class="line">     <span class="keyword">return</span>;                                                     </span><br><span class="line"> &#125;                                                               </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>连接地址时注意以下几点:  </p>
+<ul>
+<li>不连接无效的、地址数组中的外部连接地址中已有的、本地的地址。  </li>
+<li>最多尝试连接100个地址。 </li>
+<li>不连接受限制的地址。 </li>
+<li>尝试连接次数达到30次时，才尝试连接距离上一次尝试连接10分钟以内的地址。  </li>
+<li>尝试连接次数达到50次时，才尝试连接地址端不是参数默认端的地址。 </li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!interruptNet) &#123;                                                     </span><br><span class="line">    CAddrInfo addr = addrman.Select(fFeeler);                                                          </span><br><span class="line">    <span class="keyword">if</span> (!addr.IsValid() || setConnected.count(addr.GetGroup()) ||           </span><br><span class="line">        IsLocal(addr)) &#123;                                                    </span><br><span class="line">        <span class="keyword">break</span>;                                                              </span><br><span class="line">    &#125;                                                                                                                                                                                                        </span><br><span class="line">    nTries++;                                                               </span><br><span class="line">    <span class="keyword">if</span> (nTries &gt; <span class="number">100</span>) &#123;                                                     </span><br><span class="line">        <span class="keyword">break</span>;                                                              </span><br><span class="line">    &#125;                                                                                                                                               </span><br><span class="line">    <span class="keyword">if</span> (IsLimited(addr)) &#123;                                                  </span><br><span class="line">        <span class="keyword">continue</span>;                                                           </span><br><span class="line">    &#125;                                                                                                                                                                                        </span><br><span class="line">    <span class="keyword">if</span> ((addr.nServices &amp; REQUIRED_SERVICES) != REQUIRED_SERVICES) &#123;        </span><br><span class="line">        <span class="keyword">continue</span>;                                                           </span><br><span class="line">    &#125;                                                                                                                                                 </span><br><span class="line">    <span class="comment">// only consider very recently tried nodes after 30 failed attempts     </span></span><br><span class="line">    <span class="keyword">if</span> (nANow - addr.nLastTry &lt; <span class="number">600</span> &amp;&amp; nTries &lt; <span class="number">30</span>) &#123;                       </span><br><span class="line">        <span class="keyword">continue</span>;                                                           </span><br><span class="line">    &#125;                                                                                   </span><br><span class="line">    <span class="keyword">if</span> ((addr.nServices &amp; nRelevantServices) != nRelevantServices &amp;&amp;        </span><br><span class="line">        (nTries &lt; <span class="number">40</span> || nOutbound &gt;= (nMaxOutbound &gt;&gt; <span class="number">1</span>))) &#123;                </span><br><span class="line">        <span class="keyword">continue</span>;                                                           </span><br><span class="line">    &#125;                                                                                                                       </span><br><span class="line">    <span class="keyword">if</span> (addr.GetPort() != Params().GetDefaultPort() &amp;&amp; nTries &lt; <span class="number">50</span>) &#123;       </span><br><span class="line">        <span class="keyword">continue</span>;                                                           </span><br><span class="line">    &#125;                                                                                                                                                </span><br><span class="line">    addrConnect = addr;                                                     </span><br><span class="line">    <span class="keyword">break</span>;                                                                  </span><br><span class="line">&#125;                                                                           </span><br><span class="line">                                                                            </span><br><span class="line"><span class="keyword">if</span> (addrConnect.IsValid()) &#123;                                                </span><br><span class="line">                                                                            </span><br><span class="line">    <span class="keyword">if</span> (fFeeler) &#123;                                                          </span><br><span class="line">        <span class="comment">// Add small amount of random noise before connection to avoid      </span></span><br><span class="line">        <span class="comment">// synchronization.                                                 </span></span><br><span class="line">        <span class="keyword">int</span> randsleep = GetRandInt(FEELER_SLEEP_WINDOW * <span class="number">1000</span>);             </span><br><span class="line">        <span class="keyword">if</span> (!interruptNet.sleep_for(                                        </span><br><span class="line">                <span class="built_in">std</span>::chrono::milliseconds(randsleep))) &#123;                    </span><br><span class="line">            <span class="keyword">return</span>;                                                         </span><br><span class="line">        &#125;                                                                   </span><br><span class="line">        LogPrint(<span class="string">"net"</span>, <span class="string">"Making feeler connection to %s\n"</span>,                 </span><br><span class="line">                 addrConnect.ToString());                                   </span><br><span class="line">    &#125;                                                                       </span><br><span class="line">                                                                            </span><br><span class="line">    OpenNetworkConnection(addrConnect,                                      </span><br><span class="line">                          (<span class="keyword">int</span>)setConnected.size() &gt;=                       </span><br><span class="line">                              <span class="built_in">std</span>::min(nMaxConnections - <span class="number">1</span>, <span class="number">2</span>),             </span><br><span class="line">                          &amp;grant, <span class="literal">nullptr</span>, <span class="literal">false</span>, fFeeler);                 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="获取主机ip：GetLocal"><a href="#获取主机ip：GetLocal" class="headerlink" title="获取主机ip：GetLocal"></a>获取主机ip：GetLocal</h2><p>节点启用时，获取主机名称、IP地址，添加到地址、服务对应的数组中(mapLocalHost)。获取本地地址，保存到节点的本地地址(addrLocal)，且向节点网络广播地址(AdvertizeLocal)。这样获取的地址大于监听(LOCAL_IF)。 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">GetLocal</span><span class="params">(CService &amp;addr, <span class="keyword">const</span> CNetAddr *paddrPeer)</span> </span>&#123;                      </span><br><span class="line">    <span class="keyword">if</span> (!fListen) <span class="keyword">return</span> <span class="literal">false</span>;                                                 </span><br><span class="line">                                                                                </span><br><span class="line">    <span class="keyword">int</span> nBestScore = <span class="number">-1</span>;                                                        </span><br><span class="line">    <span class="keyword">int</span> nBestReachability = <span class="number">-1</span>;                                                 </span><br><span class="line">    &#123;                                                                           </span><br><span class="line">        LOCK(cs_mapLocalHost);                                                  </span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">map</span>&lt;CNetAddr, LocalServiceInfo&gt;::iterator it =                </span><br><span class="line">                 mapLocalHost.begin();                                          </span><br><span class="line">             it != mapLocalHost.end(); it++) &#123;                                  </span><br><span class="line">            <span class="keyword">int</span> nScore = (*it).second.nScore;                                   </span><br><span class="line">            <span class="keyword">int</span> nReachability = (*it).first.GetReachabilityFrom(paddrPeer);     </span><br><span class="line">            <span class="keyword">if</span> (nReachability &gt; nBestReachability ||                            </span><br><span class="line">                (nReachability == nBestReachability &amp;&amp; nScore &gt; nBestScore)) &#123;  </span><br><span class="line">                addr = CService((*it).first, (*it).second.nPort);               </span><br><span class="line">                nBestReachability = nReachability;                              </span><br><span class="line">                nBestScore = nScore;                                            </span><br><span class="line">            &#125;                                                                   </span><br><span class="line">        &#125;                                                                       </span><br><span class="line">    &#125;                                                                           </span><br><span class="line">    <span class="keyword">return</span> nBestScore &gt;= <span class="number">0</span>;                                                     </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>系统定义了几种本地地址类型，优先采用值大的类型(GetLocal函数)</p>
+<pre><code class="c++"><span class="keyword">enum</span> {
+    <span class="comment">// unknown</span>
+    LOCAL_NONE,
+    <span class="comment">// address a local interface listens on</span>
+    LOCAL_IF,
+    <span class="comment">// address explicit bound to</span>
+    LOCAL_BIND,
+    <span class="comment">// address reported by UPnP</span>
+    LOCAL_UPNP,
+    <span class="comment">// address explicitly specified (-externalip=)</span>
+    LOCAL_MANUAL,
+
+    LOCAL_MAX
+};
+</code></pre>
+<hr>
+<p>本文由 copernicus 团队 冉小龙 编写，转载无需授权！</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
