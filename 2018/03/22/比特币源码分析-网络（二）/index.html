@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析:网络（二） | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="众所周知，比特币网络是采用的P2P网络体系，所以，没有明显的客户端与服务端的区别或者是概念，每一个节点既是自身的客户端，又是其它节点的服务端。 在sync.h中，定义了 CSemaphore，它包装了系统底层的信号量机制，对wait(), try_wait(),post()实现了封装，代码如下： 1234567891011class CSemaphore &amp;#123;private:    boo">
+<meta name="keywords" content="Bitcoin Cash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析:网络（二）">
+<meta property="og:url" content="http://yoursite.com/2018/03/22/比特币源码分析-网络（二）/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="众所周知，比特币网络是采用的P2P网络体系，所以，没有明显的客户端与服务端的区别或者是概念，每一个节点既是自身的客户端，又是其它节点的服务端。 在sync.h中，定义了 CSemaphore，它包装了系统底层的信号量机制，对wait(), try_wait(),post()实现了封装，代码如下： 1234567891011class CSemaphore &amp;#123;private:    boo">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/6967649-23438a4e801336db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-03-21T22:54:32.818Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析:网络（二）">
+<meta name="twitter:description" content="众所周知，比特币网络是采用的P2P网络体系，所以，没有明显的客户端与服务端的区别或者是概念，每一个节点既是自身的客户端，又是其它节点的服务端。 在sync.h中，定义了 CSemaphore，它包装了系统底层的信号量机制，对wait(), try_wait(),post()实现了封装，代码如下： 1234567891011class CSemaphore &amp;#123;private:    boo">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/6967649-23438a4e801336db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析:网络（二）</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-22</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Bitcoin-Cash/">Bitcoin Cash</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p><em>众所周知，比特币网络是采用的P2P网络体系，所以，没有明显的客户端与服务端的区别或者是概念，每一个节点既是自身的客户端，又是其它节点的服务端。</em></p>
+<p>在<code>sync.h</code>中，定义了 <code>CSemaphore</code>，它包装了系统底层的信号量机制，对<code>wait(), try_wait(),post()</code>实现了封装，代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CSemaphore</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    boost::condition_variable condition;</span><br><span class="line">    boost::mutex mutex;</span><br><span class="line">    <span class="keyword">int</span> value;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CSemaphore(<span class="keyword">int</span> init) : value(init) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wait</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">try_wait</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">post</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>用于控制网络连接时的最大数量，每一个网络节点的最大连接数受限于信号量所允许的最大值。 </p>
+<p><strong>下面我们按照一个网络连接从发送到接收到请求返回的这么个思路，来梳理代码逻辑。</strong></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/6967649-23438a4e801336db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="004.png"></p>
+<h2 id="CNode"><a href="#CNode" class="headerlink" title="CNode"></a>CNode</h2><p>CNode定义在<code>bitcoin.cpp</code>中，是比较重要的也是较为复杂的一个类，节点的所有信息都包含在内：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CNode</span> &#123;</span></span><br><span class="line">    SOCKET sock; <span class="comment">//用来连接的socket句柄</span></span><br><span class="line">    CDataStream vSend; <span class="comment">//发送消息</span></span><br><span class="line">    CDataStream vRecv; <span class="comment">//接收消息</span></span><br><span class="line">    <span class="keyword">uint32_t</span> nHeaderStart; <span class="comment">//头信息开始</span></span><br><span class="line">    <span class="keyword">uint32_t</span> nMessageStart; </span><br><span class="line">    <span class="keyword">int</span> nVersion; <span class="comment">//版本信息</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> strSubVer; </span><br><span class="line">    <span class="keyword">int</span> nStartingHeight; <span class="comment">//起始高度</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;CAddress&gt; *vAddr; <span class="comment">//ip地址（网络上节点的连接信息）</span></span><br><span class="line">    <span class="keyword">int</span> ban; </span><br><span class="line">    <span class="keyword">int64_t</span> doneAfter; </span><br><span class="line">    CAddress you;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在上述定义中，最主要的是 <code>std::vector&lt;CAddress&gt; *vAddr;</code> 它包含了连接的所有节点，如果有节点连接进来，就加入到这个vector中；如果某个节点断开连接，就从这个vector中删除。</p>
+<p>在<code>net.h</code>中，对CNode进行了详细的定义（所有关于节点的信息，都进行了详细罗列），由于篇幅较长，只罗列其中的一些关键结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Information about a peer */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CNode</span> &#123;</span></span><br><span class="line">    <span class="keyword">friend</span> <span class="class"><span class="keyword">class</span> <span class="title">CConnman</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    SOCKET hSocket; <span class="comment">//连接的socket句柄</span></span><br><span class="line">    <span class="keyword">size_t</span> nSendSize; <span class="comment">//所有vSendMsg条目的总大小。</span></span><br><span class="line">    <span class="keyword">size_t</span> nSendOffset; <span class="comment">//已经发送的第一个vSendMsg内的偏移量。</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">deque</span>&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">uint8_t</span>&gt;&gt; vSendMsg;<span class="comment">//发送消息的数组</span></span><br><span class="line">	 ...</span><br><span class="line">    <span class="keyword">const</span> CAddress addr;<span class="comment">//节点地址信息</span></span><br><span class="line">    <span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; nVersion;<span class="comment">//版本信息</span></span><br><span class="line">    CBloomFilter *pfilter;<span class="comment">//海量过滤器</span></span><br><span class="line">    <span class="keyword">const</span> NodeId id;<span class="comment">//节点ID</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    mapMsgCmdSize mapSendBytesPerMsgCmd;</span><br><span class="line">    mapMsgCmdSize mapRecvBytesPerMsgCmd;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    uint256 hashContinue;</span><br><span class="line">    <span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; nStartingHeight;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">list</span>&lt;CNetMessage&gt; vRecvMsg;<span class="comment">//接收消息的数组</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//用来解析接收到的消息数据</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">ReceiveMsgBytes</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pch, <span class="keyword">unsigned</span> <span class="keyword">int</span> nBytes, <span class="keyword">bool</span> &amp;complete)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用来设置接收版本</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetRecvVersion</span><span class="params">(<span class="keyword">int</span> nVersionIn)</span> </span>&#123; nRecvVersion = nVersionIn; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetRecvVersion</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> nRecvVersion; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetSendVersion</span><span class="params">(<span class="keyword">int</span> nVersionIn)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetSendVersion</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用来发送地址</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">PushAddress</span><span class="params">(<span class="keyword">const</span> CAddress &amp;_addr, FastRandomContext &amp;insecure_rand)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Known checking here is only to save space from duplicates.</span></span><br><span class="line">        <span class="comment">// SendMessages will filter it again for knowns that were added</span></span><br><span class="line">        <span class="comment">// after addresses were pushed.</span></span><br><span class="line">        <span class="keyword">if</span> (_addr.IsValid() &amp;&amp; !addrKnown.contains(_addr.GetKey())) &#123;</span><br><span class="line">            <span class="keyword">if</span> (vAddrToSend.size() &gt;= MAX_ADDR_TO_SEND) &#123;</span><br><span class="line">                vAddrToSend[insecure_rand.randrange(vAddrToSend.size())] =</span><br><span class="line">                    _addr;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                vAddrToSend.push_back(_addr);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用来发送inventory消息</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">PushInventory</span><span class="params">(<span class="keyword">const</span> CInv &amp;inv)</span> </span>&#123;</span><br><span class="line">        LOCK(cs_inventory);</span><br><span class="line">        <span class="keyword">if</span> (inv.type == MSG_TX) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!filterInventoryKnown.contains(inv.hash)) &#123;</span><br><span class="line">                setInventoryTxToSend.insert(inv.hash);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (inv.type == MSG_BLOCK) &#123;</span><br><span class="line">            vInventoryBlockToSend.push_back(inv.hash);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">PushBlockHash</span><span class="params">(<span class="keyword">const</span> uint256 &amp;hash)</span> </span>&#123;</span><br><span class="line">        LOCK(cs_inventory);</span><br><span class="line">        vBlockHashesToAnnounce.push_back(hash);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="发送消息"><a href="#发送消息" class="headerlink" title="发送消息"></a>发送消息</h2><p>CDataStream这个类主要是包装了一个带有双向缓冲区的接口， 它重载了 &gt;&gt; 和 &lt;&lt;，使用上述序列化读取和写入未格式化的数据模板，以线性时间填充数据;</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CDataStream</span> &#123;</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">typedef</span> CSerializeData vector_type;</span><br><span class="line">    vector_type vch;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nReadPos;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> nType;</span><br><span class="line">    <span class="keyword">int</span> nVersion;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; CDataStream &amp;<span class="keyword">operator</span>&lt;&lt;(<span class="keyword">const</span> T &amp;obj) &#123;</span><br><span class="line">        <span class="comment">// Serialize to this stream</span></span><br><span class="line">        ::Serialize(*<span class="keyword">this</span>, obj);</span><br><span class="line">        <span class="keyword">return</span> (*<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; CDataStream &amp;<span class="keyword">operator</span>&gt;&gt;(T &amp;obj) &#123;</span><br><span class="line">        <span class="comment">// Unserialize from this stream</span></span><br><span class="line">        ::Unserialize(*<span class="keyword">this</span>, obj);</span><br><span class="line">        <span class="keyword">return</span> (*<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">read</span><span class="params">(<span class="keyword">char</span> *pch, <span class="keyword">size_t</span> nSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nSize == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Read from the beginning of the buffer</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> nReadPosNext = nReadPos + nSize;</span><br><span class="line">        <span class="keyword">if</span> (nReadPosNext &gt;= vch.size()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (nReadPosNext &gt; vch.size()) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="built_in">std</span>::ios_base::failure(</span><br><span class="line">                    <span class="string">"CDataStream::read(): end of data"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">memcpy</span>(pch, &amp;vch[nReadPos], nSize);</span><br><span class="line">            nReadPos = <span class="number">0</span>;</span><br><span class="line">            vch.clear();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">memcpy</span>(pch, &amp;vch[nReadPos], nSize);</span><br><span class="line">        nReadPos = nReadPosNext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">write</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pch, <span class="keyword">size_t</span> nSize)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Write to the end of the buffer</span></span><br><span class="line">        vch.insert(vch.end(), pch, pch + nSize);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>所以，当我们需要发送消息时，首先会把数据放到<code>CDataStream</code>的数据流中，构造好完整的消息，但此时的消息格式是网络无法识别的，下一步，将构造好的消息放入到<code>CSerializeData</code>（类似一个消息队列）进行序列化，序列化之后，我们就可以把消息放到<code>SocketSendData</code>中发送出去。</p>
+<p>CSerializeData 的格式如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Byte-vector that clears its contents before deletion.</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">char</span>, zero_after_free_allocator&lt;<span class="keyword">char</span>&gt;&gt; CSerializeData;</span><br></pre></td></tr></table></figure>
+<p>SocketSendData 的定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> CConnman::SocketSendData(CNode *pnode) <span class="keyword">const</span> &#123;</span><br><span class="line">    AssertLockHeld(pnode-&gt;cs_vSend);</span><br><span class="line">    <span class="keyword">size_t</span> nSentSize = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">size_t</span> nMsgCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;data : pnode-&gt;vSendMsg) &#123;</span><br><span class="line">        assert(data.size() &gt; pnode-&gt;nSendOffset);</span><br><span class="line">        <span class="keyword">int</span> nBytes = <span class="number">0</span>;</span><br><span class="line">		 ...       </span><br><span class="line">    &#125;</span><br><span class="line">    pnode-&gt;vSendMsg.erase(pnode-&gt;vSendMsg.begin(),</span><br><span class="line">                          pnode-&gt;vSendMsg.begin() + nMsgCount);</span><br><span class="line">    <span class="keyword">if</span> (pnode-&gt;vSendMsg.empty()) &#123;</span><br><span class="line">        assert(pnode-&gt;nSendOffset == <span class="number">0</span>);</span><br><span class="line">        assert(pnode-&gt;nSendSize == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nSentSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="接收消息"><a href="#接收消息" class="headerlink" title="接收消息"></a>接收消息</h2><p>接收消息的工作，主要是由 <code>ThreadSocketHandler</code> 来完成的，</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!pnode-&gt;ReceiveMsgBytes(pchBuf, nBytes, notify)) &#123;</span><br><span class="line">     pnode-&gt;CloseSocketDisconnect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>随后，通过 <code>ReceiveMsgBytes</code> 把从其它节点接收到的数据解析为单个数据，然后放回到消息队列，最后由<code>ThreadMessageHandler</code>来进行最后的处理。</p>
+<p>ReceiveMsgBytes解析数据的主要流程如下，调用的是CNetMessage下的readHeader和readData方法，随后，使用complete()进行一次判定，看解析是否完成：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Absorb network data.</span></span><br><span class="line"><span class="keyword">int</span> handled;</span><br><span class="line"><span class="keyword">if</span> (!msg.in_data) &#123;</span><br><span class="line">     handled = msg.readHeader(pch, nBytes);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     handled = msg.readData(pch, nBytes);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="readHeader"><a href="#readHeader" class="headerlink" title="readHeader"></a>readHeader</h3><p>readHeader 主要用来解析消息头，由上一篇文章我们能够知道，一个消息头，至少24字节，如果小于24字节直接退出，如果满足这个条件，先把接收到的数据的开始部分复制到消息头数据流中(hdrbuf)，再反格式化成消息头(hdr)。消息数据最大为MAX_SIZE(0x02000000)，如果大于这个值，证明出错，直接退出。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> CNetMessage::readHeader(<span class="keyword">const</span> <span class="keyword">char</span> *pch, <span class="keyword">unsigned</span> <span class="keyword">int</span> nBytes) &#123;</span><br><span class="line">    <span class="comment">// copy data to temporary parsing buffer</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nRemaining = <span class="number">24</span> - nHdrPos;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nCopy = <span class="built_in">std</span>::min(nRemaining, nBytes);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memcpy</span>(&amp;hdrbuf[nHdrPos], pch, nCopy);</span><br><span class="line">    nHdrPos += nCopy;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// if header incomplete, exit</span></span><br><span class="line">    <span class="keyword">if</span> (nHdrPos &lt; <span class="number">24</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> nCopy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// deserialize to CMessageHeader</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        hdrbuf &gt;&gt; hdr;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">const</span> <span class="built_in">std</span>::exception &amp;) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// reject messages larger than MAX_SIZE</span></span><br><span class="line">    <span class="keyword">if</span> (hdr.nMessageSize &gt; MAX_SIZE) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// switch state to reading message data</span></span><br><span class="line">    in_data = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> nCopy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="readData"><a href="#readData" class="headerlink" title="readData"></a>readData</h3><p>readData 主要用来解析消息体，消息的数据部分复制到消息数据流中(vRecv)来处理，如果 vRecv 的空间不够，会进行扩容，但最多分配256 KB，不能超过总消息大小。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> CNetMessage::readData(<span class="keyword">const</span> <span class="keyword">char</span> *pch, <span class="keyword">unsigned</span> <span class="keyword">int</span> nBytes) &#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nRemaining = hdr.nMessageSize - nDataPos;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nCopy = <span class="built_in">std</span>::min(nRemaining, nBytes);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (vRecv.size() &lt; nDataPos + nCopy) &#123;</span><br><span class="line">        <span class="comment">// Allocate up to 256 KiB ahead, but never more than the total message</span></span><br><span class="line">        <span class="comment">// size.</span></span><br><span class="line">        vRecv.resize(<span class="built_in">std</span>::min(hdr.nMessageSize, nDataPos + nCopy + <span class="number">256</span> * <span class="number">1024</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hasher.Write((<span class="keyword">const</span> <span class="keyword">uint8_t</span> *)pch, nCopy);</span><br><span class="line">    <span class="built_in">memcpy</span>(&amp;vRecv[nDataPos], pch, nCopy);</span><br><span class="line">    nDataPos += nCopy;</span><br><span class="line">    <span class="keyword">return</span> nCopy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="缓冲区"><a href="#缓冲区" class="headerlink" title="缓冲区"></a>缓冲区</h2><p>在 net.h 文件中，我们能够看到如下定义：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//接收消息缓冲区</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">size_t</span> DEFAULT_MAXRECEIVEBUFFER = <span class="number">5</span> * <span class="number">1000</span>;</span><br><span class="line"><span class="comment">//发送消息缓冲区</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">size_t</span> DEFAULT_MAXSENDBUFFER = <span class="number">1</span> * <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
+<p>我们将接收或者发送的数据放入到缓冲区，我们可以通过如下函数，分别对他们调用，加速我们的处理过程：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> CConnman::GetReceiveFloodSize() <span class="keyword">const</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> nReceiveFloodSize;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> CConnman::GetSendBufferSize() <span class="keyword">const</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> nSendBufferMaxSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>本文由 <code>copernicus 团队 冉小龙</code> 分析编写，转载无需授权！</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>

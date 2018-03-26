@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>比特币源码分析:任务调度器的使用 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="任务调度器Bitcoin 进程启动后，有一个专门的线程做任务调度， 这些任务根据指定的时刻，执行对应的函数:12345678bool AppInitMain()&amp;#123;   .......   // Start the lightweight task scheduler thread    CScheduler::Function serviceLoop = boost::bind(&amp;amp">
+<meta name="keywords" content="Bitcoin Cash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币源码分析:任务调度器的使用">
+<meta property="og:url" content="http://yoursite.com/2018/03/23/比特币源码分析-任务调度器的使用/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="任务调度器Bitcoin 进程启动后，有一个专门的线程做任务调度， 这些任务根据指定的时刻，执行对应的函数:12345678bool AppInitMain()&amp;#123;   .......   // Start the lightweight task scheduler thread    CScheduler::Function serviceLoop = boost::bind(&amp;amp">
+<meta property="og:updated_time" content="2018-03-23T00:36:07.655Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币源码分析:任务调度器的使用">
+<meta name="twitter:description" content="任务调度器Bitcoin 进程启动后，有一个专门的线程做任务调度， 这些任务根据指定的时刻，执行对应的函数:12345678bool AppInitMain()&amp;#123;   .......   // Start the lightweight task scheduler thread    CScheduler::Function serviceLoop = boost::bind(&amp;amp">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>比特币源码分析:任务调度器的使用</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-03-23</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Bitcoin-Cash/">Bitcoin Cash</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h2 id="任务调度器"><a href="#任务调度器" class="headerlink" title="任务调度器"></a>任务调度器</h2><p>Bitcoin 进程启动后，有一个专门的线程做任务调度， 这些任务根据指定的时刻，执行对应的函数:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">AppInitMain</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   .......</span><br><span class="line">   <span class="comment">// Start the lightweight task scheduler thread</span></span><br><span class="line">    CScheduler::Function serviceLoop = boost::bind(&amp;CScheduler::serviceQueue, &amp;scheduler);</span><br><span class="line">    threadGroup.create_thread(boost::bind(&amp;TraceThread&lt;CScheduler::Function&gt;, <span class="string">"scheduler"</span>, serviceLoop));</span><br><span class="line">   .......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>调度器类主要是实现了一个生产者消费者的任务队列，只是这个任务队列是用 std::multimap 实现的，map 的key表达某一时刻，map的值表达：那一时刻要执行的函数，内部使用条件变量和锁来保护multimap ，还有几个bool 条件:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CScheduler</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CScheduler();</span><br><span class="line">    ~CScheduler();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">typedef</span> <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>(<span class="keyword">void</span>)&gt; Function;</span><br><span class="line">    </span><br><span class="line">    void schedule(Function f, boost::chrono::system_clock::time_point t=boost::chrono::system_clock::now());</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">scheduleFromNow</span><span class="params">(Function f, <span class="keyword">int64_t</span> deltaMilliSeconds)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">scheduleEvery</span><span class="params">(Function f, <span class="keyword">int64_t</span> deltaMilliSeconds)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">serviceQueue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">(<span class="keyword">bool</span> drain=<span class="literal">false</span>)</span></span>;</span><br><span class="line">    <span class="keyword">size_t</span> getQueueInfo(boost::chrono::system_clock::time_point &amp;first,</span><br><span class="line">                        boost::chrono::system_clock::time_point &amp;last) <span class="keyword">const</span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">AreThreadsServicingQueue</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">multimap</span>&lt;boost::chrono::system_clock::time_point, Function&gt; taskQueue;</span><br><span class="line">    boost::condition_variable newTaskScheduled;</span><br><span class="line">    <span class="keyword">mutable</span> boost::mutex newTaskMutex;</span><br><span class="line">    <span class="keyword">int</span> nThreadsServicingQueue;</span><br><span class="line">    <span class="keyword">bool</span> stopRequested;</span><br><span class="line">    <span class="keyword">bool</span> stopWhenEmpty;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">shouldStop</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> stopRequested || (stopWhenEmpty &amp;&amp; taskQueue.empty()); &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>CScheduler的client 通过调用schedule 往内部multimap添加一个条目;<br>scheduleFromNow 和scheduleEvery 内部都是调用schedule 方法实现;<br>这三个方法属于生产者要生产任务的方法， 任务的消费者调用serviceQueue等待取走任务， 然后执行。<br>目前整个程序有一个全局的CScheduler实例:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> CScheduler scheduler;</span><br></pre></td></tr></table></figure></p>
+<p>这个实例对应只有一个消费者线程， 即唯一的后台调度器线程。<br><code>class SingleThreadedSchedulerClient</code> 主要用途是，借助CScheduler类型，保障被添加到内部链表的任务，被串行执行:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleThreadedSchedulerClient</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    CScheduler *m_pscheduler;</span><br><span class="line"></span><br><span class="line">    CCriticalSection m_cs_callbacks_pending;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">list</span>&lt;<span class="built_in">std</span>::function&lt;<span class="keyword">void</span> (<span class="keyword">void</span>)&gt;&gt; m_callbacks_pending;</span><br><span class="line">    <span class="keyword">bool</span> m_are_callbacks_running = <span class="literal">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">MaybeScheduleProcessQueue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ProcessQueue</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    explicit SingleThreadedSchedulerClient(CScheduler *pschedulerIn) : m_pscheduler(pschedulerIn) &#123;&#125;</span><br><span class="line">    void AddToProcessQueue(std::function&lt;void (void)&gt; func);</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">EmptyQueue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="keyword">size_t</span> CallbacksPending();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="使用例子"><a href="#使用例子" class="headerlink" title="使用例子"></a>使用例子</h2><p>基本的使用例子:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;scheduler.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/bind.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/test/unit_test.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doN</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"output now\n"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doE</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">		<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"i = "</span> &lt;&lt; i &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">BOOST_AUTO_TEST_SUITE(sche_tests)</span><br><span class="line">BOOST_AUTO_TEST_CASE(sche)</span><br><span class="line">&#123;</span><br><span class="line">    CScheduler s;</span><br><span class="line">    s.scheduleFromNow(doN, <span class="number">1000</span>); </span><br><span class="line">    s.scheduleEvery(doE, <span class="number">1000</span>); </span><br><span class="line">    boost::thread t(boost::bind(&amp;CScheduler::serviceQueue, &amp;s));</span><br><span class="line">    boost::this_thread::sleep_for(boost::chrono::seconds&#123;<span class="number">5</span>&#125;);</span><br><span class="line">    t.interrupt();</span><br><span class="line">    t.join();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">BOOST_AUTO_TEST_CASE(singlethread)</span><br><span class="line">&#123;</span><br><span class="line">    CScheduler s;</span><br><span class="line">    <span class="function">SingleThreadedSchedulerClient  <span class="title">sc</span> <span class="params">(&amp;s)</span></span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;<span class="number">11</span>; i++)&#123;</span><br><span class="line">	    <span class="keyword">auto</span>  f = [=]&#123;</span><br><span class="line">		    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"thread "</span> &lt;&lt; boost::this_thread::get_id() &lt;&lt; <span class="string">" print arg: "</span> &lt;&lt; i &lt;&lt; <span class="string">'\n'</span>;</span><br><span class="line">	    &#125;;</span><br><span class="line">            sc.AddToProcessQueue(f);</span><br><span class="line">    &#125;</span><br><span class="line">    boost::thread t(boost::bind(&amp;CScheduler::serviceQueue, &amp;s));</span><br><span class="line">    boost::this_thread::sleep_for(boost::chrono::seconds&#123;<span class="number">1</span>&#125;);</span><br><span class="line">    t.interrupt();</span><br><span class="line">    t.join();</span><br><span class="line">&#125;</span><br><span class="line">BOOST_AUTO_TEST_SUITE_END()</span><br></pre></td></tr></table></figure></p>
+<p>进程启动后， 全局对象连接管理器connman初始化后， connman 的Start 方法最后，通过scheduler 线程安排了一个定时任务: 每隔15分钟， 把connman 对象内部成员，banmap_t 类型的 setBanned, CAddrMan 类型的addrman 序列化到本地文件<em>banlist.dat</em> 和 <em>peers.dat</em>。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//init.cpp</span></span><br><span class="line"><span class="keyword">if</span> (!connman.Start(scheduler, connOptions)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//net.cpp</span></span><br><span class="line"><span class="keyword">bool</span> CConnman::Start(CScheduler&amp; scheduler, <span class="keyword">const</span> Options&amp; connOptions)</span><br><span class="line">&#123;</span><br><span class="line">    ...............</span><br><span class="line">    scheduler.scheduleEvery(<span class="built_in">std</span>::bind(&amp;CConnman::DumpData, <span class="keyword">this</span>), DUMP_ADDRESSES_INTERVAL * <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果钱包功能编译使能, 会让scheduler 线程安排每隔500毫秒刷新钱包状态。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//init.cpp </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> ENABLE_WALLET</span></span><br><span class="line">    StartWallets(scheduler);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//wallet/init.cpp </span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">StartWallets</span><span class="params">(CScheduler&amp; scheduler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (CWalletRef pwallet : vpwallets) &#123;</span><br><span class="line">        pwallet-&gt;postInitProcess(scheduler);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//wallet/wallet.cpp </span></span><br><span class="line"><span class="keyword">void</span> CWallet::postInitProcess(CScheduler&amp; scheduler)</span><br><span class="line">&#123;</span><br><span class="line">    ReacceptWalletTransactions();</span><br><span class="line">    <span class="keyword">if</span> (!CWallet::fFlushScheduled.exchange(<span class="literal">true</span>)) &#123;</span><br><span class="line">        scheduler.scheduleEvery(MaybeCompactWalletDB, <span class="number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>PeerLogicValidation 对象的构造函数内部, scheduler 线程安排每45秒执行CheckForStaleTipAndEvictPeer函数主要做两件事: </p>
+<ol>
+<li>关掉多余的外出tcp 连接 </li>
+<li>根据当前时间，检查当前节点的blockchain 的tip 是否有可能过时了，建立额外的连接同步跟上</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">PeerLogicValidation::PeerLogicValidation(CConnman* connmanIn, CScheduler &amp;scheduler) : connman(connmanIn), m_stale_tip_check_time(<span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// Initialize global variables that cannot be constructed at startup.</span></span><br><span class="line">    recentRejects.reset(<span class="keyword">new</span> CRollingBloomFilter(<span class="number">120000</span>, <span class="number">0.000001</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> Consensus::Params&amp; consensusParams = Params().GetConsensus();</span><br><span class="line">    <span class="comment">// Stale tip checking and peer eviction are on two different timers, but we</span></span><br><span class="line">    <span class="comment">// don't want them to get out of sync due to drift in the scheduler, so we</span></span><br><span class="line">    <span class="comment">// combine them in one function and schedule at the quicker (peer-eviction)</span></span><br><span class="line">    <span class="comment">// timer.</span></span><br><span class="line">    <span class="keyword">static_assert</span>(EXTRA_PEER_CHECK_INTERVAL &lt; STALE_CHECK_INTERVAL, <span class="string">"peer eviction timer should be less than stale tip check timer"</span>);</span><br><span class="line">    scheduler.scheduleEvery(<span class="built_in">std</span>::bind(&amp;PeerLogicValidation::CheckForStaleTipAndEvictPeers, <span class="keyword">this</span>, consensusParams), EXTRA_PEER_CHECK_INTERVAL * <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> PeerLogicValidation::CheckForStaleTipAndEvictPeers(<span class="keyword">const</span> Consensus::Params &amp;consensusParams)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (connman == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int64_t</span> time_in_seconds = GetTime();</span><br><span class="line"></span><br><span class="line">    EvictExtraOutboundPeers(time_in_seconds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (time_in_seconds &gt; m_stale_tip_check_time) &#123;</span><br><span class="line">        LOCK(cs_main);</span><br><span class="line">        <span class="comment">// Check whether our tip is stale, and if so, allow using an extra</span></span><br><span class="line">        <span class="comment">// outbound peer</span></span><br><span class="line">        <span class="keyword">if</span> (TipMayBeStale(consensusParams)) &#123;</span><br><span class="line">            LogPrintf(<span class="string">"Potential stale tip detected, will try using extra outbound peer (last tip update: %d seconds ago)\n"</span>, time_in_seconds - g_last_tip_update);</span><br><span class="line">            connman-&gt;SetTryNewOutboundPeer(<span class="literal">true</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (connman-&gt;GetTryNewOutboundPeer()) &#123;</span><br><span class="line">            connman-&gt;SetTryNewOutboundPeer(<span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        m_stale_tip_check_time = time_in_seconds + STALE_CHECK_INTERVAL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是bitoin 里面CScheduler类的主要使用场景。</p>
+<hr>
+<p>本文由 <code>Copernicus团队 喻建</code> 编写，转载无需授权！</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
