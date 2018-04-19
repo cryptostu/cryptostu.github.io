@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>门罗币 | Cryptocurrency Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="门罗币隐私性增强的3个技术要点：环签名( ring signatures):将发送者的输入与其它的人的输入进行混合，使确定后续的交易关联变得成倍的困难。隐形地址(stealth addresses):为每个交易生成隐形地址，使除了该交易的发送者和接收者之外的其他人不可能找到该交易的实际发送地址。环机密交易(ring confidential transactions):通过该机制隐藏交易的金额。">
+<meta name="keywords" content="monero">
+<meta property="og:type" content="article">
+<meta property="og:title" content="门罗币">
+<meta property="og:url" content="http://yoursite.com/2018/04/05/门罗币/index.html">
+<meta property="og:site_name" content="Cryptocurrency Tech">
+<meta property="og:description" content="门罗币隐私性增强的3个技术要点：环签名( ring signatures):将发送者的输入与其它的人的输入进行混合，使确定后续的交易关联变得成倍的困难。隐形地址(stealth addresses):为每个交易生成隐形地址，使除了该交易的发送者和接收者之外的其他人不可能找到该交易的实际发送地址。环机密交易(ring confidential transactions):通过该机制隐藏交易的金额。">
+<meta property="og:updated_time" content="2018-04-05T08:45:09.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="门罗币">
+<meta name="twitter:description" content="门罗币隐私性增强的3个技术要点：环签名( ring signatures):将发送者的输入与其它的人的输入进行混合，使确定后续的交易关联变得成倍的困难。隐形地址(stealth addresses):为每个交易生成隐形地址，使除了该交易的发送者和接收者之外的其他人不可能找到该交易的实际发送地址。环机密交易(ring confidential transactions):通过该机制隐藏交易的金额。">
+  
+    <link rel="alternate" href="/atom.xml" title="Cryptocurrency Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Copernicus</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="top: 100%;">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+        </div>
+    </nav>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>门罗币</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="https://cdn2.iconfinder.com/data/icons/rcons-user/32/male-shadow-circle-512.png">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Copernicus</span>
+                <span class="post-date sub-title">at: 2018-04-05</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/monero/">monero</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <h3 id="门罗币隐私性增强的3个技术要点："><a href="#门罗币隐私性增强的3个技术要点：" class="headerlink" title="门罗币隐私性增强的3个技术要点："></a>门罗币隐私性增强的3个技术要点：</h3><p><strong>环签名( ring signatures)</strong>:将发送者的输入与其它的人的输入进行混合，使确定后续的交易关联变得成倍的困难。<br><strong>隐形地址(stealth addresses)</strong>:为每个交易生成隐形地址，使除了该交易的发送者和接收者之外的其他人不可能找到该交易的实际发送地址。<br><strong>环机密交易(ring confidential transactions)</strong>:通过该机制隐藏交易的金额。</p>
+<h3 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h3><p>采用<code>CryptoNight proof-of-work hash algorithm</code>，该算法来自 <code>CryptoNote</code>协议；</p>
+<h2 id="门罗币的白皮书"><a href="#门罗币的白皮书" class="headerlink" title="门罗币的白皮书"></a>门罗币的白皮书</h2><h3 id="Untraceable-Transactions"><a href="#Untraceable-Transactions" class="headerlink" title="Untraceable Transactions"></a>Untraceable Transactions</h3><p>交易的发送者不会被要求与其它人或信任的第三方合作，才能成功的创建一个交易。</p>
+<p><strong>group signature</strong> : 允许用户代表该组去签名他的信息，用户在签名消息后，提供的不仅仅是他自己的公钥，而是他所在组的所有成员的公钥。验证者知道签名属于这个组的某个成员，但并不能确定具体是哪个。<br><strong>技术演化</strong>: <code>Group Manager</code> –&gt; <code>ring signature</code><br><code>Group Manager</code>它要求有一个信任的第三方，只有这个第三方才知道谁是真正的签名者。<br><code>ring signature</code>不需要Group Manager,并且可以匿名撤销。</p>
+<p>门罗币采用的是<code>one-time ring signatur</code>，大部分方案依赖于<code>Traceable ring signature</code>技术。重点在于：用户只能使用它的私钥产生一个有效的签名。特点是：公钥可以出现在许多外部验证集中，而私钥只能产生一个独一无二的匿名签名；这个方案减弱了可追踪性，保持了一次性的连接性(在签名与私钥之间)。如果尝试进行双花，这两个签名将链接在一起。</p>
+<h3 id="monero-signature-algorithm-ECDSA"><a href="#monero-signature-algorithm-ECDSA" class="headerlink" title="monero signature algorithm : ECDSA"></a>monero signature algorithm : ECDSA</h3><p>术语 :  </p>
+<blockquote>
+<ul>
+<li><code>private ec-key</code>: 标准的椭圆曲线的私钥。 a ∈ [1, l − 1];</li>
+<li><code>public ec-key</code>: 标准的椭圆曲线的公钥。A = aG;</li>
+<li><code>one-time keypair</code>: 私钥和公钥。     （a, A）</li>
+<li><code>private user key</code>: 两个不同的私钥。(a, b)</li>
+<li><code>tracking key</code>: 可追踪的钥匙(a, B)。 (where B = bG and a 不等于 b);</li>
+<li><code>public user key</code>:两个公钥(A, B).</li>
+<li><code>standard address</code>:一个<code>public user key</code>的地址表示形式，带有纠错和人性化字符串。</li>
+<li><code>truncated address</code>: B公钥的地址表示形式，带有纠错和人性化字符串。</li>
+</ul>
+</blockquote>
+<p>与比特币的相同不同之处:</p>
+<ul>
+<li>相同之处：都采用了类似的交易结构，发送者选择几个独立的交易输入，然后使用这些交易输入所对应的私钥进行签名，再将它们发送至不同的目的地址。</li>
+<li>不同之处：每个使用者拥有一个独一无二的私钥和公钥，在这个模型中：发送者依据接收者的地址和一些随机数生成一个一次性的公钥。从这个角度来说：同一个接收者的不同收入交易会被发送到一次性的公钥上(而不是直接到他的独一无二的地址上)，并且只有接收者可以恢复对应的私钥部分来获得这些资金。然后接收者可以使用环签名来花费资金，从而保证了他的所有权和花费的匿名性。</li>
+</ul>
+<h3 id="Unlinkable-payments"><a href="#Unlinkable-payments" class="headerlink" title="Unlinkable payments :"></a>Unlinkable payments :</h3><p>在门罗币中，提出了一个解决方案，允许用户公布一个地址，然后接受绝对匿名性的支付。<br>原因在于：<code>CryptoNode output</code>的目的地址是一个公钥，由接收者的地址和发送者的随机数据生成。 相比于比特币的优点在于：每个接受金额的公钥都是独一无二的(除非发送者向相同接收者发送交易时，使用了相同公钥生成数据)。于是，通过设计来避免比特币上地址重用的问题，这样就没有验证者可以确定真实的发送地址，或将两个地址的关系关联起来。</p>
+<h3 id="一次性公钥；-作为花费金额的目的地，混淆接收者"><a href="#一次性公钥；-作为花费金额的目的地，混淆接收者" class="headerlink" title="一次性公钥；(作为花费金额的目的地，混淆接收者)"></a>一次性公钥；(作为花费金额的目的地，混淆接收者)</h3><p>发送者执行一个<code>Diffie-Hellman</code>来交换他的随机数据和采用的发送者的部分地址。然后发送者使用这两部分数据生成一个一次性的key。这两步接收者需要两个不同的key。然后接受者也执行一个<code>Diffie-Hellman</code>交换来恢复对应的私钥。一个标准的交易如下所述：</p>
+<blockquote>
+<ol>
+<li>Alice 支付给Bob， Bob公布一个标准地址，然后Alice解析这个地址获取Bob的公钥(A, B).</li>
+<li>Alice 生个一个随机数r, 并计算一个一次性公钥P= H<sub>s</sub>(rA)G+B</li>
+<li>Alice 使用P作为输出的目的地址，并打包R=rG(作为<code>Diffie-Hellman</code>交换的一部分)在交易的某个地方。注意：Alice可以使用这个独一无二的公钥创建不同的输出，不同的接收的公钥使用相同的r也生成的是不同的独一无二公钥。</li>
+<li>Alice发送交易</li>
+<li>Bob使用他的私钥(a,b)检查每个传输的交易，并计算P’ = H<sub>s</sub>(aR)G + B, 如果P’ = P,则表示这个交易输出是发送给Bob的。</li>
+</ol>
+</blockquote>
+<h3 id="One-time-ring-signatures-一次性环签名：混淆发送者，混合历史交易作为交易输入"><a href="#One-time-ring-signatures-一次性环签名：混淆发送者，混合历史交易作为交易输入" class="headerlink" title="One-time ring signatures(一次性环签名：混淆发送者，混合历史交易作为交易输入)"></a>One-time ring signatures(一次性环签名：混淆发送者，混合历史交易作为交易输入)</h3><p>原始的加密签名允许去追踪一个交易的接收者和发送者，针对这个缺陷，解决方案是：使用与当前电子现金系统不同的签名类型。<br>采用的签名包含四中算法：GEN, SIG, VER, LNK</p>
+<ul>
+<li><p>GEN: 采用公共参数，并输出一个对组(P,x)和公钥I。签名者选一个随机的机密<code>key</code> x,并计算对应的公钥P = xG. 另外，计算另一个公钥，也叫<code>key image</code> I = x*H<sub>p</sub>(P)， 该结构是对公钥P做一个commitment。</p>
+</li>
+<li><p>SIG: 选取信息m,一个公钥集合S’{P<sub>i</sub>}<sub>i不等于s</sub>，一个对组(P<sub>s</sub>, x<sub>s</sub>)，并输出一个签名signature和一个公钥集合S = S’ ∪ {P<sub>s</sub>}. </p>
+<blockquote>
+<p>上述这段话的意思是：输入信息：从引入n个诱饵输入，作为集合S’，要签名的信息m, 签名者的对组(P,x)。 输出信息：依据上述三个输入信息，产生两个输出：一个签名signature和一个所有公钥的集合S(即包括所有诱饵和签名者的公钥)。签名者在此处使用了一个非交互式的零知识证明来生成一个签名。</p>
+</blockquote>
+</li>
+<li><p>VER: 选取信息m，公钥集合S，signature，进行验证，输出true OR false. 验证者通过反向变换来检查签名。</p>
+</li>
+<li><p>LNK: 选取一个<code>key image</code>集合 {I<sub>i</sub>}，一个signature，然后输出(链接)”linked”，(独立)”indep”。</p>
+</li>
+</ul>
+<p>这个协议的想法相当简单：签名者产生一个可以被公钥S验证的签名，签名者的身份与集合中其它诱饵公钥的身份是没有区别的，除非这个签名者使用相同的秘钥生成了第二个签名。<br>验证着检查<code>key image</code>是否已在过去的签名中被使用，多次出现标识两个签名是使用相同的秘钥生成的，<strong>通过这步可以识别出双花交易</strong>。</p>
+<blockquote>
+<p>上述的意思是：使用<code>L-transformations</code>,签名者证明他知道x, 且至少符合这样的公式 P<sub>i</sub> = xG。为了保证这个证明是不可重复的，引入了<code>key image</code> I = x <em> H<sub>p</sub>(P)。 签名者至少知道x符合这样的公式：H<sub>p</sub>(P<sub>i</sub>) = I </em> x <sup>-1</sup>.<br>如果x–&gt;I这个映射是注入的，则</p>
+<pre><code>1. 无人可以从`key image`恢复公钥和签名者的身份。
+2. 签名者不能使用不同的`key image`和相同的x产生两个签名。
+</code></pre></blockquote>
+<h3 id="Standard-CryptoNote-transaction"><a href="#Standard-CryptoNote-transaction" class="headerlink" title="Standard CryptoNote transaction"></a>Standard CryptoNote transaction</h3><p>通过上述的两种方法(不可链接的公钥(即一次性公钥) 和 不可追踪的环形签名(引入其他人的key)),来实现了更高一级的隐私性。接收者和发送者都被隐藏。<br>要实现这种匿名结果，用户需要一对私钥(a,b)和一对公钥(A,B)。<br>当验证一个交易时，用户需要为每个交易的输出额外做两次椭圆曲线的乘法和加法，来检测是否这个交易输出的金额属于他自己。对于每个交易输出，用户恢复属于他自己的一次性对组(p<sub>i</sub>, P<sub>I</sub>),然后将它存入自己的钱包中。<br>当Bob签名他的交易时，会引用n个与他具有相同金额的外部交易(以前的版本设计，最近的版本已不需金额限制)，不需要这些交易者的参与，将这些交易与他自己的交易混合在一起。同时Bob不需要知道是否这些引用已被花费，这表示一个交易输出可以在成千上万的签名中作为混淆系数来使用。双花检查在LNK阶段进行，检查是否<code>key image</code>符合花费要求。<br>Bob 可以选择混淆等级，当n=1时，意味着引入一个外部输出，有50%的概率可以猜出谁是真正的发送者。当n=99时，意味着引入99个外部输出，有1%的概率可以猜出谁是真正的发送者。并且签名后的字节长度随引入的交易成线性增长O(n+1)，所以隐私程度越高，交易字节越大，交易费越高。</p>
+<h3 id="Smooth-emission-平滑的分发币"><a href="#Smooth-emission-平滑的分发币" class="headerlink" title="Smooth emission(平滑的分发币)"></a>Smooth emission(平滑的分发币)</h3><p>为了保证分发过程的平滑性，块的奖励采用了如下的公式：<code>BaseReward = (MSupply - A) &gt;&gt; 18</code>。<br>A是以前生成的币的总量。</p>
+<h3 id="Difficulty"><a href="#Difficulty" class="headerlink" title="Difficulty"></a>Difficulty</h3><p>逐块调整<br>基于最近的720个块，出去20%的时间戳异常的块。</p>
+<h3 id="Size-limits"><a href="#Size-limits" class="headerlink" title="Size limits"></a>Size limits</h3><p>区块的大小限制：M<sub>N</sub> 是最近N个区块的中位数大小，当前块的最大限制 是2 * M<sub>N</sub>。这样的设计可以避免块链的膨胀，同时仍然可以允许区块大小缓慢增长。<br>交易大小也不是明确的被限制，而是绑定在块的大小上。(例如：每个交易最大为块的1/10,…)</p>
+<h3 id="Excess-size-penalty"><a href="#Excess-size-penalty" class="headerlink" title="Excess size penalty"></a>Excess size penalty</h3><p>虽然只有占大多数算力的矿工才可以移动中值大小，但仍然可能膨胀区块链，并对节点产生额外的负担。为了禁止恶意节点产生超大区块，引入如下限制：NewReward = BaseReward * ((BlkSize/M<sub>N</sub>) - 1)<sup>2</sup><br>上述规则只有在BlkSize大于应该接近最大值的最小空闲块大小时才应用此规则。矿工允许创建通用大小的块，或者只有当所有交易费的利润超过惩罚时，也允许创建该块。但与惩罚不同，交易费不可能以平方的方式增长，所以最终仍然会有平衡。</p>
+<h2 id="门罗币的单位，总金额"><a href="#门罗币的单位，总金额" class="headerlink" title="门罗币的单位，总金额"></a>门罗币的单位，总金额</h2><p>门罗币的单位： 1XMR = 10<sup>12</sup> “monoshis”;<br>门罗币的总金额： Tatal Coin = 2<sup>64</sup> - 1 “monoshis”;<br>2**64 - 1 = 1844 6744 073709551615（即：大约1844万）</p>
+<h2 id="门罗币块奖励分发"><a href="#门罗币块奖励分发" class="headerlink" title="门罗币块奖励分发"></a>门罗币块奖励分发</h2><p>BR_nom = max( 0.6, floor( (M - A) / 2<sup>19</sup> ) / 10<sup>12</sup> )</p>
+<blockquote>
+<ul>
+<li>注意：M, A 都是uint64 类型。</li>
+</ul>
+</blockquote>
+<p>如果区块大于 60kB时，实际的块奖励将低于BR_nom。这种情况下，块奖励如下计算：<br>中位块: M100 = max(Median_100, 60kB);  // Median_100: 前100个块的中位块大小。<br>实际块奖励: BR_actual = BR_nom * (1 - (max(CurrentBlickSize, M100)/M100 -1)<sup>2</sup>)</p>
+<blockquote>
+<ul>
+<li>注意：CurrentBlickSize 不允许大于 Median_100 *2；但是允许CurrentBlickSize不管 Median_100多大，都可以在任何块大于60kB; 即此处总共有两种限制措施。</li>
+</ul>
+</blockquote>
+<h2 id="出块的时间"><a href="#出块的时间" class="headerlink" title="出块的时间"></a>出块的时间</h2><p>出块间隔 2 minute。<br>未来可能会有变化。</p>
+
+        </div>
+        <div class="post-reply">
+            
+                <!-- 来必力City版安装代码 -->
+                <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTE4Ni81NzUz">
+                    <script type="text/javascript">
+                        (function(d, s) {
+                            var j, e = d.getElementsByTagName(s)[0];
+
+                            if (typeof LivereTower === 'function') { return; }
+
+                            j = d.createElement(s);
+                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                            j.async = true;
+
+                            e.parentNode.insertBefore(j, e);
+                        })(document, 'script');
+                    </script>
+                    <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+                </div>
+                <!-- City版安装代码已完成 -->
+            
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+  #footer {
+    min-height: 10vh;
+    background: black;
+    color: #fff;
+  }
+
+  #footer a {
+    color: #e1e1e1;
+  }
+</style>
+<footer id="footer" class="has-text-centered is-flex center">
+  <div class="container has-padding">
+    <div>
+      <div>
+        <!--请您保留作者署名, 主题制作来之不易-->
+        Theme by <a href="http://haojen.github.io/">Haojen Ma</a>
+        <br>
+        Copyright © Copernicus 2018
+        <br>
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/search_core.js"></script>
+<script src="/js/script.js"></script>
+
+</body>
+</html>
